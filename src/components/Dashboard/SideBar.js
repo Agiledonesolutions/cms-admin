@@ -237,12 +237,12 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
+                    <Link to="/roles"
                       
                     >
                       <i className="fa fa-angle-double-right" />
                       <span>Roles</span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>

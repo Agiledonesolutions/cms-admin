@@ -5,9 +5,9 @@ import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import { columns, data } from "../Product/Data.js";
+import { columns, data } from "../../Product/Data";
 
-class Users extends React.Component {
+class Roles extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -21,27 +21,27 @@ class Users extends React.Component {
     return (
       <React.Fragment>
         <section className="content-header clearfix">
-          <h3>Users</h3>
+          <h3>Roles</h3>
           <ol className="breadcrumb">
             <li>
-              <a href="http://ecommerce.coddedbrain.com/admin">Dashboard</a>
+              <Link to='/dashboard'>Dashboard</Link>
             </li>
-            <li className="active">Users</li>
+            <li className="active">Roles</li>
           </ol>
         </section>
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">
               <Link
-                to="/users/create"
+                to="/roles/create"
                 className="btn btn-primary btn-actions btn-create"
               >
-                Create User
+                Create Role
               </Link>
             </div>
           </div>
           <div className="box box-primary">
-            <div className="box-body index-table" id="users-table">
+            <div className="box-body index-table" id="roles-table">
               <DataTableExtensions {...this.state.tableData}>
                 <DataTable
                   noHeader
@@ -64,7 +64,7 @@ class Users extends React.Component {
         <div
           className="modal fade"
           id="keyboard-shortcuts-modal"
-          // tabIndex={-1}
+        //   tabIndex={-1}
           role="dialog"
           aria-labelledby="myModalLabel"
           aria-hidden="true"
@@ -111,4 +111,4 @@ class Users extends React.Component {
     );
   }
 }
-export default Users;
+export default Roles;

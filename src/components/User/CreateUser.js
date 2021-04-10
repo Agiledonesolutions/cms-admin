@@ -5,7 +5,9 @@ import "./user.css";
 class CreateUser extends React.Component {
   state = {
     activePanel: "account",
-  }
+    dropdownActive: false
+  };
+
   tabContentToggle = () => {
     if (this.state.activePanel == "account") {
       return (
@@ -25,7 +27,6 @@ class CreateUser extends React.Component {
                     name="first_name"
                     className="form-control "
                     id="first_name"
-                    defaultValue
                     type="text"
                   />
                 </div>
@@ -42,7 +43,6 @@ class CreateUser extends React.Component {
                     name="last_name"
                     className="form-control "
                     id="last_name"
-                    defaultValue
                     type="text"
                   />
                 </div>
@@ -59,7 +59,6 @@ class CreateUser extends React.Component {
                     name="email"
                     className="form-control "
                     id="email"
-                    defaultValue
                     type="email"
                   />
                 </div>
@@ -77,10 +76,79 @@ class CreateUser extends React.Component {
                     className="form-control custom-select-black selectize prevent-creation"
                     id="roles[]"
                     multiple={1}
+                    style={{display: "none"}}
                   >
                     <option value={1}>Admin</option>
                     <option value={2}>Customer</option>
                   </select>
+                  <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
+                    <div  className={this.state.dropdownActive?"selectize-input items not-full has-options has-items focus input-active dropdown-active": "selectize-input items not-full has-options has-items"} >
+                      <div className="item" data-value={2}>
+                        Customer
+                        <a
+                          
+                          className="remove"
+                          // tabIndex={-1}
+                          title="Remove"
+                        >
+                          ×
+                        </a>
+                      </div>
+                      <div className="item" data-value={1}>
+                        Admin
+                        <a
+                          
+                          className="remove"
+                          // tabIndex={-1}
+                          title="Remove"
+                        >
+                          ×
+                        </a>
+                      </div>
+                      <input
+                        type="select-multiple"
+                        autoComplete="off"
+                        // tabIndex
+                        id="roles[]-selectized"
+                        style={{
+                          width: 4,
+                          opacity: 1,
+                          position: "relative",
+                          left: 0,
+                        }}
+                      />
+                    </div>
+                    <div
+                      className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
+                      
+                      style={this.state.dropdownActive?{display: "block",
+                      visibility: "visible",
+                      width: "207.588px",
+                      top: 40,
+                      left: 0,}:{display: "none",
+                      visibility: "visible",
+                      width: "207.588px",
+                      top: 40,
+                      left: 0,}}
+                    >
+                      <div className="selectize-dropdown-content">
+                        <div
+                          className="option selected"
+                          data-selectable
+                          data-value={1}
+                        >
+                          Admin
+                        </div>
+                        <div
+                          className="option selected"
+                          data-selectable
+                          data-value={2}
+                        >
+                          Customer
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="form-group">
@@ -95,7 +163,6 @@ class CreateUser extends React.Component {
                     name="password"
                     className="form-control "
                     id="password"
-                    defaultValue
                     type="password"
                   />
                 </div>
@@ -112,7 +179,6 @@ class CreateUser extends React.Component {
                     name="password_confirmation"
                     className="form-control "
                     id="password_confirmation"
-                    defaultValue
                     type="password"
                   />
                 </div>
