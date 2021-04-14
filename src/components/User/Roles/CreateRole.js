@@ -63,8 +63,16 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.attributes" attributes={['Index', 'Create', 'Edit', 'Delete']} suffix="Attributes"/>
-              <PermissionGroup heading="admin.attribute_sets" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Attribute_Set"/>
+              <PermissionGroup
+                heading="admin.attributes"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Attributes"
+              />
+              <PermissionGroup
+                heading="admin.attribute_sets"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Attribute_Set"
+              />
             </div>
           </div>
           <div className="row">
@@ -77,7 +85,11 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.brands" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Brand"/>
+              <PermissionGroup
+                heading="admin.brands"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Brand"
+              />
             </div>
           </div>
           <div className="row">
@@ -90,7 +102,11 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.categories" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Categories"/>
+              <PermissionGroup
+                heading="admin.categories"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Categories"
+              />
             </div>
           </div>
           <div className="row">
@@ -103,8 +119,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.coupons" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Coupons"/>
-              </div>
+              <PermissionGroup
+                heading="admin.coupons"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Coupons"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -116,8 +136,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.currency_rates" attributes={['Index', 'Edit' ]} suffix="Currency_Rates"/>
-              </div>
+              <PermissionGroup
+                heading="admin.currency_rates"
+                attributes={["Index", "Edit"]}
+                suffix="Currency_Rates"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -129,8 +153,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.flash_sales" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Flash_Sales"/>
-              </div>
+              <PermissionGroup
+                heading="admin.flash_sales"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Flash_Sales"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -142,8 +170,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.importer" attributes={['Index', 'Create' ]} suffix="Import"/>
-              </div>
+              <PermissionGroup
+                heading="admin.importer"
+                attributes={["Index", "Create"]}
+                suffix="Import"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -155,8 +187,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.media" attributes={['Index', 'Create','Delete' ]} suffix="Media"/>
-              </div>
+              <PermissionGroup
+                heading="admin.media"
+                attributes={["Index", "Create", "Delete"]}
+                suffix="Media"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -168,9 +204,17 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.menus" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Menus"/>
-              <PermissionGroup heading="admin.menu_items" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Menu_Items"/>
-              </div>
+              <PermissionGroup
+                heading="admin.menus"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Menus"
+              />
+              <PermissionGroup
+                heading="admin.menu_items"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Menu_Items"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -182,8 +226,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.options" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Options"/>
-              </div>
+              <PermissionGroup
+                heading="admin.options"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Options"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -195,8 +243,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.orders" attributes={['Index', 'Show', 'Edit']} suffix="Order"/>
-              </div>
+              <PermissionGroup
+                heading="admin.orders"
+                attributes={["Index", "Show", "Edit"]}
+                suffix="Order"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -208,8 +260,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.pages" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Pages"/>
-              </div>
+              <PermissionGroup
+                heading="admin.pages"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Pages"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -221,7 +277,11 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.products" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Products"/>
+              <PermissionGroup
+                heading="admin.products"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Products"
+              />
             </div>
           </div>
           <div className="row">
@@ -234,8 +294,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.reports" attributes={['Index']} suffix="Report"/>
-              </div>
+              <PermissionGroup
+                heading="admin.reports"
+                attributes={["Index"]}
+                suffix="Report"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -247,8 +311,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.reviews" attributes={['Index', 'Edit', 'Delete' ]} suffix="Review"/>
-</div>
+              <PermissionGroup
+                heading="admin.reviews"
+                attributes={["Index", "Edit", "Delete"]}
+                suffix="Review"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -260,8 +328,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.settings" attributes={['Edit' ]} suffix="Settings"/>
- </div>
+              <PermissionGroup
+                heading="admin.settings"
+                attributes={["Edit"]}
+                suffix="Settings"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -273,8 +345,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.sliders" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Slider"/>
-</div>
+              <PermissionGroup
+                heading="admin.sliders"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Slider"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -286,8 +362,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.tags" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Tag"/>
-</div>
+              <PermissionGroup
+                heading="admin.tags"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Tag"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -299,8 +379,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.taxes" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Tax"/>
-</div>
+              <PermissionGroup
+                heading="admin.taxes"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Tax"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -312,8 +396,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.transactions" attributes={['Index']} suffix="Transaction"/>
-</div>
+              <PermissionGroup
+                heading="admin.transactions"
+                attributes={["Index"]}
+                suffix="Transaction"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -325,8 +413,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.translations" attributes={['Index','Edit' ]} suffix="Translation"/>
-</div>
+              <PermissionGroup
+                heading="admin.translations"
+                attributes={["Index", "Edit"]}
+                suffix="Translation"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -338,9 +430,17 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.users" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Users"/>
-              <PermissionGroup heading="admin.roles" attributes={['Index', 'Create', 'Edit', 'Delete' ]} suffix="Roles"/>
-</div>
+              <PermissionGroup
+                heading="admin.users"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Users"
+              />
+              <PermissionGroup
+                heading="admin.roles"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Roles"
+              />
+            </div>
           </div>
           <div className="row">
             <div className="col-lg-9 col-md-12">
@@ -352,8 +452,12 @@ class CreateRole extends React.Component {
                 </div>
               </div>
               <div className="clearfix" />
-              <PermissionGroup heading="admin.storefront" attributes={['Edit' ]} suffix="Storefront"/>
-</div>
+              <PermissionGroup
+                heading="admin.storefront"
+                attributes={["Edit"]}
+                suffix="Storefront"
+              />
+            </div>
           </div>
         </div>
       );

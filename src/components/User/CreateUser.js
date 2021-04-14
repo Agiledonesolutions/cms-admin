@@ -5,9 +5,28 @@ import "./user.css";
 class CreateUser extends React.Component {
   state = {
     activePanel: "account",
-    dropdownActive: false
+    dropdownActive: false,
+    data:{
+      "Email": "",
+      "Password": "",
+      "First Name": "",
+      "Last Name": "",    
+    },
+    "first name": "hel"
   };
-
+  // changeState=(name,value)=>
+  // { const {data}=this.state;
+  // data[name]=value
+  //     this.setState({data})
+  // }
+  componentDidMount(){
+    console.log(this.state['first name'])
+    const {data} = this.state;
+    data["First Name"] = "vidhi"
+    this.setState({data})
+  
+    console.log(this.state)
+  }
   tabContentToggle = () => {
     if (this.state.activePanel == "account") {
       return (
@@ -5735,6 +5754,7 @@ class CreateUser extends React.Component {
     }
   };
   render() {
+    console.log(this.state)
     return (
       <React.Fragment>
         <section className="content-header clearfix">

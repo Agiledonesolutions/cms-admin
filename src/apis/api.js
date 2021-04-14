@@ -9,7 +9,7 @@ if (getToken) {
 }
 export default axios.create({
     // baseURL: 'http://localhost:5000',
-  baseURL: "https://kaldi-api.herokuapp.com",
+  baseURL: "https://big-cms.herokuapp.com/",
   headers: {
     Accept: "applications/json",
   },

@@ -5,7 +5,7 @@ import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import { columns, data } from "../../Product/Data";
+import { columns, data } from "./Data";
 
 class Roles extends React.Component {
   constructor(props) {
