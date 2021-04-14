@@ -46,14 +46,7 @@ class Login extends React.Component {
       errors.splice(errors.indexOf("Email"), 1);
       this.setState({ errors });
     }
-
     if (
-      !errors.includes("Password") &&
-      Validate.validateNotEmpty(password)
-    ) {
-      errors.push("Password");
-      this.setState({ errors });
-    } else if (
       errors.includes("Password") &&
       Validate.validateNotEmpty(password)
     ) {

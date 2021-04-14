@@ -5,7 +5,9 @@ import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import { columns, data } from "./Data";
+import { columns } from "./Data";
+import api from '../../../apis/api'
+import {getToken} from '../../../utils/session'
 
 class Roles extends React.Component {
   constructor(props) {
@@ -13,10 +15,33 @@ class Roles extends React.Component {
     this.state = {
       tableData: {
         columns,
-        data,
+        data: []
       },
     };
   }
+  componentDidMount(){
+    const token = getToken();
+    const datalist = []
+    var i=0
+    api.get('/roles/get', {token: token}).then(res=>{
+        // console.log(res.data.data)
+        res.data.data.map(val=>{
+            i++;
+            var tmp = {
+                id: i,
+                name: val['Name'],
+                created: val['Created']
+            }
+            datalist.push(tmp)
+        })
+        const {tableData} = this.state
+        tableData['data'] = datalist
+        this.setState({tableData})
+      }).catch((err)=>{
+        console.log(err)
+    })
+  }
+  
   render() {
     return (
       <React.Fragment>

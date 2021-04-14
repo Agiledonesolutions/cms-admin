@@ -5,7 +5,9 @@ import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import { columns, data } from "../Product/Data.js";
+import { columns } from "./UserData";
+import api from '../../apis/api'
+import {getToken} from '../../utils/session'
 
 class Users extends React.Component {
   constructor(props) {
@@ -13,9 +15,36 @@ class Users extends React.Component {
     this.state = {
       tableData: {
         columns,
-        data,
+        data : []
       },
     };
+  }
+  componentDidMount(){
+    const token = getToken();
+const datalist = []
+var i=0
+api.get('/users/get', {token: token}).then(res=>{
+    // console.log(res.data.data)
+    res.data.data.map(val=>{
+        i++;
+        var tmp = {
+            id: i,
+            firstName: val['First Name'],
+            lastName: val['Last Name'],
+            email: val['Email'],
+            lastLogin: val['Last Login'],
+            created: val['createdAt'],
+            _id: val['_id']
+        }
+        datalist.push(tmp)
+    })
+    const {tableData} = this.state
+    tableData['data'] = datalist
+    this.setState({tableData})
+
+}).catch((err)=>{
+    console.log(err)
+})
   }
   render() {
     return (

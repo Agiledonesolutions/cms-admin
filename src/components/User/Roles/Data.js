@@ -16,9 +16,3 @@ export const columns = [
     }
   ];
   
-  export const data = [
-    {
-      id: 1,
-      name: 'Admin',
-      created: '11 months ago',
-    }];

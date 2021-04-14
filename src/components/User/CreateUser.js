@@ -20,12 +20,12 @@ class CreateUser extends React.Component {
   //     this.setState({data})
   // }
   componentDidMount(){
-    console.log(this.state['first name'])
-    const {data} = this.state;
-    data["First Name"] = "vidhi"
-    this.setState({data})
+    // console.log(this.state['first name'])
+    // const {data} = this.state;
+    // data["First Name"] = "vidhi"
+    // this.setState({data})
   
-    console.log(this.state)
+    // console.log(this.state)
   }
   tabContentToggle = () => {
     if (this.state.activePanel == "account") {

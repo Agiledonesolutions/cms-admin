@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import {removeUserSession} from '../../utils/session'
 
 const Wrapper = (props) => {
   const dropdownref = useRef(null);
@@ -6,7 +7,10 @@ const Wrapper = (props) => {
   const dropdownToggle = () => {
     dropdownref.current.classList.toggle("show");
   };
-
+  const handleLogout = () =>{
+    removeUserSession()
+    window.location.href ='/'
+  }
   return (
     <React.Fragment>
       <div className="wrapper" style={{ minHeight: 731 }}>
@@ -36,7 +40,7 @@ const Wrapper = (props) => {
                     </a>
                   </li>
                   <li>
-                    <a href="#">
+                    <a onClick={handleLogout}>
                       Logout
                     </a>
                   </li>
