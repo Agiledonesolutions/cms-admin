@@ -70,12 +70,12 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
+                    <Link to='/brands'
                       
                     >
                       <i className="fa fa-angle-double-right" />
                       <span>Brands</span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className=""

@@ -4,6 +4,8 @@ import Dashboard from '../components/Dashboard/Dashboard';
 import Home from '../components/Dashboard/Home';
 import Login from '../components/Login/Login';
 import ResetPassword from '../components/Login/ResetPassword';
+import Brands from '../components/Product/Brands/Brands';
+import CreateBrand from '../components/Product/Brands/CreateBrand';
 import Catalog from '../components/Product/Catalog';
 import CreateProduct from '../components/Product/CreateProduct';
 import CreateUser from '../components/User/CreateUser';
@@ -28,9 +30,8 @@ const routes = (
         <PrivateRoute exact path='/users/create' component={()=><Dashboard abc={<CreateUser />} />} />
         <PrivateRoute exact path='/roles' component={()=><Dashboard abc={<Roles />} />} />
         <PrivateRoute exact path='/roles/create' component={()=><Dashboard abc={<CreateRole />} />} />
-
-
-
+        <PrivateRoute exact path='/brands' component={()=><Dashboard abc={ <Brands />} />} />
+        <PrivateRoute exact path='/brands/create' component={()=><Dashboard abc={ <CreateBrand />} />} />
       </Switch>
     </React.Fragment>
   </Router>
