@@ -5,6 +5,7 @@ class PermissionGroup extends React.Component{
     constructor(props){
         super(props)
     }
+   
     getAttributes = (name, key)=>{
         return(
             <div className="permission-row" key={key}>
@@ -20,37 +21,42 @@ class PermissionGroup extends React.Component{
                                 <div className="radio">
                                   <input
                                     type="radio"
-                                    defaultValue={0}
-                                    id={this.props.heading + "."+name+this.props.suffix+"-inherit"}
-                                    name={this.props.heading + "."+name+this.props.suffix}
+                                    id={this.props.heading + "."+name+"-inherit"}
+                                    name={name+ " " +this.props.suffix}
                                     className="permission-inherit"
                                     defaultChecked
+                                    value="Inherit"
+                                    onChange={(e)=>this.props.setVal("Permissions", e.target.value, e.target.name)}
                                   />
-                                  <label htmlFor={this.props.heading + "."+name+this.props.suffix+"-inherit"}>
+                                  <label htmlFor={this.props.heading + "."+name+"-inherit"}>
                                     Inherit
                                   </label>
                                 </div>
                                 <div className="radio">
                                   <input
                                     type="radio"
-                                    defaultValue={-1}
-                                    id={this.props.heading + "."+name+this.props.suffix+"-deny"}
-                                    name={this.props.heading + "."+name+this.props.suffix}
+                                    id={this.props.heading + "."+name+"-deny"}
+                                    name={name+ " "+this.props.suffix}
                                     className="permission-deny"
+                                    value="Deny"
+                                    onChange={(e)=>this.props.setVal("Permissions", e.target.value, e.target.name)}
+
                                   />
-                                  <label htmlFor={this.props.heading + "."+name+this.props.suffix+"-deny"}>
+                                  <label htmlFor={this.props.heading + "."+name+"-deny"}>
                                     Deny
                                   </label>
                                 </div>
                                 <div className="radio">
                                   <input
                                     type="radio"
-                                    defaultValue={1}
-                                    id={this.props.heading + "."+name+this.props.suffix+"-allow"}
-                                    name={this.props.heading + "."+name+this.props.suffix}
+                                    id={this.props.heading + "."+name+"-allow"}
+                                    name={name+" "+this.props.suffix}
                                     className="permission-allow"
+                                    value="Allow"
+                                    onChange={(e)=>this.props.setVal("Permissions", e.target.value, e.target.name)}
+
                                   />
-                                  <label htmlFor={this.props.heading + "."+name+this.props.suffix+"-allow"}>
+                                  <label htmlFor={this.props.heading + "."+name+"-allow"}>
                                     Allow
                                   </label>
                                 </div>
