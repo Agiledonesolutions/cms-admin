@@ -1,31 +1,57 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./user.css";
+import {getToken} from '../../utils/session'
+import api from '../../apis/api'
+import Validate from '../../utils/validation'
+import MultiSelect from  'react-multiple-select-dropdown-lite'
+import  'react-multiple-select-dropdown-lite/dist/index.css'
+
 
 class CreateUser extends React.Component {
   state = {
     activePanel: "account",
     dropdownActive: false,
-    data:{
-      "Email": "",
-      "Password": "",
-      "First Name": "",
-      "Last Name": "",    
+    options: [],
+    rolesArray: [],
+    data: {
+      Permissions: [],
+      roles: []
     },
-    "first name": "hel"
+    requiredPermission: "Create User",
+    errors: []
   };
-  // changeState=(name,value)=>
-  // { const {data}=this.state;
-  // data[name]=value
-  //     this.setState({data})
-  // }
+  setRole = (val) => {
+    const {rolesArray} =this.state
+    const {data} = this.state
+    rolesArray.push(val)
+    var n = rolesArray.length
+    data.roles = rolesArray[n-1].split(',')
+    this.setState({rolesArray})
+    this.setState({data})
+    console.log(this.state)
+  }
+  setVal =(name, val) => {
+    const {data} = this.state
+    data[name] = val
+    this.setState({data})
+  }
+
   componentDidMount(){
-    // console.log(this.state['first name'])
-    // const {data} = this.state;
-    // data["First Name"] = "vidhi"
-    // this.setState({data})
-  
-    // console.log(this.state)
+    const token = getToken()
+    const {options} = this.state
+    api.get('/roles/get', {token: token}).then(res=>{
+      res.data.data.forEach(x=>{
+        let tmp = {}
+        tmp['label'] = x.Name
+        tmp['value'] = x._id
+        tmp['_id'] = x._id
+        options.push(tmp)
+
+      })
+    }).catch((err)=>{
+      console.log(err)
+    })
   }
   tabContentToggle = () => {
     if (this.state.activePanel == "account") {
@@ -43,10 +69,10 @@ class CreateUser extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="first_name"
+                    name="First Name"
                     className="form-control "
-                    id="first_name"
                     type="text"
+                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                   />
                 </div>
               </div>
@@ -90,86 +116,14 @@ class CreateUser extends React.Component {
                   Roles<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
-                  <select
-                    name="roles[]"
-                    className="form-control custom-select-black selectize prevent-creation"
-                    id="roles[]"
-                    multiple={1}
-                    style={{display: "none"}}
-                  >
-                    <option value={1}>Admin</option>
-                    <option value={2}>Customer</option>
-                  </select>
-                  <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                    <div  className={this.state.dropdownActive?"selectize-input items not-full has-options has-items focus input-active dropdown-active": "selectize-input items not-full has-options has-items"} >
-                      <div className="item" data-value={2}>
-                        Customer
-                        <a
-                          
-                          className="remove"
-                          // tabIndex={-1}
-                          title="Remove"
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={1}>
-                        Admin
-                        <a
-                          
-                          className="remove"
-                          // tabIndex={-1}
-                          title="Remove"
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <input
-                        type="select-multiple"
-                        autoComplete="off"
-                        // tabIndex
-                        id="roles[]-selectized"
-                        style={{
-                          width: 4,
-                          opacity: 1,
-                          position: "relative",
-                          left: 0,
-                        }}
-                      />
-                    </div>
-                    <div
-                      className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                      
-                      style={this.state.dropdownActive?{display: "block",
-                      visibility: "visible",
-                      width: "207.588px",
-                      top: 40,
-                      left: 0,}:{display: "none",
-                      visibility: "visible",
-                      width: "207.588px",
-                      top: 40,
-                      left: 0,}}
-                    >
-                      <div className="selectize-dropdown-content">
-                        <div
-                          className="option selected"
-                          data-selectable
-                          data-value={1}
-                        >
-                          Admin
-                        </div>
-                        <div
-                          className="option selected"
-                          data-selectable
-                          data-value={2}
-                        >
-                          Customer
-                        </div>
-                      </div>
+               
+
+      <MultiSelect
+      onChange={this.setRole}
+        options={this.state.options}
+      />
                     </div>
                   </div>
-                </div>
-              </div>
               <div className="form-group">
                 <label
                   htmlFor="password"
@@ -202,9 +156,9 @@ class CreateUser extends React.Component {
                   />
                 </div>
               </div>
+              </div>
+              </div>
             </div>
-          </div>
-        </div>
       );
     } else if (this.state.activePanel == "permissions") {
       return (

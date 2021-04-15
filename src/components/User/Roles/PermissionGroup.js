@@ -18,7 +18,7 @@ class PermissionGroup extends React.Component{
                           <div className="col-md-7 col-sm-8">
                             <div className="row">
                               <div className="radio-btn clearfix">
-                                <div className="radio">
+                                <div className="radio" style={{marginTop: 0}}>
                                   <input
                                     type="radio"
                                     id={this.props.heading + "."+name+"-inherit"}
