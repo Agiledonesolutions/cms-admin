@@ -6,45 +6,51 @@ import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import { columns } from "./UserData";
-import api from '../../apis/api'
-import {getToken} from '../../utils/session'
+import api from "../../apis/api";
+import { getToken } from "../../utils/session";
 
 class Users extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      selectedRows: [],
       tableData: {
         columns,
-        data : []
+        data: [],
       },
     };
   }
-  componentDidMount(){
+  componentDidMount() {
     const token = getToken();
-const datalist = []
-var i=0
-api.get('/users/get', {token: token}).then(res=>{
-    // console.log(res.data.data)
-    res.data.data.map(val=>{
-        i++;
-        var tmp = {
+    const datalist = [];
+    var i = 0;
+    api
+      .get("/users/get", { token: token })
+      .then((res) => {
+        // console.log(res.data.data)
+        res.data.data.map((val) => {
+          i++;
+          var tmp = {
             id: i,
-            firstName: val['First Name'],
-            lastName: val['Last Name'],
-            email: val['Email'],
-            lastLogin: val['Last Login'],
-            created: val['createdAt'],
-            _id: val['_id']
-        }
-        datalist.push(tmp)
-    })
-    const {tableData} = this.state
-    tableData['data'] = datalist
-    this.setState({tableData})
-
-}).catch((err)=>{
-    console.log(err)
-})
+            firstName: val["First Name"],
+            lastName: val["Last Name"],
+            email: val["Email"],
+            lastLogin: val["Last Login"],
+            created: val["createdAt"],
+            _id: val["_id"],
+          };
+          datalist.push(tmp);
+        });
+        const { tableData } = this.state;
+        tableData["data"] = datalist;
+        this.setState({ tableData });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  deleteSelectedItems = () =>{
+    console.log(this.state.selectedRows)
   }
   render() {
     return (
@@ -71,16 +77,23 @@ api.get('/users/get', {token: token}).then(res=>{
           </div>
           <div className="box box-primary">
             <div className="box-body index-table" id="users-table">
+              <div className="table-delete-button">
+
+                <button type="button" className="btn btn-default btn-delete" onClick={this.deleteSelectedItems}>Delete</button>
+              </div>
               <DataTableExtensions {...this.state.tableData}>
                 <DataTable
                   noHeader
                   defaultSortField="id"
-                  defaultSortAsc={false}
+                  defaultSortAsc={true}
                   sortIcon={<SortIcon />}
                   selectableRowsComponent={Checkbox}
                   filterPlaceholder="Search"
                   export={false}
                   print={false}
+                  onSelectedRowsChange={(selected)=> {
+                    this.setState({selectedRows : selected['selectedRows']})
+                  }}
                   responsive
                   pagination
                   selectableRows

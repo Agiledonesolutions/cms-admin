@@ -126,16 +126,31 @@ a{
 .msl-wrp{
     width: 100% !important;
 }
+.table-delete-button{
+    position: absolute;
+    left: 20%;
+    top: 4%;
+}
 @media screen and (max-width:1199px) {
     .single-grid.total-customers,
     .single-grid.total-products {
         margin-top: 15px
+    }
+    .table-delete-button{
+        position: absolute;
+        left: 25%;
+        top: 4%;
     }
 }
 
 @media screen and (max-width:767px) {
     .single-grid.total-orders {
         margin-top: 15px
+    }
+    .table-delete-button{
+        position: relative;
+        left: 5%;
+        top: 0;
     }
 }
 
