@@ -8,46 +8,44 @@ import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 
 class Tags extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedRows: [],
-      tableData: {
-        columns: [
-          {
-            name: "Id",
-            selector: "id",
-            sortable: true,
-          },
-          {
-            name: "Name",
-            selector: "name",
-            sortable: true,
-          },
-          {
-            name: "Created",
-            selector: "created",
-            sortable: true
-          }
-        ],
-        data: [],
-      },
-      requiredPermission: "Delete User",
-    };
-  }
+  state = {
+    selectedRows: [],
+    tableData: {
+      columns: [
+        {
+          name: "Id",
+          selector: "id",
+          sortable: true,
+        },
+        {
+          name: "Name",
+          selector: "name",
+          sortable: true,
+        },
+        {
+          name: "Created",
+          selector: "created",
+          sortable: true
+        }
+      ],
+      data: [],
+    },
+    requiredPermission: "Delete Tag",
+  };
+
   componentDidMount() {
     const datalist = [];
     var i = 0;
     api
-      .get("/users/get")
+      .get("/tag/get")
       .then((res) => {
-        // console.log(res.data.data)
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
-            name: val["First Name"],
-            created: val["Last Name"],
+            name: val["name"],
+            created: val["createdAt"],
+            _id: val['_id']
           };
           datalist.push(tmp);
         });
@@ -59,7 +57,19 @@ class Tags extends React.Component {
         console.log(err);
       });
   }
-  deleteSelectedItems = () => {};
+
+  deleteSelectedItems = () => {
+    const {selectedRows} = this.state
+    const {requiredPermission} = this.state
+    const data = {id: selectedRows, requiredPermission}
+    api.delete('/tag', {data}).then(res=>{
+      console.log(res)
+      this.componentDidMount()
+    }).catch(err=>{
+      console.log("delete error")
+    })
+  };
+
   render() {
     return (
       <div>

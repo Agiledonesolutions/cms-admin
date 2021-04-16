@@ -1,11 +1,50 @@
+import { Android } from "@material-ui/icons";
 import React from "react";
 import { Link } from "react-router-dom";
-import { getToken } from "../../../utils/session";
 import api from "../../../apis/api";
-import MultiSelect from "react-multiple-select-dropdown-lite";
-import "react-multiple-select-dropdown-lite/dist/index.css";
+import Validate from '../../../utils/validation'
 
 class CreateTag extends React.Component {
+  state = {
+    data: {
+      "name": ""
+    },
+    requiredPermission: "Create Tag",
+    errors: []
+  }
+  setVal = (key,val) => {
+    const {data} = this.state
+    data[key] = val;
+    this.setState({data})
+  }
+  handleSubmit = () =>{
+    const {errors} = this.state
+    const {data} = this.state
+    if (
+      !errors.includes("name") &&
+      !Validate.validateNotEmpty(data['name'])
+    ) {
+      errors.push("name");
+      this.setState({ errors });
+    } else if (
+      errors.includes("name") &&
+      Validate.validateNotEmpty(data['name'])
+    ) {
+      errors.splice(errors.indexOf("name"), 1);
+      this.setState({ errors });
+    }
+    if(!Validate.validateNotEmpty(this.state.errors)){
+      const {requiredPermission} = this.state
+      api.post('/tag',{data: data, requiredPermission}).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log("tag add error")
+      })
+    }else{
+      console.log("name empty")
+    }
+    
+  }
   render() {
     return (
       <React.Fragment>
@@ -22,18 +61,7 @@ class CreateTag extends React.Component {
           </ol>
         </section>
         <section className="content">
-          <form
-            method="POST"
-            action="https://fleetcart.envaysoft.com/en/admin/tags"
-            className="form-horizontal"
-            id="tag-create-form"
-            noValidate
-          >
-            <input
-              type="hidden"
-              name="_token"
-              defaultValue="b170oSWcVkOhNqbqEGbpocZMzs0zzMACrNxeW4ub"
-            />
+          <form>
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
                 <div className="accordion-box">
@@ -51,7 +79,7 @@ class CreateTag extends React.Component {
                         <div className="panel-body">
                           <ul className="accordion-tab nav nav-tabs">
                             <li className="active ">
-                              <a href="#general" data-toggle="tab">
+                              <a >
                                 General
                               </a>
                             </li>
@@ -82,6 +110,7 @@ class CreateTag extends React.Component {
                                 className="form-control "
                                 id="name"
                                 type="text"
+                                onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                               />
                             </div>
                           </div>
@@ -91,9 +120,12 @@ class CreateTag extends React.Component {
                     <div className="form-group">
                       <div className="col-md-offset-2 col-md-10">
                         <button
-                          type="submit"
-                          className="btn btn-primary"
-                          data-loading
+                          className="btn btn-primary "
+                          style={{marginTop: "5px"}}
+                          onClick={(e)=>{
+                            e.preventDefault()
+                            this.handleSubmit()
+                          }}
                         >
                           Save
                         </button>

@@ -17,7 +17,17 @@ class Roles extends React.Component {
     },
     requiredPermission: "Delete Role"
   }
-
+  deleteSelectedItems = () =>{
+    const {selectedRows} = this.state
+    const {requiredPermission} = this.state
+    const data = {id: selectedRows, requiredPermission}
+    api.delete('/roles', {data}).then(res=>{
+      console.log(res)
+      this.componentDidMount()
+    }).catch(err=>{
+      console.log("delete error")
+    })
+  }
   componentDidMount(){
     const datalist = []
     var i=0
@@ -40,17 +50,7 @@ class Roles extends React.Component {
         console.log(err)
     })
   }
-  deleteSelectedItems = () =>{
-    const {selectedRows} = this.state
-    const {requiredPermission} = this.state
-    const data = {id: selectedRows, requiredPermission}
-    api.delete('/roles', {data}).then(res=>{
-      console.log(res)
-      this.componentDidMount()
-    }).catch(err=>{
-      console.log("delete error")
-    })
-  }
+  
   render() {
     return (
       <React.Fragment>
@@ -78,7 +78,7 @@ class Roles extends React.Component {
             <div className="box-body index-table" id="roles-table">
             <div className="table-delete-button">
 
-<button type="button" className="btn btn-default btn-delete" onClick={this.deleteSelectedItems()}>Delete</button>
+<button type="button" className="btn btn-default btn-delete" onClick={this.deleteSelectedItems}>Delete</button>
 </div>
               <DataTableExtensions {...this.state.tableData}>
                 <DataTable
