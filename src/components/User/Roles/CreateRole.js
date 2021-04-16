@@ -34,8 +34,10 @@ class CreateRole extends React.Component {
                     name="Name"
                     className="form-control "
                     type="text"
+                    value={this.state.data.Name}
                     onChange={(e)=>this.setVal(e.target.name, e.target.value, "")}
                   />
+                  <p style={{opacity: "0.7"}}>Set permissions before saving.</p>
                 </div>
               </div>
             </div>
@@ -49,13 +51,28 @@ class CreateRole extends React.Component {
           <div className="row">
             <div className="col-lg-9 col-md-12">
               <div className="btn-group permission-parent-actions pull-right">
-                <button type="button" className="btn btn-default allow-all">
+                <button type="button" className="btn btn-default allow-all" onClick={()=>{
+                  const arr = document.querySelectorAll('[id $="-allow"]' )
+                  for(var i = 0; i < arr.length; i++){
+                    arr[i].click()
+                  }
+                }}>
                   Allow all
                 </button>
-                <button type="button" className="btn btn-default deny-all">
+                <button type="button" className="btn btn-default deny-all" onClick={()=>{
+                  const arr = document.querySelectorAll('[id $="-deny"]' )
+                  for(var i = 0; i < arr.length; i++){
+                    arr[i].click()
+                  }
+                }}>
                   Deny all
                 </button>
-                <button type="button" className="btn btn-default inherit-all">
+                <button type="button" className="btn btn-default inherit-all" onClick={()=>{
+                  const arr = document.querySelectorAll('[id $="-inherit"]' )
+                  for(var i = 0; i < arr.length; i++){
+                    arr[i].click()
+                  }
+                }}>
                   Inherit all
                 </button>
               </div>
@@ -568,7 +585,7 @@ class CreateRole extends React.Component {
           </ol>
         </section>
         <section className="content">
-          <form
+          <form className="form-horizontal"
           >
           
             <div className="accordion-content clearfix">

@@ -16,9 +16,14 @@ class CreateUser extends React.Component {
     options: [],
     rolesArray: [],
     data: {
+      "First Name": "",
+      "Last Name": "",
+      "Email": "",
+      "Password": "",
       Permissions: [],
       roles: []
     },
+    confirmPassword: "",
     requiredPermission: "Create User",
     errors: []
   };
@@ -64,7 +69,7 @@ class CreateUser extends React.Component {
       res.data.data.forEach(x=>{
         let tmp = {}
         tmp['label'] = x.Name
-        tmp['value'] = x._id
+        tmp['value'] = x.Name
         tmp['_id'] = x._id
         options.push(tmp)
 
@@ -82,7 +87,6 @@ class CreateUser extends React.Component {
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="first_name"
                   className="col-md-3 control-label text-left"
                 >
                   First Name<span className="m-l-5 text-red">*</span>
@@ -92,39 +96,40 @@ class CreateUser extends React.Component {
                     name="First Name"
                     className="form-control "
                     type="text"
+                    value={this.state.data['First Name']}
                     onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="last_name"
                   className="col-md-3 control-label text-left"
                 >
                   Last Name<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="last_name"
+                    name="Last Name"
                     className="form-control "
-                    id="last_name"
                     type="text"
+                    value={this.state.data['Last Name']}
+                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="email"
                   className="col-md-3 control-label text-left"
                 >
                   Email<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="email"
+                    name="Email"
                     className="form-control "
-                    id="email"
                     type="email"
+                    value={this.state.data['Email']}
+                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                   />
                 </div>
               </div>
@@ -146,33 +151,33 @@ class CreateUser extends React.Component {
                   </div>
               <div className="form-group">
                 <label
-                  htmlFor="password"
                   className="col-md-3 control-label text-left"
                 >
                   Password<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="password"
+                    name="Password"
                     className="form-control "
-                    id="password"
                     type="password"
+                    value={this.state.data['Password']}
+                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="password_confirmation"
                   className="col-md-3 control-label text-left"
                 >
                   Confirm Password<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="password_confirmation"
+                    name="confirmPassword"
                     className="form-control "
-                    id="password_confirmation"
                     type="password"
+                    value={this.state.confirmPassword}
+                    onChange={(e)=>{this.setState({confirmPassword: e.target.value})}}
                   />
                 </div>
               </div>
@@ -187,13 +192,30 @@ class CreateUser extends React.Component {
           <div className="row">
             <div className="col-lg-9 col-md-12">
               <div className="btn-group permission-parent-actions pull-right">
-                <button type="button" className="btn btn-default allow-all">
+                <button type="button" className="btn btn-default allow-all"
+                onClick={()=>{
+                  const arr = document.querySelectorAll('[id $="-allow"]' )
+                  for(var i = 0; i < arr.length; i++){
+                    arr[i].click()
+                  }
+                }}>
                   Allow all
                 </button>
-                <button type="button" className="btn btn-default deny-all">
+                <button type="button" className="btn btn-default deny-all" onClick={()=>{
+                  const arr = document.querySelectorAll('[id $="-deny"]' )
+                  for(var i = 0; i < arr.length; i++){
+                    arr[i].click()
+                  }
+                }}>
                   Deny all
                 </button>
-                <button type="button" className="btn btn-default inherit-all">
+                <button type="button" className="btn btn-default inherit-all"
+                onClick={()=>{
+                  const arr = document.querySelectorAll('[id $="-inherit"]' )
+                  for(var i = 0; i < arr.length; i++){
+                    arr[i].click()
+                  }
+                }}>
                   Inherit all
                 </button>
               </div>
@@ -652,7 +674,7 @@ class CreateUser extends React.Component {
           </ol>
         </section>
         <section className="content">
-          <form>
+          <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
                 <div className="accordion-box">

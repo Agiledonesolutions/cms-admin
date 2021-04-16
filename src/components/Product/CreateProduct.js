@@ -897,11 +897,8 @@ class CreateProduct extends React.Component {
         </section>
         <section className="content">
           <form
-            method="POST"
-            action="#"
             className="form-horizontal"
-            id="product-create-form"
-            noValidate
+            
           >
             <input type="hidden" name="_token" defaultValue="" />
             <div className="accordion-content clearfix">

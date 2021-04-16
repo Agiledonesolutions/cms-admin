@@ -8,6 +8,8 @@ import "react-data-table-component-extensions/dist/index.css";
 import { columns } from "./UserData";
 import api from "../../apis/api";
 import { getToken } from "../../utils/session";
+import { format } from 'timeago.js';
+
 
 class Users extends React.Component {
   state={
@@ -34,8 +36,8 @@ class Users extends React.Component {
             firstName: val["First Name"],
             lastName: val["Last Name"],
             email: val["Email"],
-            lastLogin: val["Last Login"],
-            created: val["createdAt"],
+            lastLogin: format(val["Last Login"]),
+            created: format(val["createdAt"]),
             _id: val["_id"],
           };
           datalist.push(tmp);

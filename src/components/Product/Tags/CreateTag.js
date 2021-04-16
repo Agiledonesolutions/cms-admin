@@ -61,7 +61,7 @@ class CreateTag extends React.Component {
           </ol>
         </section>
         <section className="content">
-          <form>
+          <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
                 <div className="accordion-box">

@@ -7,6 +7,7 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import { columns } from "./Data";
 import api from '../../../apis/api'
+import { format } from 'timeago.js';
 
 class Roles extends React.Component {
   state={
@@ -38,7 +39,7 @@ class Roles extends React.Component {
             var tmp = {
                 id: i,
                 name: val['Name'],
-                created: val['Created'],
+                created: format(val['Created']),
                 _id: val['_id']
             }
             datalist.push(tmp)

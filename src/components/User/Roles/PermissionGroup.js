@@ -24,7 +24,6 @@ class PermissionGroup extends React.Component{
                                     id={this.props.heading + "."+name+"-inherit"}
                                     name={name+ " " +this.props.suffix}
                                     className="permission-inherit"
-                                    defaultChecked
                                     value="Inherit"
                                     onChange={(e)=>this.props.setVal("Permissions", e.target.value, e.target.name)}
                                   />
@@ -82,18 +81,36 @@ class PermissionGroup extends React.Component{
                             <button
                               type="button"
                               className="btn btn-default allow-all"
+                              onClick={()=>{
+                                const arr = document.querySelectorAll('[id ^="' + this.props.heading +'"][id $="-allow"]' )
+                                for(var i = 0; i < arr.length; i++){
+                                  arr[i].click()
+                                }
+                              }}
                             >
                               Allow all
                             </button>
                             <button
                               type="button"
                               className="btn btn-default deny-all"
+                              onClick={()=>{
+                                const arr = document.querySelectorAll('[id ^="' + this.props.heading +'"][id $="-deny"]' )
+                                for(var i = 0; i < arr.length; i++){
+                                  arr[i].click()
+                                }
+                              }}
                             >
                               Deny all
                             </button>
                             <button
                               type="button"
                               className="btn btn-default inherit-all"
+                              onClick={()=>{
+                                const arr = document.querySelectorAll('[id ^="' + this.props.heading +'"][id $="-inherit"]' )
+                                for(var i = 0; i < arr.length; i++){
+                                  arr[i].click()
+                                }
+                              }}
                             >
                               Inherit all
                             </button>
