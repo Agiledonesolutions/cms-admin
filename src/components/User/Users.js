@@ -10,23 +10,21 @@ import api from "../../apis/api";
 import { getToken } from "../../utils/session";
 
 class Users extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedRows: [],
-      tableData: {
-        columns,
-        data: [],
-      },
-      requiredPermission: "Delete User"
-    };
+  state={
+    selectedRows: [],
+    tableData: {
+      columns,
+      data: [],
+    },
+    requiredPermission: "Delete User"
   }
+
   componentDidMount() {
     const token = getToken();
     const datalist = [];
     var i = 0;
     api
-      .get("/users/get", { token: token })
+      .get("/users/get")
       .then((res) => {
         // console.log(res.data.data)
         res.data.data.map((val) => {
@@ -50,12 +48,14 @@ class Users extends React.Component {
         console.log(err);
       });
   }
+ 
   deleteSelectedItems = () =>{
-    const token = getToken()
     const {selectedRows} = this.state
     const {requiredPermission} = this.state
-    api.delete('/users', {id: selectedRows, requiredPermission}, {token: token}).then(res=>{
+    const data = {id: selectedRows, requiredPermission}
+    api.delete('/users', {data}).then(res=>{
       console.log(res)
+      this.componentDidMount()
     }).catch(err=>{
       console.log("delete error")
     })
@@ -67,7 +67,7 @@ class Users extends React.Component {
           <h3>Users</h3>
           <ol className="breadcrumb">
             <li>
-              <a href="http://ecommerce.coddedbrain.com/admin">Dashboard</a>
+              <Link to='/dashboard'>Dashboard</Link>
             </li>
             <li className="active">Users</li>
           </ol>
@@ -104,7 +104,6 @@ class Users extends React.Component {
                     selected['selectedRows'].forEach(row=>{
                       arr.push(row._id)
                     })
-                    console.log(arr)
                     this.setState({selectedRows : arr})
                   }}
                   responsive

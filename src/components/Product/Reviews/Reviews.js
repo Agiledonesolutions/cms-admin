@@ -6,7 +6,6 @@ import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
-import { getToken } from "../../../utils/session";
 
 class Reviews extends React.Component {
   constructor(props) {
@@ -52,11 +51,10 @@ class Reviews extends React.Component {
     };
   }
   componentDidMount() {
-    const token = getToken();
     const datalist = [];
     var i = 0;
     api
-      .get("/users/get", { token: token })
+      .get("/users/get")
       .then((res) => {
         // console.log(res.data.data)
         res.data.data.map((val) => {

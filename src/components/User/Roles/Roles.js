@@ -7,30 +7,29 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import { columns } from "./Data";
 import api from '../../../apis/api'
-import {getToken} from '../../../utils/session'
 
 class Roles extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      tableData: {
-        columns,
-        data: []
-      },
-    };
+  state={
+    selectedRows: [],
+    tableData: {
+      columns,
+      data: []
+    },
+    requiredPermission: "Delete Role"
   }
+
   componentDidMount(){
-    const token = getToken();
     const datalist = []
     var i=0
-    api.get('/roles/get', {token: token}).then(res=>{
+    api.get('/roles/get').then(res=>{
         // console.log(res.data.data)
         res.data.data.map(val=>{
             i++;
             var tmp = {
                 id: i,
                 name: val['Name'],
-                created: val['Created']
+                created: val['Created'],
+                _id: val['_id']
             }
             datalist.push(tmp)
         })
@@ -41,7 +40,17 @@ class Roles extends React.Component {
         console.log(err)
     })
   }
-  
+  deleteSelectedItems = () =>{
+    const {selectedRows} = this.state
+    const {requiredPermission} = this.state
+    const data = {id: selectedRows, requiredPermission}
+    api.delete('/roles', {data}).then(res=>{
+      console.log(res)
+      this.componentDidMount()
+    }).catch(err=>{
+      console.log("delete error")
+    })
+  }
   render() {
     return (
       <React.Fragment>
@@ -67,16 +76,27 @@ class Roles extends React.Component {
           </div>
           <div className="box box-primary">
             <div className="box-body index-table" id="roles-table">
+            <div className="table-delete-button">
+
+<button type="button" className="btn btn-default btn-delete" onClick={this.deleteSelectedItems()}>Delete</button>
+</div>
               <DataTableExtensions {...this.state.tableData}>
                 <DataTable
                   noHeader
                   defaultSortField="id"
-                  defaultSortAsc={false}
+                  defaultSortAsc={true}
                   sortIcon={<SortIcon />}
                   selectableRowsComponent={Checkbox}
                   filterPlaceholder="Search"
                   export={false}
                   print={false}
+                  onSelectedRowsChange={(selected)=> {
+                    const arr = []
+                    selected['selectedRows'].forEach(row=>{
+                      arr.push(row._id)
+                    })
+                    this.setState({selectedRows : arr})
+                  }}
                   responsive
                   pagination
                   selectableRows

@@ -60,7 +60,7 @@ class CreateUser extends React.Component {
   componentDidMount(){
     const token = getToken()
     const {options} = this.state
-    api.get('/roles/get', {token: token}).then(res=>{
+    api.get('/roles/get').then(res=>{
       res.data.data.forEach(x=>{
         let tmp = {}
         tmp['label'] = x.Name

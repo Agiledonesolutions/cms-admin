@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../user.css";
 import PermissionGroup from "./PermissionGroup";
-import {getToken} from '../../../utils/session'
 import api from '../../../apis/api'
 import Validate from '../../../utils/validation'
 
@@ -523,9 +522,8 @@ class CreateRole extends React.Component {
     if(!Validate.validateNotEmpty(this.state.errors)){
     data['Created'] = Date.now()
     console.log(this.state.data)
-    const token = getToken()
     const {requiredPermission} = this.state
-      api.post('/roles',{data: data, requiredPermission},{token: token}).then((res)=>{
+      api.post('/roles',{data: data, requiredPermission}).then((res)=>{
         console.log(res)
       }).catch((err)=>{
         console.log(err)
