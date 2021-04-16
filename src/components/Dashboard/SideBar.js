@@ -110,22 +110,18 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/tags'>
                       <i className="fa fa-tag" />
                       <span>Tags</span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className=""
                   >
-                    <a
-                     
-                    >
+                    <Link to ='/reviews'>
                       <i className="fa fa-angle-double-right" />
                       <span>Reviews</span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>

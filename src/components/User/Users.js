@@ -18,6 +18,7 @@ class Users extends React.Component {
         columns,
         data: [],
       },
+      requiredPermission: "Delete User"
     };
   }
   componentDidMount() {
@@ -50,7 +51,14 @@ class Users extends React.Component {
       });
   }
   deleteSelectedItems = () =>{
-    console.log(this.state.selectedRows)
+    const token = getToken()
+    const {selectedRows} = this.state
+    const {requiredPermission} = this.state
+    api.delete('/users', {id: selectedRows, requiredPermission}, {token: token}).then(res=>{
+      console.log(res)
+    }).catch(err=>{
+      console.log("delete error")
+    })
   }
   render() {
     return (
@@ -92,7 +100,12 @@ class Users extends React.Component {
                   export={false}
                   print={false}
                   onSelectedRowsChange={(selected)=> {
-                    this.setState({selectedRows : selected['selectedRows']})
+                    const arr = []
+                    selected['selectedRows'].forEach(row=>{
+                      arr.push(row._id)
+                    })
+                    console.log(arr)
+                    this.setState({selectedRows : arr})
                   }}
                   responsive
                   pagination

@@ -5,23 +5,88 @@ import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import { columns, data } from "../Data.js";
+import api from "../../../apis/api";
+import { getToken } from "../../../utils/session";
 
 class Brands extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+          selectedRows: [],
           tableData: {
-            columns,
-            data 
+            columns: [
+              {
+                name: 'Id',
+                selector: 'id',
+                sortable: true,
+              },
+              {
+                name: 'First Name',
+                selector: 'firstName',
+                sortable: true,
+              },
+              {
+                name: 'Last Name',
+                selector: 'lastName',
+                sortable: true,
+              },
+              {
+                name: 'Email',
+                selector: 'email',
+                sortable: true,
+              },
+              {
+                name: 'Last Login',
+                selector: 'lastLogin',
+                sortable: true,
+              },
+              {
+                name: 'Created',
+                selector: 'created',
+                sortable: true,
+              }
+            ],
+            data: [],
           },
+          requiredPermission: "Delete User"
         };
+      }
+      componentDidMount(){
+        const token = getToken();
+    const datalist = [];
+    var i = 0;
+    api
+      .get("/users/get", { token: token })
+      .then((res) => {
+        // console.log(res.data.data)
+        res.data.data.map((val) => {
+          i++;
+          var tmp = {
+            id: i,
+            firstName: val["First Name"],
+            lastName: val["Last Name"],
+            email: val["Email"],
+            lastLogin: val["Last Login"],
+            created: val["createdAt"],
+            _id: val["_id"],
+          };
+          datalist.push(tmp);
+        });
+        const { tableData } = this.state;
+        tableData["data"] = datalist;
+        this.setState({ tableData });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+      }
+      deleteSelectedItems = () =>{
       }
       render(){
         return (
             <div>
               <section className="content-header clearfix">
-                <h3>Products</h3>
+                <h3>Brands</h3>
                 <ol className="breadcrumb">
                   <li>
                     <Link to="/dashboard">Dashboard</Link>
@@ -39,20 +104,31 @@ class Brands extends React.Component {
                 </div>
                 <div className="box box-primary">
                   <div className="box-body index-table" id="attributes-table">
-                    
+                  <div className="table-delete-button">
+
+<button type="button" className="btn btn-default btn-delete" onClick={this.deleteSelectedItems}>Delete</button>
+</div>
                     <DataTableExtensions {...this.state.tableData}>
                       <DataTable
-                        noHeader
-                        defaultSortField="id"
-                        defaultSortAsc={false}
-                        sortIcon={<SortIcon />}
-                        selectableRowsComponent={Checkbox}
-                        filterPlaceholder="Search"
-                        export={false}
-                        print={false}
-                        responsive
-                        pagination
-                        selectableRows
+                         noHeader
+                         defaultSortField="id"
+                         defaultSortAsc={true}
+                         sortIcon={<SortIcon />}
+                         selectableRowsComponent={Checkbox}
+                         filterPlaceholder="Search"
+                         export={false}
+                         print={false}
+                         onSelectedRowsChange={(selected)=> {
+                           const arr = []
+                           selected['selectedRows'].forEach(row=>{
+                             arr.push(row._id)
+                           })
+                           console.log(arr)
+                           this.setState({selectedRows : arr})
+                         }}
+                         responsive
+                         pagination
+                         selectableRows
                       />
                     </DataTableExtensions>
                   </div>

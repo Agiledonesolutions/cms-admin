@@ -8,6 +8,9 @@ import Brands from '../components/Product/Brands/Brands';
 import CreateBrand from '../components/Product/Brands/CreateBrand';
 import Catalog from '../components/Product/Catalog';
 import CreateProduct from '../components/Product/CreateProduct';
+import Reviews from '../components/Product/Reviews/Reviews';
+import CreateTag from '../components/Product/Tags/CreateTag';
+import Tags from '../components/Product/Tags/Tags';
 import CreateUser from '../components/User/CreateUser';
 import CreateRole from '../components/User/Roles/CreateRole';
 import Roles from '../components/User/Roles/Roles';
@@ -32,6 +35,11 @@ const routes = (
         <PrivateRoute exact path='/roles/create' component={()=><Dashboard abc={<CreateRole />} />} />
         <PrivateRoute exact path='/brands' component={()=><Dashboard abc={ <Brands />} />} />
         <PrivateRoute exact path='/brands/create' component={()=><Dashboard abc={ <CreateBrand />} />} />
+
+        <PrivateRoute exact path='/reviews' component={()=><Dashboard abc={ <Reviews />} />} />
+        <PrivateRoute exact path='/tags' component={()=><Dashboard abc={ <Tags />} />} />
+        <PrivateRoute exact path='/tags/create' component={()=><Dashboard abc={ <CreateTag />} />} />
+
       </Switch>
     </React.Fragment>
   </Router>
