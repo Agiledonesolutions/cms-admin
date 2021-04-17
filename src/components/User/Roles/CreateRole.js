@@ -1,11 +1,26 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import "../user.css";
 import PermissionGroup from "./PermissionGroup";
 import api from '../../../apis/api'
 import Validate from '../../../utils/validation'
 
 class CreateRole extends React.Component {
+
+  async componentDidMount(){
+    if(this.props.edit == "true"){
+      const url = "/roles/get/" + this.props.match.params.id
+      await api.get(url).then(res=>{
+        const {data} = this.state
+        data.Name = res.data.data.Name
+        data.Permissions = res.data.data.Permissions
+        this.setState({data})
+      }).catch(err=>{
+        console.log("error")
+      })
+    }
+    console.log(this.state.data)
+  }
   state = {
     activePanel: "general",
     data: {
@@ -13,7 +28,7 @@ class CreateRole extends React.Component {
       Permissions: []
     },
     requiredPermission: "Create Role",
-    errors: []
+    errors: [],
   };
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
@@ -93,12 +108,15 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Attributes"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
               />
               <PermissionGroup
                 heading="admin.attribute_sets"
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Attribute Set"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -117,6 +135,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Brand"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -135,6 +155,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Categories"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -153,6 +175,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Coupons"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -171,6 +195,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Edit"]}
                 suffix="Currency Rates"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -189,6 +215,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Flash Sales"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -207,6 +235,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create"]}
                 suffix="Import"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -225,6 +255,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Delete"]}
                 suffix="Media"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -243,12 +275,16 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Menus"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
               <PermissionGroup
                 heading="admin.menu_items"
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Menu Items"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -267,6 +303,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Options"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -285,6 +323,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Show", "Edit"]}
                 suffix="Order"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -303,6 +343,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Pages"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -321,6 +363,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Products"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -339,6 +383,8 @@ class CreateRole extends React.Component {
                 attributes={["Index"]}
                 suffix="Report"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -357,6 +403,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Edit", "Delete"]}
                 suffix="Review"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -375,6 +423,8 @@ class CreateRole extends React.Component {
                 attributes={["Edit"]}
                 suffix="Settings"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -393,6 +443,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Slider"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -411,6 +463,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Tag"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -429,6 +483,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Tax"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -447,6 +503,8 @@ class CreateRole extends React.Component {
                 attributes={["Index"]}
                 suffix="Transaction"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -465,6 +523,8 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Edit"]}
                 suffix="Translation"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -483,12 +543,16 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Users"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
               <PermissionGroup
                 heading="admin.roles"
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Roles"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
 
               />
             </div>
@@ -508,6 +572,8 @@ class CreateRole extends React.Component {
                 attributes={["Edit"]}
                 suffix="Storefront"
                 setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
               />
             </div>
           </div>
@@ -518,13 +584,10 @@ class CreateRole extends React.Component {
   handleSubmit = () => {
     const {errors} = this.state
     const {data} = this.state
-    if(!Validate.validateNotEmpty(data['Name'])){
-      errors.push("name");
-      this.setState({ errors });
-    }
+  
     if (
       !errors.includes("name") &&
-      Validate.validateNotEmpty(data['Name'])
+      !Validate.validateNotEmpty(data['Name'])
     ) {
       errors.push("name");
       this.setState({ errors });
@@ -536,16 +599,21 @@ class CreateRole extends React.Component {
       this.setState({ errors });
     }
     if(!Validate.validateNotEmpty(this.state.errors)){
-    data['Created'] = Date.now()
-    console.log(this.state.data)
-    const {requiredPermission} = this.state
-      api.post('/roles',{data: data, requiredPermission}).then((res)=>{
-        console.log(res)
-      }).catch((err)=>{
-        console.log(err)
-      })
+      if(this.props.edit == "true"){
+        console.log("edit submit")
+      }else{
+        data['Created'] = Date.now()
+        console.log(this.state.data)
+        const {requiredPermission} = this.state
+          api.post('/roles',{data: data, requiredPermission}).then((res)=>{
+            console.log(res)
+          }).catch((err)=>{
+            console.log(err)
+          })
+      }
+    
     }else{
-      console.log("errors")
+      console.log(errors)
     }
 
    
@@ -558,7 +626,7 @@ class CreateRole extends React.Component {
       console.log(Permissions)
       Permissions.map((perm, index)=>{
         if(perm['name'] == permName){
-          Permissions.splice(perm, index)
+          // Permissions.splice(perm, index)
           perm['value'] = val
           flag = false;
         }
@@ -570,7 +638,7 @@ class CreateRole extends React.Component {
       data[key] = val
     }
     this.setState({data})
-    console.log(this.state.data)
+    console.log(this.state.data.Permissions)
   }
   render() {
     return (
@@ -667,4 +735,4 @@ class CreateRole extends React.Component {
   }
 }
 
-export default CreateRole;
+export default withRouter(CreateRole);

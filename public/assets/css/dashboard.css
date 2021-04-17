@@ -129,7 +129,7 @@ a{
 .table-delete-button{
     position: absolute;
     left: 20%;
-    top: 4%;
+    top: 8%;
 }
 @media screen and (max-width:1199px) {
     .single-grid.total-customers,
@@ -138,8 +138,8 @@ a{
     }
     .table-delete-button{
         position: absolute;
-        left: 25%;
-        top: 4%;
+        left: 30%;
+        top: 8%;
     }
 }
 

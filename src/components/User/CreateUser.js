@@ -10,6 +10,7 @@ import PermissionGroup from './Roles/PermissionGroup'
 
 
 class CreateUser extends React.Component {
+  
   state = {
     activePanel: "account",
     dropdownActive: false,
@@ -44,7 +45,7 @@ class CreateUser extends React.Component {
       console.log(Permissions)
       Permissions.map((perm, index)=>{
         if(perm['name'] == permName){
-          Permissions.splice(perm, index)
+          // Permissions.splice(perm, index)
           perm['value'] = val
           flag = false;
         }

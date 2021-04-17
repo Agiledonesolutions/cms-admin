@@ -2,10 +2,23 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 class PermissionGroup extends React.Component{
-    constructor(props){
-        super(props)
-    }
-   
+    // getPermission = (name) =>{
+    //   if(this.props.editPermissions){
+    //     const permissions = this.props.editPermissions
+    //     for(var i = 0; i < permissions.length; i++){
+    //       if(permissions[i]["name"] == name){
+    //         // console.log(permissions[i]["value"])
+    //         return permissions[i]["value"]
+    //       }
+          
+    //     }
+    //   }else{
+    //     return ""
+    //   }
+     
+    // }
+
+
     getAttributes = (name, key)=>{
         return(
             <div className="permission-row" key={key}>
@@ -25,6 +38,7 @@ class PermissionGroup extends React.Component{
                                     name={name+ " " +this.props.suffix}
                                     className="permission-inherit"
                                     value="Inherit"
+                                    
                                     onChange={(e)=>this.props.setVal("Permissions", e.target.value, e.target.name)}
                                   />
                                   <label htmlFor={this.props.heading + "."+name+"-inherit"}>
@@ -121,9 +135,9 @@ class PermissionGroup extends React.Component{
                     <div className="col-md-12">
                       {this.props.attributes.map((attribute, key)=>{
                           return this.getAttributes(attribute, key)
-                          
+
                       })}
-                      
+
                     </div>
                   </div>
                 </div>
