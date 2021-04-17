@@ -20,10 +20,10 @@ class CreateUser extends React.Component {
       "Last Name": "",
       "Email": "",
       "Password": "",
+      "Confirm": "",
       Permissions: [],
-      roles: []
+      Roles: []
     },
-    confirmPassword: "",
     requiredPermission: "Create User",
     errors: []
   };
@@ -32,7 +32,7 @@ class CreateUser extends React.Component {
     const {data} = this.state
     rolesArray.push(val)
     var n = rolesArray.length
-    data.roles = rolesArray[n-1].split(',')
+    data.Roles = rolesArray[n-1].split(',')
     this.setState({rolesArray})
     this.setState({data})
   }
@@ -59,7 +59,50 @@ class CreateUser extends React.Component {
   }
 
   handleSubmit = () =>{
-    console.log(this.state.data)
+    const {errors} = this.state
+    const {data} = this.state
+    for(var key in data){
+      if( key !== "Permissions")
+      if (
+        !Validate.validateNotEmpty(data[key]) &&
+        !errors.includes(key)
+      ) {
+        errors.push(key);
+        this.setState({ errors });
+      } else if (
+        Validate.validateNotEmpty(data[key]) &&
+        errors.includes(key)
+      ) {
+        errors.splice(errors.indexOf(key), 1);
+        this.setState({ errors });
+      }
+    }
+    
+    if (
+      !errors.includes("Email") &&
+      !Validate.validateEmail(data["Email"]) &&
+      Validate.validateNotEmpty(data["Email"])
+    ) {
+      errors.push("Email");
+      this.setState({ errors });
+    } else if (
+      errors.includes("Email") &&
+      Validate.validateEmail(data["Email"]) &&
+      Validate.validateNotEmpty(data["Email"])
+    ) {
+      errors.splice(errors.indexOf("Email"), 1);
+      this.setState({ errors });
+    }
+    if(!Validate.validateNotEmpty(this.state.errors)){
+      api.post('/users', {data: data}).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log("create user error")
+      })
+      console.log(this.state.data)
+    }else{
+      console.log("Some error")
+    }
   }
 
   componentDidMount(){
@@ -173,11 +216,11 @@ class CreateUser extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="confirmPassword"
+                    name="Confirm"
                     className="form-control "
                     type="password"
-                    value={this.state.confirmPassword}
-                    onChange={(e)=>{this.setState({confirmPassword: e.target.value})}}
+                    value={this.state.data["Confirm"]}
+                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                   />
                 </div>
               </div>
@@ -738,6 +781,7 @@ class CreateUser extends React.Component {
                         >
                           Save
                         </button>
+                        <p style={{opacity: "0.7"}}>Set permissions (if needed) before saving.</p>
                       </div>
                     </div>
                   </div>

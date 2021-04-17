@@ -36,7 +36,7 @@ class Users extends React.Component {
             firstName: val["First Name"],
             lastName: val["Last Name"],
             email: val["Email"],
-            lastLogin: format(val["Last Login"]),
+            lastLogin: format(val["LastLogin"]),
             created: format(val["createdAt"]),
             _id: val["_id"],
           };

@@ -20,9 +20,13 @@ class CreateTag extends React.Component {
   handleSubmit = () =>{
     const {errors} = this.state
     const {data} = this.state
+    if(!Validate.validateNotEmpty(data['name'])){
+      errors.push("name");
+      this.setState({ errors });
+    }
     if (
       !errors.includes("name") &&
-      !Validate.validateNotEmpty(data['name'])
+      Validate.validateNotEmpty(data['name'])
     ) {
       errors.push("name");
       this.setState({ errors });

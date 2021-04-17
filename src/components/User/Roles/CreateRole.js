@@ -518,10 +518,13 @@ class CreateRole extends React.Component {
   handleSubmit = () => {
     const {errors} = this.state
     const {data} = this.state
-   
+    if(!Validate.validateNotEmpty(data['Name'])){
+      errors.push("name");
+      this.setState({ errors });
+    }
     if (
       !errors.includes("name") &&
-      !Validate.validateNotEmpty(data['Name'])
+      Validate.validateNotEmpty(data['Name'])
     ) {
       errors.push("name");
       this.setState({ errors });
