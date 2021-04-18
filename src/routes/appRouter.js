@@ -4,6 +4,8 @@ import Dashboard from '../components/Dashboard/Dashboard';
 import Home from '../components/Dashboard/Home';
 import Login from '../components/Login/Login';
 import ResetPassword from '../components/Login/ResetPassword';
+import AttributeSets from '../components/Product/AttributeSets/AttributeSets';
+import CreateAttributeSet from '../components/Product/AttributeSets/CreateAttributeSet';
 import Brands from '../components/Product/Brands/Brands';
 import CreateBrand from '../components/Product/Brands/CreateBrand';
 import Catalog from '../components/Product/Catalog';
@@ -41,6 +43,9 @@ const routes = (
         <PrivateRoute exact path='/reviews' component={()=><Dashboard abc={ <Reviews />} />} />
         <PrivateRoute exact path='/tags' component={()=><Dashboard abc={ <Tags />} />} />
         <PrivateRoute exact path='/tags/create' component={()=><Dashboard abc={ <CreateTag />} />} />
+        <PrivateRoute exact path='/attribute-sets' component={()=><Dashboard abc={ <AttributeSets />} />} />
+        <PrivateRoute exact path='/attribute-sets/create' component={()=><Dashboard abc={ <CreateAttributeSet />} />} />
+
 
       </Switch>
     </React.Fragment>

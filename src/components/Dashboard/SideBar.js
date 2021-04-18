@@ -90,12 +90,10 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/attribute-sets'>
                       <i className="fa fa-angle-double-right" />
                       <span>Attribute Sets</span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className=""

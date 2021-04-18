@@ -7,7 +7,7 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 
-class Tags extends React.Component {
+class AttributeSets extends React.Component {
   state = {
     selectedRows: [],
     tableData: {
@@ -30,28 +30,29 @@ class Tags extends React.Component {
       ],
       data: [],
     },
-    requiredPermission: "Delete Tag",
+    requiredPermission: "Delete Attribute Set",
   };
 
   componentDidMount() {
     const datalist = [];
     var i = 0;
     api
-      .get("/tag/get")
+      .get("/attributeset/get")
       .then((res) => {
-        res.data.data.map((val) => {
-          i++;
-          var tmp = {
-            id: i,
-            name: val["name"],
-            created: val["createdAt"],
-            _id: val['_id']
-          };
-          datalist.push(tmp);
-        });
-        const { tableData } = this.state;
-        tableData["data"] = datalist;
-        this.setState({ tableData });
+          console.log(res.data.data)
+        // res.data.data.map((val) => {
+        //   i++;
+        //   var tmp = {
+        //     id: i,
+        //     name: val["name"],
+        //     created: val["createdAt"],
+        //     _id: val['_id']
+        //   };
+        //   datalist.push(tmp);
+        // });
+        // const { tableData } = this.state;
+        // tableData["data"] = datalist;
+        // this.setState({ tableData });
       })
       .catch((err) => {
         console.log(err);
@@ -74,19 +75,19 @@ class Tags extends React.Component {
     return (
       <div>
         <section className="content-header clearfix">
-          <h3>Tags</h3>
+          <h3>Attribute Sets</h3>
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
             </li>
-            <li className="active">Tags</li>
+            <li className="active">Attribute Sets</li>
           </ol>
         </section>
         <section className="content">
         <div className="row">
                   <div className="btn-group pull-right">
-                    <Link to='/tags/create' className="btn btn-primary btn-actions btn-create">
-                      Create Tag
+                    <Link to='/attribute-sets/create' className="btn btn-primary btn-actions btn-create">
+                      Create Attribute Set
                     </Link>
                   </div>
                 </div>
@@ -131,4 +132,4 @@ class Tags extends React.Component {
     );
   }
 }
-export default Tags;
+export default AttributeSets;
