@@ -1,11 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
+import { format } from 'timeago.js';
 
 class AttributeSets extends React.Component {
   state = {
@@ -31,6 +32,7 @@ class AttributeSets extends React.Component {
       data: [],
     },
     requiredPermission: "Delete Attribute Set",
+    edit: ""
   };
 
   componentDidMount() {
@@ -39,20 +41,20 @@ class AttributeSets extends React.Component {
     api
       .get("/attributeset/get")
       .then((res) => {
-          console.log(res.data.data)
-        // res.data.data.map((val) => {
-        //   i++;
-        //   var tmp = {
-        //     id: i,
-        //     name: val["name"],
-        //     created: val["createdAt"],
-        //     _id: val['_id']
-        //   };
-        //   datalist.push(tmp);
-        // });
-        // const { tableData } = this.state;
-        // tableData["data"] = datalist;
-        // this.setState({ tableData });
+          // console.log(res.data.data)
+        res.data.data.map((val) => {
+          i++;
+          var tmp = {
+            id: i,
+            name: val["name"],
+            created: format(val["createdAt"]),
+            _id: val['_id']
+          };
+          datalist.push(tmp);
+        });
+        const { tableData } = this.state;
+        tableData["data"] = datalist;
+        this.setState({ tableData });
       })
       .catch((err) => {
         console.log(err);
@@ -63,7 +65,7 @@ class AttributeSets extends React.Component {
     const {selectedRows} = this.state
     const {requiredPermission} = this.state
     const data = {id: selectedRows, requiredPermission}
-    api.delete('/tag', {data}).then(res=>{
+    api.delete('/attributeset', {data}).then(res=>{
       console.log(res)
       this.componentDidMount()
     }).catch(err=>{
@@ -72,6 +74,9 @@ class AttributeSets extends React.Component {
   };
 
   render() {
+    if(this.state.edit != ""){
+      return <Redirect to={"/attribute-sets/"+ this.state.edit + "/edit"} />
+    }
     return (
       <div>
         <section className="content-header clearfix">
@@ -123,6 +128,11 @@ class AttributeSets extends React.Component {
                   responsive
                   pagination
                   selectableRows
+                  onRowClicked={(index)=>{
+                    this.setState({edit: index._id})
+                  }}
+                  pointerOnHover
+                  highlightOnHover
                 />
               </DataTableExtensions>
             </div>

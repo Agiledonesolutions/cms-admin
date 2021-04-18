@@ -45,6 +45,7 @@ const routes = (
         <PrivateRoute exact path='/tags/create' component={()=><Dashboard abc={ <CreateTag />} />} />
         <PrivateRoute exact path='/attribute-sets' component={()=><Dashboard abc={ <AttributeSets />} />} />
         <PrivateRoute exact path='/attribute-sets/create' component={()=><Dashboard abc={ <CreateAttributeSet />} />} />
+        <PrivateRoute exact path='/attribute-sets/:id/edit' component={()=><Dashboard abc={ <CreateAttributeSet edit="true"/>} />} />
 
 
       </Switch>

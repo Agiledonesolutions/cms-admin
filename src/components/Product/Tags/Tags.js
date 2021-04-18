@@ -6,6 +6,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
+import { format } from 'timeago.js';
+
 
 class Tags extends React.Component {
   state = {
@@ -44,7 +46,7 @@ class Tags extends React.Component {
           var tmp = {
             id: i,
             name: val["name"],
-            created: val["createdAt"],
+            created: format(val["createdAt"]),
             _id: val['_id']
           };
           datalist.push(tmp);

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, withRouter } from "react-router-dom";
-
+import Validate from '../../../utils/validation'
+import api from '../../../apis/api'
 class CreateAttributeSet extends React.Component {
   state = {
     data: {
@@ -9,6 +10,19 @@ class CreateAttributeSet extends React.Component {
     requiredPermission: "Create Attribute Set",
     errors: [],
   };
+   async UNSAFE_componentWillMount(){
+    if(this.props.edit == "true"){
+      const url = "/attributeset/get/" + this.props.match.params.id
+      const {data} = this.state
+       await api.get(url).then(res=>{
+        console.log(res)
+        data.name = res.data.data.name
+      }).catch(err=>{
+        console.log("error")
+      })
+      this.setState({data})
+    }
+  }
   setVal = (key, val) => {
     const { data } = this.state;
     data[key] = val;
@@ -17,6 +31,43 @@ class CreateAttributeSet extends React.Component {
 
   handlesubmit = () => {
       console.log(this.state.data)
+      const {errors} = this.state
+    const {data} = this.state
+    
+    if (
+      !errors.includes("name") &&
+      !Validate.validateNotEmpty(data['name'])
+    ) {
+      errors.push("name");
+      this.setState({ errors });
+    } else if (
+      errors.includes("name") &&
+      Validate.validateNotEmpty(data['name'])
+    ) {
+      errors.splice(errors.indexOf("name"), 1);
+      this.setState({ errors });
+    }
+    if(!Validate.validateNotEmpty(this.state.errors)){
+      if(this.props.edit){
+        console.log("edit")
+        const _id = this.props.match.params.id
+        api.put('/attributeset', {data, _id, requiredPermission: "Edit Attribute Set"}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("edit attri set error")
+        })
+      }else{
+        const {requiredPermission} = this.state
+        api.post('/attributeset',{data: data, requiredPermission}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("tag add error")
+        })
+      }
+      
+    }else{
+      console.log("name empty")
+    }
   }
   render() {
     return (
