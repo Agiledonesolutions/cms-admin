@@ -4,6 +4,7 @@ import Dashboard from '../components/Dashboard/Dashboard';
 import Home from '../components/Dashboard/Home';
 import Login from '../components/Login/Login';
 import ResetPassword from '../components/Login/ResetPassword';
+import Attributes from '../components/Product/Attributes/Attributes';
 import AttributeSets from '../components/Product/AttributeSets/AttributeSets';
 import CreateAttributeSet from '../components/Product/AttributeSets/CreateAttributeSet';
 import Brands from '../components/Product/Brands/Brands';
@@ -48,6 +49,8 @@ const routes = (
         <PrivateRoute exact path='/attribute-sets' component={()=><Dashboard abc={ <AttributeSets />} />} />
         <PrivateRoute exact path='/attribute-sets/create' component={()=><Dashboard abc={ <CreateAttributeSet />} />} />
         <PrivateRoute exact path='/attribute-sets/:id/edit' component={()=><Dashboard abc={ <CreateAttributeSet edit="true"/>} />} />
+        <PrivateRoute exact path='/attributes' component={()=><Dashboard abc={ <Attributes />} />} />
+
 
 
       </Switch>

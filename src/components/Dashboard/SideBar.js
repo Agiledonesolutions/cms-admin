@@ -80,12 +80,10 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/attributes'>
                       <i className="fa fa-angle-double-right" />
                       <span>Attributes</span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className=""
