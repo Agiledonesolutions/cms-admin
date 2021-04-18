@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
 import Dashboard from '../components/Dashboard/Dashboard';
 import Home from '../components/Dashboard/Home';
 import Login from '../components/Login/Login';
@@ -17,6 +17,7 @@ import CreateUser from '../components/User/CreateUser';
 import CreateRole from '../components/User/Roles/CreateRole';
 import Roles from '../components/User/Roles/Roles';
 import Users from '../components/User/Users';
+import { getToken } from '../utils/session';
 import PrivateRoute from './privateroutes';
 
 import PublicRoute from './publicroutes';
@@ -26,7 +27,7 @@ const routes = (
   <Router>
     <React.Fragment>
       <Switch>
-        <PublicRoute exact path='/' component={Login} />
+        <PublicRoute exact path='/'  component={Login} />
         <PublicRoute exact path='/reset-password' component={ResetPassword} />
         <PrivateRoute exact path='/dashboard' component={()=><Dashboard abc={ <Home />} />} />
         <PrivateRoute exact path='/products' component={()=><Dashboard abc={ <Catalog />} />} />
@@ -43,6 +44,7 @@ const routes = (
         <PrivateRoute exact path='/reviews' component={()=><Dashboard abc={ <Reviews />} />} />
         <PrivateRoute exact path='/tags' component={()=><Dashboard abc={ <Tags />} />} />
         <PrivateRoute exact path='/tags/create' component={()=><Dashboard abc={ <CreateTag />} />} />
+        <PrivateRoute exact path='/tags/:id/edit' component={()=><Dashboard abc={ <CreateTag edit="true"/>} />} />
         <PrivateRoute exact path='/attribute-sets' component={()=><Dashboard abc={ <AttributeSets />} />} />
         <PrivateRoute exact path='/attribute-sets/create' component={()=><Dashboard abc={ <CreateAttributeSet />} />} />
         <PrivateRoute exact path='/attribute-sets/:id/edit' component={()=><Dashboard abc={ <CreateAttributeSet edit="true"/>} />} />

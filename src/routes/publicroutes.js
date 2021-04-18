@@ -6,13 +6,13 @@ const PublicRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     component={(props) =>
-      // !getToken() ? (
+      !getToken() ? (
         <React.Fragment>
           <Component {...props} />
         </React.Fragment>
-      // ) : (
-      //   <Redirect to='/dashboard' />
-      // )
+      ) : (
+        <Redirect to='/dashboard' />
+      )
     }
   />
 );

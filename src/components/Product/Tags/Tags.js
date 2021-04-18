@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -33,6 +33,7 @@ class Tags extends React.Component {
       data: [],
     },
     requiredPermission: "Delete Tag",
+    edit: ""
   };
 
   componentDidMount() {
@@ -73,6 +74,9 @@ class Tags extends React.Component {
   };
 
   render() {
+    if(this.state.edit != ""){
+      return <Redirect to={"/tags/"+ this.state.edit + "/edit"} />
+    }
     return (
       <div>
         <section className="content-header clearfix">
@@ -124,6 +128,11 @@ class Tags extends React.Component {
                   responsive
                   pagination
                   selectableRows
+                  onRowClicked={(index)=>{
+                    this.setState({edit: index._id})
+                  }}
+                  pointerOnHover
+                  highlightOnHover
                 />
               </DataTableExtensions>
             </div>

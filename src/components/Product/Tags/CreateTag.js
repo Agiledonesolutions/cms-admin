@@ -1,16 +1,29 @@
-import { Android } from "@material-ui/icons";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import Validate from '../../../utils/validation'
 
 class CreateTag extends React.Component {
   state = {
     data: {
-      "name": ""
+      "name": "",
+      "url": ""
     },
     requiredPermission: "Create Tag",
     errors: []
+  }
+  async UNSAFE_componentWillMount(){
+    if(this.props.edit == "true"){
+      const url = "/tag/get/" + this.props.match.params.id
+      const {data} = this.state
+       await api.get(url).then(res=>{
+        data.name = res.data.data.name
+        data.url = res.data.data.url
+      }).catch(err=>{
+        console.log("error")
+      })
+      this.setState({data})
+    }
   }
   setVal = (key,val) => {
     const {data} = this.state
@@ -20,13 +33,10 @@ class CreateTag extends React.Component {
   handleSubmit = () =>{
     const {errors} = this.state
     const {data} = this.state
-    if(!Validate.validateNotEmpty(data['name'])){
-      errors.push("name");
-      this.setState({ errors });
-    }
+   
     if (
       !errors.includes("name") &&
-      Validate.validateNotEmpty(data['name'])
+      !Validate.validateNotEmpty(data['name'])
     ) {
       errors.push("name");
       this.setState({ errors });
@@ -38,12 +48,23 @@ class CreateTag extends React.Component {
       this.setState({ errors });
     }
     if(!Validate.validateNotEmpty(this.state.errors)){
-      const {requiredPermission} = this.state
-      api.post('/tag',{data: data, requiredPermission}).then(res=>{
-        console.log(res)
-      }).catch(err=>{
-        console.log("tag add error")
-      })
+      if(this.props.edit == "true"){
+        console.log("edit")
+        const _id = this.props.match.params.id
+        api.put('/tag', {data, _id, requiredPermission: "Edit Tag"}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("edit attri set error")
+        })
+      }else{
+        const {requiredPermission} = this.state
+        api.post('/tag',{data: data, requiredPermission}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("tag add error")
+        })
+      }
+    
     }else{
       console.log("name empty")
     }
@@ -114,10 +135,29 @@ class CreateTag extends React.Component {
                                 className="form-control "
                                 id="name"
                                 type="text"
+                                value={this.state.data.name}
                                 onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                               />
                             </div>
                           </div>
+                          {this.props.edit == "true"? <div className="form-group">
+                            <label
+                              htmlFor="name"
+                              className="col-md-3 control-label text-left"
+                            >
+                              Url<span className="m-l-5 text-red">*</span>
+                            </label>
+                            <div className="col-md-9">
+                              <input
+                                name="url"
+                                className="form-control "
+                                id="name"
+                                type="text"
+                                value={this.state.data.url}
+                                onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                              />
+                            </div>
+                          </div>:""}
                         </div>
                       </div>
                     </div>
@@ -145,4 +185,4 @@ class CreateTag extends React.Component {
     );
   }
 }
-export default CreateTag;
+export default withRouter(CreateTag);
