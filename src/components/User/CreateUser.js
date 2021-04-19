@@ -106,10 +106,9 @@ class CreateUser extends React.Component {
     }
   }
 
-  componentDidMount(){
-    const token = getToken()
+   async UNSAFE_componentWillMount(){
     const {options} = this.state
-    api.get('/roles/get').then(res=>{
+     await api.get('/roles/get').then(res=>{
       res.data.data.forEach(x=>{
         let tmp = {}
         tmp['label'] = x.Name

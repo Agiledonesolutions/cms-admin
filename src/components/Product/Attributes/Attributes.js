@@ -52,14 +52,13 @@ class Attributes extends React.Component {
     api
       .get("/attribute/get")
       .then((res) => {
-          console.log(res.data)
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
             name: val["name"],
-            attributeset: "",
-            filterable: val[""],
+            attributeset: val["attributeSet"]["name"],
+            filterable: val.filterable?"Yes": "No",
             created: format(val["createdAt"]),
             _id: val['_id']
           };

@@ -8,7 +8,7 @@ import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
 
-class Brands extends React.Component {
+class Options extends React.Component {
   state = {
     selectedRows: [],
     tableData: {
@@ -89,27 +89,27 @@ class Brands extends React.Component {
 
   render() {
     if (this.state.edit != "") {
-      return <Redirect to={"/brands/" + this.state.edit + "/edit"} />;
+      return <Redirect to={"/products/" + this.state.edit + "/edit"} />;
     }
     return (
       <div>
         <section className="content-header clearfix">
-          <h3>Brands</h3>
+          <h3>Options</h3>
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
             </li>
-            <li className="active">Brands</li>
+            <li className="active">Options</li>
           </ol>
         </section>
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">
               <Link
-                to="/brands/create"
+                to="/options/create"
                 className="btn btn-primary btn-actions btn-create"
               >
-                Create Brand
+                Create Option
               </Link>
             </div>
           </div>
@@ -159,4 +159,4 @@ class Brands extends React.Component {
     );
   }
 }
-export default Brands;
+export default Options;

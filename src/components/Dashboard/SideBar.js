@@ -96,12 +96,10 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/options'>
                       <i className="fa fa-angle-double-right" />
                       <span>Options</span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className=""
@@ -157,22 +155,18 @@ const SideBar = () => {
               <li
                 className=""
               >
-                <a
-                  
-                >
+                <Link to='/flashsales'>
                   <i className="fa fa-bolt" />
                   <span>Flash Sales</span>
-                </a>
+                </Link>
               </li>
               <li
                 className=""
               >
-                <a
-                  
-                >
+                <Link to='/coupons'>
                   <i className="fa fa-tags" />
                   <span>Coupons</span>
-                </a>
+                </Link>
               </li>
               <li
                 className=""

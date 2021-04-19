@@ -5,10 +5,10 @@ import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import api from "../../../apis/api";
+import api from "../../apis/api";
 import { format } from "timeago.js";
 
-class Brands extends React.Component {
+class FlashSales extends React.Component {
   state = {
     selectedRows: [],
     tableData: {
@@ -89,27 +89,27 @@ class Brands extends React.Component {
 
   render() {
     if (this.state.edit != "") {
-      return <Redirect to={"/brands/" + this.state.edit + "/edit"} />;
+      return <Redirect to={"/flashsales/" + this.state.edit + "/edit"} />;
     }
     return (
       <div>
         <section className="content-header clearfix">
-          <h3>Brands</h3>
+          <h3>Flash Sales</h3>
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
             </li>
-            <li className="active">Brands</li>
+            <li className="active">Flash Sales</li>
           </ol>
         </section>
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">
               <Link
-                to="/brands/create"
+                to="/flashsales/create"
                 className="btn btn-primary btn-actions btn-create"
               >
-                Create Brand
+                Create Flash Sale
               </Link>
             </div>
           </div>
@@ -159,4 +159,4 @@ class Brands extends React.Component {
     );
   }
 }
-export default Brands;
+export default FlashSales;

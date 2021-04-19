@@ -1,71 +1,64 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
+import { format } from "timeago.js";
 
 class Reviews extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedRows: [],
-      tableData: {
-        columns: [
-          {
-            name: "Id",
-            selector: "id",
-            sortable: true,
-          },
-          {
-            name: "Product",
-            selector: "product",
-            sortable: true,
-          },
-          {
-            name: "Reviewer Name",
-            selector: "reviewer",
-            sortable: true,
-          },
-          {
-            name: "Rating",
-            selector: "rating",
-            sortable: true,
-          },
-          {
-            name: "Approved",
-            selector: "approved",
-            sortable: true,
-          },
-          {
-            name: "Date",
-            selector: "date",
-            sortable: true,
-          },
-        ],
-        data: [],
-      },
-      requiredPermission: "Delete User",
-    };
-  }
+  state = {
+    selectedRows: [],
+    tableData: {
+      columns: [
+        {
+          name: "Id",
+          selector: "id",
+          sortable: true,
+        },
+        {
+          name: "Name",
+          selector: "name",
+          sortable: true,
+        },
+        {
+          name: "Attribute Set",
+          selector: "attributeset",
+          sortable: true,
+        },
+        {
+          name: "Filterable",
+          selector: "filterable",
+          sortable: true,
+        },
+        {
+          name: "Created",
+          selector: "created",
+          sortable: true,
+        },
+      ],
+      data: [],
+    },
+    requiredPermission: "Delete Tag",
+    edit: "",
+  };
+
   componentDidMount() {
     const datalist = [];
     var i = 0;
     api
-      .get("/users/get")
+      .get("/attribute/get")
       .then((res) => {
-        // console.log(res.data.data)
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
-            product: val["First Name"],
-            reviewer: val["Last Name"],
-            rating: val["Email"],
-            approved: val["Last Login"],
-            date: val["createdAt"],
+            name: val["name"],
+            attributeset: val["attributeSet"]["name"],
+            filterable: val.filterable ? "Yes" : "No",
+            created: format(val["createdAt"]),
             _id: val["_id"],
           };
           datalist.push(tmp);
@@ -78,8 +71,26 @@ class Reviews extends React.Component {
         console.log(err);
       });
   }
-  deleteSelectedItems = () => {};
+
+  deleteSelectedItems = () => {
+    const { selectedRows } = this.state;
+    const { requiredPermission } = this.state;
+    const data = { id: selectedRows, requiredPermission };
+    api
+      .delete("/attribute", { data })
+      .then((res) => {
+        console.log(res);
+        this.componentDidMount();
+      })
+      .catch((err) => {
+        console.log("delete error");
+      });
+  };
+
   render() {
+    if (this.state.edit != "") {
+      return <Redirect to={"/reviews/" + this.state.edit + "/edit"} />;
+    }
     return (
       <div>
         <section className="content-header clearfix">
@@ -88,7 +99,7 @@ class Reviews extends React.Component {
             <li>
               <Link to="/dashboard">Dashboard</Link>
             </li>
-            <li className="active">Brands</li>
+            <li className="active">Reviews</li>
           </ol>
         </section>
         <section className="content">
@@ -125,6 +136,11 @@ class Reviews extends React.Component {
                   responsive
                   pagination
                   selectableRows
+                  onRowClicked={(index) => {
+                    this.setState({ edit: index._id });
+                  }}
+                  pointerOnHover
+                  highlightOnHover
                 />
               </DataTableExtensions>
             </div>
