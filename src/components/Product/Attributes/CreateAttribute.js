@@ -4,6 +4,7 @@ import api from "../../../apis/api";
 import "./attribute.css";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
+import Validate from '../../../utils/validation'
 
 class CreateAttribute extends React.Component {
   state = {
@@ -118,6 +119,36 @@ class CreateAttribute extends React.Component {
     this.setState({data})
   };
   handleSubmit = () => {
+    const {errors} = this.state
+    const {data} = this.state
+    
+    if (
+      !errors.includes("name") &&
+      !Validate.validateNotEmpty(data['name'])
+    ) {
+      errors.push("name");
+      this.setState({ errors });
+    } else if (
+      errors.includes("name") &&
+      Validate.validateNotEmpty(data['name'])
+    ) {
+      errors.splice(errors.indexOf("name"), 1);
+      this.setState({ errors });
+    }
+    if (
+      !errors.includes("attributeSetId") &&
+      !Validate.validateNotEmpty(data['attributeSetId'])
+    ) {
+      errors.push("attributeSetId");
+      this.setState({ errors });
+    } else if (
+      errors.includes("attributeSetId") &&
+      Validate.validateNotEmpty(data['attributeSetId'])
+    ) {
+      errors.splice(errors.indexOf("attributeSetId"), 1);
+      this.setState({ errors });
+    }
+    if(!Validate.validateNotEmpty(this.state.errors)){
     if(this.props.edit == "true"){
       api.put('/attribute', {data: this.state.data, _id: this.props.match.params.id, categoryIds: this.state.CategoryIds, requiredPermission: "Edit Attributes"}).then(res=>{
         console.log(res)
@@ -131,6 +162,9 @@ class CreateAttribute extends React.Component {
         console.log("error creating attribute")
       })
     }
+  }else{
+    console.log(errors)
+  }
 
   };
   tabContentToggle = () => {
