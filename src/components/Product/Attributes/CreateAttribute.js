@@ -19,10 +19,12 @@ class CreateAttribute extends React.Component {
       name: "",
       attributeSetId: "",
       filterable: false,
-      value: [],
+      value: [""],
     },
+    CategoryIds: [],
     rolesArray: []
   };
+  
   async UNSAFE_componentWillMount() {
     const { attributesSets } = this.state;
     await api
@@ -35,31 +37,34 @@ class CreateAttribute extends React.Component {
       .catch((err) => {
         console.log("error fetching attri sets");
       });
-    this.setState({ attributesSets });
     const {categoryOptions} = this.state
-    api.get('/roles/get').then(res=>{
+    await api.get('/category/get').then(res=>{
       res.data.data.forEach(x=>{
         let tmp = {}
-        tmp['label'] = x.Name
-        tmp['value'] = x.Name
-        tmp['_id'] = x._id
+        tmp['label'] = x.name
+        tmp['value'] = x._id
         categoryOptions.push(tmp)
 
       })
     }).catch((err)=>{
       console.log(err)
     })
+    this.setState({ attributesSets });
+    this.setState({categoryOptions})
   }
-
-  setValueArray = (val) => {
-      console.log(val)
+  setValues = (idx, val) =>{
+    const {data} = this.state
+    data["value"][idx] = val
+    this.setState({data})
+  }
+  setCategoryArray = (val) => {
     const { rolesArray } = this.state;
-    const { data } = this.state;
     rolesArray.push(val);
     var n = rolesArray.length;
-    data.CategoryId = rolesArray[n - 1].split(",");
+    var {CategoryIds} = this.state
+    CategoryIds = rolesArray[n - 1].split(",") 
     this.setState({ rolesArray });
-    this.setState({ data });
+    this.setState({ CategoryIds });
   };
   setVal = (key, val) => {
     const { data } = this.state;
@@ -72,21 +77,21 @@ class CreateAttribute extends React.Component {
     
   };
   handleAddRow = () => {
-    const item = {
-      name: "",
-    };
-    this.setState({
-      rows: [...this.state.rows, item],
-    });
-    console.log(this.state.rows);
+    const {data} =this.state
+    data["value"].push("")
+    this.setState({data})
   };
-  handleRemoveSpecificRow = (idx) => () => {
-    const rows = [...this.state.rows];
-    rows.splice(idx, 1);
-    this.setState({ rows });
+  handleRemoveSpecificRow = (idx)  => {
+    const {data} = this.state
+    data['value'].splice(idx, 1)
+    this.setState({data})
   };
   handleSubmit = () => {
-    console.log(this.state.data);
+    api.post('/attribute', {data: this.state.data, categoryIds: this.state.CategoryIds, requiredPermission: "Create Attributes"}).then(res=>{
+      console.log(res)
+    }).catch(err=>{
+      console.log("error creating attribute")
+    })
   };
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
@@ -148,8 +153,9 @@ class CreateAttribute extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <MultiSelect
-                    onChange={this.setValueArray}
+                    onChange={this.setCategoryArray}
                     options={this.state.categoryOptions}
+                    defaultValue={this.state.rolesArray[this.state.rolesArray.length-1]}
                   />
                 </div>
               </div>
@@ -161,18 +167,19 @@ class CreateAttribute extends React.Component {
                   Filterable
                 </label>
                 <div className="col-md-9">
-                  <div className="checkbox">
-                    
+                  <div className="check">
                     <input
                       type="checkbox"
                       name="filterable"
+                      id="filterable"
                       checked={this.state.data.filterable}
-                      value={this.state.data.filterable}
-                      onChange={(e)=>{
-                          this.setVal(e.target.name, e.target.value)}
-                      }
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.filterable = !this.state.data.filterable
+                        this.setState({data})
+                      }}      
                     />
-                    <label >
+                    <label htmlFor="filterable">
                       Use this attribute for filtering products
                     </label>
                   </div>
@@ -197,7 +204,7 @@ class CreateAttribute extends React.Component {
                   </tr>
                 </thead>
                 <tbody id="attribute-values">
-                  {this.state.rows.map((item, idx) => (
+                  {this.state.data.value.map((item, idx) => (
                     <tr key={idx}>
                       <td className="text-center">
                         <span className="drag-icon">
@@ -209,8 +216,12 @@ class CreateAttribute extends React.Component {
                         <div className="form-group">
                           <input
                             type="text"
-                            name="values[<%- valueId %>][value]"
+                            name={idx}
+                            value={this.state.data.value[idx]}
                             className="form-control"
+                            onChange={(e)=>{
+                              this.setValues(e.target.name, e.target.value)
+                            }}
                           />
                         </div>
                       </td>
@@ -219,8 +230,9 @@ class CreateAttribute extends React.Component {
                           type="button"
                           className="btn btn-default delete-row"
                           data-toggle="tooltip"
+                          name={idx}
                           data-title="Delete Value"
-                          onClick={this.handleRemoveSpecificRow(idx)}
+                          onClick={(e)=>{this.handleRemoveSpecificRow(idx)}}
                         >
                           <i className="fa fa-trash" />
                         </button>

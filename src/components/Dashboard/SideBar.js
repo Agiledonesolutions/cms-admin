@@ -60,12 +60,10 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/categories'>
                       <i className="fa fa-angle-double-right" />
                       <span>Categories</span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className=""
@@ -133,22 +131,18 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/orders'>
                       <i className="fa fa-angle-double-right" />
                       <span>Orders</span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/transactions'>
                       <i className="fa fa-angle-double-right" />
                       <span>Transactions</span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
@@ -171,32 +165,26 @@ const SideBar = () => {
               <li
                 className=""
               >
-                <a
-                  
-                >
+                <Link to='/pages'>
                   <i className="fa fa-file" />
                   <span>Pages</span>
-                </a>
+                </Link>
               </li>
               <li
                 className=""
               >
-                <a
-                  
-                >
+                <Link to='/media'>
                   <i className="fa fa-camera" />
                   <span>Media</span>
-                </a>
+                </Link>
               </li>
               <li
                 className=""
               >
-                <a
-                  
-                >
+                <Link to='/menus'>
                   <i className="fa fa-bars" />
                   <span>Menus</span>
-                </a>
+                </Link>
               </li>
               <li className="header">System</li>
               <li className="treeview" onClick={NavLinkToggle}>
@@ -246,32 +234,26 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/translations' >
                       <i className="fa fa-angle-double-right" />
                       <span>Translations</span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/currency-rates'>
                       <i className="fa fa-angle-double-right" />
                       <span>Currency Rates</span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/taxes'>
                       <i className="fa fa-angle-double-right" />
                       <span>Taxes</span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
@@ -289,22 +271,18 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/sliders'>
                       <i className="fa fa-angle-double-right" />
                       <span>Sliders</span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/storefront'>
                       <i className="fa fa-angle-double-right" />
                       <span>Storefront</span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
@@ -322,32 +300,26 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <a
-                      
-                    >
+                    <Link to='/importer'>
                       <i className="fa fa-angle-double-right" />
                       <span>Importer</span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
               <li
                 className=""
               >
-                <a
-                  
-                >
+                <Link to='/reports'>
                   <i className="fa fa-bar-chart" />
                   <span>Reports</span>
-                </a>
+                </Link>
               </li>
               <li className="">
-                <a
-                  
-                >
+                <Link to='/settings'>
                   <i className="fa fa-cogs" />
                   <span>Settings</span>
-                </a>
+                </Link>
               </li>
             </ul>
           </section>
