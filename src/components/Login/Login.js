@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import api from '../../apis/api';
 import Validate from '../../utils/validation'
 import {setUserSession} from '../../utils/session'
+import Loading from "../Loading";
 
 
 class Login extends React.Component {
@@ -12,6 +13,7 @@ class Login extends React.Component {
       Email: "",
       Password: ""
     },
+    submitting: false,
     errors: []
   }
   setVal = (key, val) =>{
@@ -20,6 +22,7 @@ class Login extends React.Component {
     this.setState({data})
   }
   handleSubmit = () => {
+    this.setState({submitting: true})
     const {errors} = this.state
     const email = this.state.data["Email"]
     const password = this.state.data["Password"]
@@ -123,7 +126,7 @@ class Login extends React.Component {
               Login
             </button>
             <div className="clearfix" />
-            {/* <div className="checkbox pull-left">
+            <div className="checkbox pull-left">
               <input type="hidden" name="remember_me" defaultValue={0} />
               <input
                 type="checkbox"
@@ -132,11 +135,12 @@ class Login extends React.Component {
                 id="remember-me"
               />
               <label htmlFor="remember-me">Remember me</label>
-            </div> */}
+            </div>
             <Link to="/reset-password" className="text-center pull-right">
               forgot password?
             </Link>
           </form>
+            <Loading show={this.state.submitting}/>
         </div>
       </div>
     </div>

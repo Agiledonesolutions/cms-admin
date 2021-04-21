@@ -5,7 +5,7 @@ import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import api from "../../apis/api";
+import api from "../../../apis/api";
 import { format } from "timeago.js";
 
 class Catalog extends React.Component {

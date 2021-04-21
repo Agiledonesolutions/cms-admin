@@ -12,8 +12,7 @@ import AttributeSets from '../components/Product/AttributeSets/AttributeSets';
 import CreateAttributeSet from '../components/Product/AttributeSets/CreateAttributeSet';
 import Brands from '../components/Product/Brands/Brands';
 import CreateBrand from '../components/Product/Brands/CreateBrand';
-import Catalog from '../components/Product/Catalog';
-import CreateProduct from '../components/Product/CreateProduct';
+import CreateProduct from '../components/Product/Products/CreateProduct';
 import Options from '../components/Product/Options/Options';
 import Reviews from '../components/Product/Reviews/Reviews';
 import CreateTag from '../components/Product/Tags/CreateTag';
@@ -22,10 +21,9 @@ import CreateUser from '../components/User/CreateUser';
 import CreateRole from '../components/User/Roles/CreateRole';
 import Roles from '../components/User/Roles/Roles';
 import Users from '../components/User/Users';
-import { getToken } from '../utils/session';
 import PrivateRoute from './privateroutes';
-
 import PublicRoute from './publicroutes';
+import Catalog from '../components/Product/Products/Catalog';
 
 
 const routes = (
