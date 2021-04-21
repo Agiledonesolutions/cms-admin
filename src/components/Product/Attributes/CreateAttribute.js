@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import "./attribute.css";
 import MultiSelect from "react-multiple-select-dropdown-lite";
@@ -17,21 +17,41 @@ class CreateAttribute extends React.Component {
       value: [""],
     },
     CategoryIds: [],
-    rolesArray: []
+    rolesArray: [],
+    errors:[]
   };
-  
-  async UNSAFE_componentWillMount() {
+
+   componentDidMount() {
+    if(this.props.edit == "true"){
+      const url = "/attribute/get/" + this.props.match.params.id
+      const {data} = this.state
+      const {rolesArray} = this.state
+      api.get(url).then(res=>{
+        console.log(res.data.data)
+        data.name = res.data.data.name
+        data.attributeSetId = res.data.data.attributeSet
+        rolesArray.push(res.data.data.categories.toString())
+        data.filterable = res.data.data.filterable
+        data.value = res.data.data.value
+        this.setState({data})
+        this.setState({rolesArray})
+      }).catch(err=>{
+        console.log("error fetching attri")
+      })
+    }
     const { attributesSets } = this.state;
-    await api
+     api
       .get("/attributeset/get")
       .then((res) => {
         res.data.data.map((val) => {
           attributesSets.push(val);
+          this.setState({ attributesSets });
         });
       })
       .catch((err) => {
         console.log("error fetching attri sets");
       });
+
     const {categoryOptions} = this.state
     const addToCategories = (x, sub) =>{
       let tmp = {}
@@ -53,14 +73,13 @@ class CreateAttribute extends React.Component {
       
     }
 
-    await api.get('/category/get').then(res=>{
+     api.get('/category/get').then(res=>{
       res.data.data.forEach(val=>{
         addToCategories(val, []) 
       })
     }).catch((err)=>{
       console.log(err)
     })
-    this.setState({ attributesSets });
     this.setState({categoryOptions})
   }
   setValues = (idx, val) =>{
@@ -99,11 +118,20 @@ class CreateAttribute extends React.Component {
     this.setState({data})
   };
   handleSubmit = () => {
-    api.post('/attribute', {data: this.state.data, categoryIds: this.state.CategoryIds, requiredPermission: "Create Attributes"}).then(res=>{
-      console.log(res)
-    }).catch(err=>{
-      console.log("error creating attribute")
-    })
+    if(this.props.edit == "true"){
+      api.put('/attribute', {data: this.state.data, _id: this.props.match.params.id, categoryIds: this.state.CategoryIds, requiredPermission: "Edit Attributes"}).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log("error updating attri")
+      })
+    }else{
+      api.post('/attribute', {data: this.state.data, categoryIds: this.state.CategoryIds, requiredPermission: "Create Attributes"}).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log("error creating attribute")
+      })
+    }
+
   };
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
@@ -123,6 +151,7 @@ class CreateAttribute extends React.Component {
                   <select
                     name="attributeSetId"
                     className="form-control custom-select-black "
+                    value={this.state.data.attributeSetId}
                     onChange={(e) => {
                       this.setVal(e.target.name, e.target.value);
                     }}
@@ -359,4 +388,4 @@ class CreateAttribute extends React.Component {
   }
 }
 
-export default CreateAttribute;
+export default withRouter(CreateAttribute);

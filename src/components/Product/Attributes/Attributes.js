@@ -87,7 +87,7 @@ class Attributes extends React.Component {
 
   render() {
     if(this.state.edit != ""){
-      return <Redirect to={"/attribute/"+ this.state.edit + "/edit"} />
+      return <Redirect to={"/attributes/"+ this.state.edit + "/edit"} />
     }
     return (
       <div>

@@ -132,10 +132,10 @@ class Login extends React.Component {
                 id="remember-me"
               />
               <label htmlFor="remember-me">Remember me</label>
-            </div>
+            </div> */}
             <Link to="/reset-password" className="text-center pull-right">
               forgot password?
-            </Link> */}
+            </Link>
           </form>
         </div>
       </div>

@@ -17,19 +17,12 @@ const ResetPassword = () => {
             your password.
           </p>
           <form
-            method="POST"
-            action="#"
           >
-            <input
-              type="hidden"
-              name="_token"
-              defaultValue="GN6h3SWdOEM7GJ3IludBfgE13rOE6VZZ0pHus17c"
-            />
+           
             <div className="form-group">
               <input
                 type="text"
                 name="email"
-                defaultValue
                 className="form-control"
                 placeholder="Email"
                 autofocus
