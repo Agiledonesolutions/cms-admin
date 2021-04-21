@@ -9,11 +9,6 @@ class CreateAttribute extends React.Component {
   state = {
     activePanel: "general",
     categoryOptions: [],
-    rows: [
-      {
-        name: "",
-      },
-    ],
     attributesSets: [],
     data: {
       name: "",
@@ -38,13 +33,29 @@ class CreateAttribute extends React.Component {
         console.log("error fetching attri sets");
       });
     const {categoryOptions} = this.state
-    await api.get('/category/get').then(res=>{
-      res.data.data.forEach(x=>{
-        let tmp = {}
-        tmp['label'] = x.name
-        tmp['value'] = x._id
-        categoryOptions.push(tmp)
+    const addToCategories = (x, sub) =>{
+      let tmp = {}
+      let name = ""
+      for(var i = 0; i < sub.length; i++){
+        name+="| - - "
+      }
+      tmp['label'] = name+ x.name
+      tmp['value'] = x._id
+      categoryOptions.push(tmp)
+      if(x.childrenCategory.length > 0){
+        sub.push("sub")
+        x.childrenCategory.forEach(y=>{
+          addToCategories(y, sub)
+        })      
+      }else{
+        return
+      }
+      
+    }
 
+    await api.get('/category/get').then(res=>{
+      res.data.data.forEach(val=>{
+        addToCategories(val, []) 
       })
     }).catch((err)=>{
       console.log(err)
@@ -60,6 +71,7 @@ class CreateAttribute extends React.Component {
   setCategoryArray = (val) => {
     const { rolesArray } = this.state;
     rolesArray.push(val);
+    console.log(rolesArray)
     var n = rolesArray.length;
     var {CategoryIds} = this.state
     CategoryIds = rolesArray[n - 1].split(",") 

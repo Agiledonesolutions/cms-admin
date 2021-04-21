@@ -173,6 +173,10 @@ a{
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
       }
+      .msl-grp-title, .msl-options .msl-option{
+          letter-spacing: 0.5px;
+          font-size: 12px;
+      }
 
 @media screen and (max-width:1199px) {
     .single-grid.total-customers,
