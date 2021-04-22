@@ -2,9 +2,8 @@ import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import "./options.css";
-import MultiSelect from "react-multiple-select-dropdown-lite";
-import "react-multiple-select-dropdown-lite/dist/index.css";
 import Validate from "../../../utils/validation";
+import { data } from "jquery";
 
 class CreateOption extends React.Component {
   state = {
@@ -13,35 +12,29 @@ class CreateOption extends React.Component {
       name: "",
       type: "",
       required: false,
-      value: [""],
+      values: [
+        {
+          label: "",
+          price: "",
+          priceType: "Fixed",
+        },
+      ],
     },
-    CategoryIds: [],
-    rolesArray: [],
     errors: [],
   };
 
   componentDidMount() {
     // if(this.props.edit == "true"){
     //   const url = "/attribute/get/" + this.props.match.params.id
-    //   const {data} = this.state
-    //   const {rolesArray} = this.state
-    //   api.get(url).then(res=>{
-    //     console.log(res.data.data)
-    //     data.name = res.data.data.name
-    //     data.attributeSetId = res.data.data.attributeSet
-    //     rolesArray.push(res.data.data.categories.toString())
-    //     data.filterable = res.data.data.filterable
-    //     data.value = res.data.data.value
-    //     this.setState({data})
-    //     this.setState({rolesArray})
-    //   }).catch(err=>{
-    //     console.log("error fetching attri")
-    //   })
     // }
   }
-  setValues = (idx, val) => {
+  setValues = (name, val, multi, idx) => {
     const { data } = this.state;
-    data["value"][idx] = val;
+    if (multi) {
+      data["values"][idx][name] = val;
+    } else {
+      data["values"][0][name] = val;
+    }
     this.setState({ data });
   };
 
@@ -56,12 +49,16 @@ class CreateOption extends React.Component {
   };
   handleAddRow = () => {
     const { data } = this.state;
-    data["value"].push("");
+    data["values"].push({
+      label: "",
+      price: "",
+      priceType: "",
+    });
     this.setState({ data });
   };
   handleRemoveSpecificRow = (idx) => {
     const { data } = this.state;
-    data["value"].splice(idx, 1);
+    data["values"].splice(idx, 1);
     this.setState({ data });
   };
   handleSubmit = () => {
@@ -78,46 +75,30 @@ class CreateOption extends React.Component {
       errors.splice(errors.indexOf("name"), 1);
       this.setState({ errors });
     }
-    if (
-      !errors.includes("attributeSetId") &&
-      !Validate.validateNotEmpty(data["attributeSetId"])
-    ) {
-      errors.push("attributeSetId");
+    if (!errors.includes("type") && !Validate.validateNotEmpty(data["type"])) {
+      errors.push("type");
       this.setState({ errors });
     } else if (
-      errors.includes("attributeSetId") &&
-      Validate.validateNotEmpty(data["attributeSetId"])
+      errors.includes("type") &&
+      Validate.validateNotEmpty(data["type"])
     ) {
-      errors.splice(errors.indexOf("attributeSetId"), 1);
+      errors.splice(errors.indexOf("type"), 1);
       this.setState({ errors });
     }
+
     if (!Validate.validateNotEmpty(this.state.errors)) {
       if (this.props.edit == "true") {
-        api
-          .put("/attribute", {
-            data: this.state.data,
-            _id: this.props.match.params.id,
-            categoryIds: this.state.CategoryIds,
-            requiredPermission: "Edit Attributes",
-          })
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.log("error updating attri");
-          });
       } else {
         api
-          .post("/attribute", {
+          .post("/option", {
             data: this.state.data,
-            categoryIds: this.state.CategoryIds,
-            requiredPermission: "Create Attributes",
+            requiredPermission: "Create Options",
           })
           .then((res) => {
             console.log(res);
           })
           .catch((err) => {
-            console.log("error creating attribute");
+            console.log("error creating option");
           });
       }
     } else {
@@ -125,131 +106,170 @@ class CreateOption extends React.Component {
     }
   };
   typeToggle = () => {
-    if (this.state.data.type == "Dropdown" || this.state.data.type == "Checkbox" || this.state.data.type == "Custom Checkbox" || this.state.data.type == "Radio Button" || this.state.data.type == "Custom Radio Button" || this.state.data.type == "Multiple Select") {
-        return(
-            <div className="option-values clearfix" id="option-values">
-                <div className="option-select m-b-15">
-              <div className="table-responsive">
-            <table className="options table table-bordered">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Label</th>
-                <th>Price</th>
-                <th>Price Type</th>
-                <th></th>
-              </tr>
-            </thead>
-
-            <tbody id="select-values">
-              {this.state.data.value.map((item, idx) => (
-                <tr key={idx} className="option-row">
-                  <td className="text-center">
-                    <span className="drag-icon">
-                      <i className="fa">&#xf142;</i>
-                      <i className="fa">&#xf142;</i>
-                    </span>
-                  </td>
-                  <td>
-                    <div className="form-group">
-                      <input
-                        type="text"
-                        name={idx}
-                        value={this.state.data.value[idx]}
-                        className="form-control"
-                        onChange={(e) => {
-                          this.setValues(e.target.name, e.target.value);
-                        }}
-                      />
-                    </div>
-                  </td>
-                  <td>
-                    <div className="form-group">
-                      <input
-                        type="text"
-                        name={idx}
-                        value={this.state.data.value[idx]}
-                        className="form-control"
-                        onChange={(e) => {
-                          this.setValues(e.target.name, e.target.value);
-                        }}
-                      />
-                    </div>
-                  </td>
-                  <td>
-                    <select
-                      name="values[0][price_type]"
-                      id="values-0-price_type"
-                      className="form-control custom-select-black"
-                    >
-                      <option value="fixed" >
-                        Fixed
-                      </option>
-                      <option value="percent">Percent</option>
-                    </select>
-                  </td>
-                  <td className="text-center">
-                    <button
-                      type="button"
-                      className="btn btn-default delete-row"
-                      data-toggle="tooltip"
-                      name={idx}
-                      data-title="Delete Value"
-                      onClick={(e) => {
-                        this.handleRemoveSpecificRow(idx);
-                      }}
-                    >
-                      <i className="fa fa-trash" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          </div>
-              <button
-                type="button"
-                className="btn btn-default"
-                onClick={this.handleAddRow}
-              >
-                Add New Value
-              </button>
-              </div>
-            </div>
-        )
-    }else if(this.state.data.type == "Field" || this.state.data.type == "Textarea" || this.state.data.type == "Date" || this.state.data.type == "Date Time" || this.state.data.type == "Time"){
-        return(
-            <div className="option-values clearfix" id="option-values">
-            <div className="table-responsive option-text">
-              <table className="table table-bordered">
+    if (
+      this.state.data.type == "Dropdown" ||
+      this.state.data.type == "Checkbox" ||
+      this.state.data.type == "Custom Checkbox" ||
+      this.state.data.type == "Radio Button" ||
+      this.state.data.type == "Custom Radio Button" ||
+      this.state.data.type == "Multiple Select"
+    ) {
+      return (
+        <div className="option-values clearfix" id="option-values">
+          <div className="option-select m-b-15">
+            <div className="table-responsive">
+              <table className="options table table-bordered">
                 <thead>
                   <tr>
+                    <th></th>
+                    <th>Label</th>
                     <th>Price</th>
                     <th>Price Type</th>
+                    <th></th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr className="option-row">
-                    <td>
-                      <input type="number" name="values[0][price]" id="values-0-price" className="form-control" defaultValue />
-                    </td>
-                    <td>
-                      <select name="values[0][price_type]" id="values-0-price-type" className="form-control custom-select-black">
-                        <option value="fixed" selected>
-                          Fixed
-                        </option>
-                        <option value="percent">
-                          Percent
-                        </option>
-                      </select>
-                    </td>
-                  </tr>
+
+                <tbody id="select-values">
+                  {this.state.data.values.map((item, idx) => (
+                    <tr key={idx} className="option-row">
+                      <td className="text-center">
+                        <span className="drag-icon">
+                          <i className="fa">&#xf142;</i>
+                          <i className="fa">&#xf142;</i>
+                        </span>
+                      </td>
+                      <td>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            name="label"
+                            value={this.state.data.values[idx].label}
+                            className="form-control"
+                            onChange={(e) => {
+                              this.setValues(
+                                e.target.name,
+                                e.target.value,
+                                true,
+                                idx
+                              );
+                            }}
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            name="price"
+                            value={this.state.data.values[idx].price}
+                            className="form-control"
+                            onChange={(e) => {
+                              this.setValues(
+                                e.target.name,
+                                e.target.value,
+                                true,
+                                idx
+                              );
+                            }}
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <select
+                          name="priceType"
+                          className="form-control custom-select-black"
+                          value={this.state.data.values[idx].priceType}
+                          onChange={(e) => {
+                            this.setValues(
+                              e.target.name,
+                              e.target.value,
+                              true,
+                              idx
+                            );
+                          }}
+                        >
+                          <option value="fixed">Fixed</option>
+                          <option value="percent">Percent</option>
+                        </select>
+                      </td>
+                      <td className="text-center">
+                        <button
+                          type="button"
+                          className="btn btn-default delete-row"
+                          data-toggle="tooltip"
+                          name={idx}
+                          data-title="Delete Value"
+                          onClick={(e) => {
+                            this.handleRemoveSpecificRow(idx);
+                          }}
+                        >
+                          <i className="fa fa-trash" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
+            <button
+              type="button"
+              className="btn btn-default"
+              onClick={this.handleAddRow}
+            >
+              Add New Value
+            </button>
           </div>
-          
-        )
+        </div>
+      );
+    } else if (
+      this.state.data.type == "Field" ||
+      this.state.data.type == "Textarea" ||
+      this.state.data.type == "Date" ||
+      this.state.data.type == "Date Time" ||
+      this.state.data.type == "Time"
+    ) {
+      return (
+        <div className="option-values clearfix" id="option-values">
+          <div className="table-responsive option-text">
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Price</th>
+                  <th>Price Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="option-row">
+                  <td>
+                    <input
+                      type="number"
+                      name="price"
+                      className="form-control"
+                      value={this.state.data.values[0].price}
+                      onChange={(e) => {
+                        this.setValues(e.target.name, e.target.value, false);
+                      }}
+                    />
+                  </td>
+                  <td>
+                    <select
+                      name="priceType"
+                      className="form-control custom-select-black"
+                      value={this.state.data.values[0].priceType}
+                      onChange={(e) => {
+                        this.setValues(e.target.name, e.target.value, false);
+                      }}
+                    >
+                      <option value="fixed">Fixed</option>
+                      <option value="percent">Percent</option>
+                    </select>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
     }
   };
   tabContentToggle = () => {
@@ -271,7 +291,9 @@ class CreateOption extends React.Component {
                     name="name"
                     className="form-control "
                     id="name"
+                    value={this.state.data.name}
                     type="text"
+                    onChange={(e) => this.setVal(e.target.name, e.target.value)}
                   />
                 </div>
               </div>
@@ -288,14 +310,11 @@ class CreateOption extends React.Component {
                     className="form-control custom-select-black"
                     id="type"
                     value={this.state.data.type}
-                    onChange={(e)=>{
-                        this.setVal(e.target.name, e.target.value)
-                        
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
                     }}
                   >
-                    <option value="">
-                      Please Select
-                    </option>
+                    <option value="">Please Select</option>
                     <optgroup label="Text">
                       <option value="Field">Field</option>
                       <option value="Textarea">Textarea</option>
@@ -305,7 +324,9 @@ class CreateOption extends React.Component {
                       <option value="Checkbox">Checkbox</option>
                       <option value={"Custom Checkbox"}>Custom Checkbox</option>
                       <option value={"Radio Button"}>Radio Button</option>
-                      <option value={"Custom Radio Button"}>Custom Radio Button</option>
+                      <option value={"Custom Radio Button"}>
+                        Custom Radio Button
+                      </option>
                       <option value={"Multiple Select"}>Multiple Select</option>
                     </optgroup>
                     <optgroup label="Date">
@@ -329,6 +350,12 @@ class CreateOption extends React.Component {
                       type="checkbox"
                       name="is_required"
                       id="is_required"
+                      checked={this.state.data.required}
+                      onChange={() => {
+                        const { data } = this.state;
+                        data.required = !this.state.data.required;
+                        this.setState({ data });
+                      }}
                     />
                     <label htmlFor="is_required">This option is required</label>
                   </div>
@@ -354,9 +381,8 @@ class CreateOption extends React.Component {
         return (
           <div className="tab-pane fade in active" id="values">
             <h3 className="tab-content-title">Values</h3>
-            
-               {this.typeToggle()}
-             
+
+            {this.typeToggle()}
           </div>
         );
     }
