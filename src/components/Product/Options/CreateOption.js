@@ -24,9 +24,19 @@ class CreateOption extends React.Component {
   };
 
   componentDidMount() {
-    // if(this.props.edit == "true"){
-    //   const url = "/attribute/get/" + this.props.match.params.id
-    // }
+    if(this.props.edit == "true"){
+      const url = "/option/get/" + this.props.match.params.id
+      api.get(url).then(res=>{
+        const {data} = this.state
+        data.name = res.data.data.name
+        data.type = res.data.data.type
+        data.required = res.data.data.required
+        data.values = res.data.data.values
+        this.setState({data})
+      }).catch(err=>{
+        console.log("error fetching option det")
+      })
+    }
   }
   setValues = (name, val, multi, idx) => {
     const { data } = this.state;
@@ -88,6 +98,15 @@ class CreateOption extends React.Component {
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
       if (this.props.edit == "true") {
+        api.put('/option', {
+          data: this.state.data,
+          _id: this.props.match.params.id,
+          requiredPermission: "Edit Options"
+        }).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("error updating option")
+        })
       } else {
         api
           .post("/option", {

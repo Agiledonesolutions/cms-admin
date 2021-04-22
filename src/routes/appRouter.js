@@ -57,6 +57,7 @@ const routes = (
 
         <PrivateRoute exact path='/options' component={()=><Dashboard abc={ <Options />} />} />
         <PrivateRoute exact path='/options/create' component={()=><Dashboard abc={ <CreateOption />} />} />
+        <PrivateRoute exact path='/options/:id/edit' component={()=><Dashboard abc={ <CreateOption edit="true"/>} />} />
 
 
         <PrivateRoute exact path='/flashsales' component={()=><Dashboard abc={ <FlashSales />} />} />
