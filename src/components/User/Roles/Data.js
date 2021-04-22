@@ -3,6 +3,7 @@ export const columns = [
       name: 'Id',
       selector: 'id',
       sortable: true,
+      width: "60px"
     },
     {
       name: 'Name',

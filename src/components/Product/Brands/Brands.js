@@ -17,6 +17,13 @@ class Brands extends React.Component {
           name: "Id",
           selector: "id",
           sortable: true,
+          width: "65px"
+        },
+        {
+          name: "Logo",
+          selector: "logo",
+          sortable: true,
+          cell: row => <img src={row.logo}/>
         },
         {
           name: "Name",
@@ -24,13 +31,8 @@ class Brands extends React.Component {
           sortable: true,
         },
         {
-          name: "Attribute Set",
-          selector: "attributeset",
-          sortable: true,
-        },
-        {
-          name: "Filterable",
-          selector: "filterable",
+          name: "Status",
+          selector: "status",
           sortable: true,
         },
         {
@@ -39,9 +41,8 @@ class Brands extends React.Component {
           sortable: true,
         },
       ],
-      data: [],
     },
-    requiredPermission: "Delete Tag",
+    requiredPermission: "Delete Brand",
     edit: "",
   };
 
@@ -55,9 +56,9 @@ class Brands extends React.Component {
           i++;
           var tmp = {
             id: i,
+            logo: "https://via.placeholder.com/50",
             name: val["name"],
-            attributeset: val["attributeSet"]["name"],
-            filterable: val.filterable ? "Yes" : "No",
+            status: val["attributeSet"]["name"],
             created: format(val["createdAt"]),
             _id: val["_id"],
           };
@@ -139,7 +140,6 @@ class Brands extends React.Component {
                     selected["selectedRows"].forEach((row) => {
                       arr.push(row._id);
                     });
-                    console.log(arr);
                     this.setState({ selectedRows: arr });
                   }}
                   responsive

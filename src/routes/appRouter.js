@@ -36,14 +36,19 @@ const routes = (
         <PrivateRoute exact path='/dashboard' component={()=><Dashboard abc={ <Home />} />} />
         <PrivateRoute exact path='/products' component={()=><Dashboard abc={ <Catalog />} />} />
         <PrivateRoute exact path='/products/create' component={()=><Dashboard abc={ <CreateProduct />} />} />
+
         <PrivateRoute exact path='/users' component={()=><Dashboard abc={<Users />} />} />
         <PrivateRoute exact path='/users/create' component={()=><Dashboard abc={<CreateUser />} />} />
         {/* <PrivateRoute exact path='/users/:id/edit' component={()=><Dashboard abc={<CreateUser edit="true"/>} />} /> */}
+
         <PrivateRoute exact path='/roles' component={()=><Dashboard abc={<Roles />} />} />
         <PrivateRoute exact path='/roles/create' component={()=><Dashboard abc={<CreateRole />} />} />
         <PrivateRoute exact path='/roles/:id/edit' component={()=><Dashboard abc={<CreateRole edit="true"/>} />} />
+
         <PrivateRoute exact path='/brands' component={()=><Dashboard abc={ <Brands />} />} />
         <PrivateRoute exact path='/brands/create' component={()=><Dashboard abc={ <CreateBrand />} />} />
+        <PrivateRoute exact path='/brands/:id/edit' component={()=><Dashboard abc={ <CreateBrand edit="true"/>} />} />
+
         <PrivateRoute exact path='/reviews' component={()=><Dashboard abc={ <Reviews />} />} />
         <PrivateRoute exact path='/tags' component={()=><Dashboard abc={ <Tags />} />} />
         <PrivateRoute exact path='/tags/create' component={()=><Dashboard abc={ <CreateTag />} />} />

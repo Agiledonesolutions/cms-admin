@@ -1,14 +1,26 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 
 class CreateBrand extends React.Component {
   state = {
     activePanel: "general",
+    data: {
+      name: "",
+      status: "",
+      metaTitle: "",
+      metaDescription: ""
+    },
+    errors: []
   };
+  componentDidMount(){
+    if(this.props.edit == "true"){
+      console.log("edit")
+    }
+  }
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
       return (
-        <div className="tab-pane fade in active" >
+        <div className="tab-pane fade in active">
           <h3 className="tab-content-title">General</h3>
           <div className="row">
             <div className="col-md-8">
@@ -23,9 +35,9 @@ class CreateBrand extends React.Component {
                   <input
                     name="name"
                     className="form-control "
-                    id="name"
-                    defaultValue
+                    value={this.state.data.name}
                     type="text"
+                    onChange={(e)=>this.setVal(e.target.name, e.target.value)}
                   />
                 </div>
               </div>
@@ -38,13 +50,11 @@ class CreateBrand extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input type="hidden" defaultValue={0} name="is_active" />
                     <input
                       type="checkbox"
-                      name="is_active"
+                      name="enable"
                       className
                       id="is_active"
-                      defaultValue={1}
                     />
                     <label htmlFor="is_active">Enable the brand</label>
                   </div>
@@ -56,7 +66,7 @@ class CreateBrand extends React.Component {
       );
     } else if (this.state.activePanel == "images") {
       return (
-        <div className="tab-pane fade in active" >
+        <div className="tab-pane fade in active">
           <h3 className="tab-content-title">Images</h3>
           <div className="single-image-wrapper">
             <h4>Logo</h4>
@@ -97,7 +107,7 @@ class CreateBrand extends React.Component {
       );
     } else if (this.state.activePanel == "seo") {
       return (
-        <div className="tab-pane fade in active" >
+        <div className="tab-pane fade in active">
           <h3 className="tab-content-title">SEO</h3>
           <div className="row">
             <div className="col-md-8">
@@ -140,6 +150,11 @@ class CreateBrand extends React.Component {
         </div>
       );
     }
+  };
+  setVal = (key, val) => {
+    const { data } = this.state;
+    data[key] = val;
+    this.setState({ data });
   };
   render() {
     return (
@@ -241,4 +256,4 @@ class CreateBrand extends React.Component {
   }
 }
 
-export default CreateBrand;
+export default withRouter(CreateBrand);
