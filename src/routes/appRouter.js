@@ -24,6 +24,7 @@ import Users from '../components/User/Users';
 import PrivateRoute from './privateroutes';
 import PublicRoute from './publicroutes';
 import Catalog from '../components/Product/Products/Catalog';
+import CreateOption from '../components/Product/Options/CreateOption';
 
 
 const routes = (
@@ -55,6 +56,7 @@ const routes = (
         <PrivateRoute exact path='/attributes/:id/edit' component={()=><Dashboard abc={ <CreateAttribute edit="true"/>} />} />
 
         <PrivateRoute exact path='/options' component={()=><Dashboard abc={ <Options />} />} />
+        <PrivateRoute exact path='/options/create' component={()=><Dashboard abc={ <CreateOption />} />} />
 
 
         <PrivateRoute exact path='/flashsales' component={()=><Dashboard abc={ <FlashSales />} />} />

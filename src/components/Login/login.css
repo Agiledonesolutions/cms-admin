@@ -91,6 +91,58 @@
   padding-left: 30px;
   padding-right: 30px;
 }
+.check{
+  display: flex;
+  min-height: 27px;
+  padding-top: 10px;
+}
+ .check input{
+  padding: 0;
+height: initial;
+width: initial;
+margin-bottom: 0;
+display: none;
+cursor: pointer;
+}
+ .check label{
+  cursor: pointer;
+  position: relative;
+  font-size: 15px;
+  font-weight: 400;
+  color: #333;
+}
+ .check label::before{
+  content:'';
+  -webkit-appearance: none;
+  background-color: transparent;
+  border-radius: 3px;
+  border: 2px solid #e9e9e9;
+  background-color: #e9e9e9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05);
+  padding: 7px;
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  cursor: pointer;
+  margin-right: 5px;
+}
+.check  input:checked + label::before{
+  background-color: #0068e1;
+  border: 2px solid #0068e1;
+
+}
+ .check input:checked + label::after{
+      content: '';
+      display: block;
+      position: absolute;
+      top: 3px;
+      left: 7px;
+      width: 5px;
+      height: 14px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
 @media screen and (max-width: 415px) {
   .login-page {
     width: 100%;

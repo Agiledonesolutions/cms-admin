@@ -24,13 +24,8 @@ class Options extends React.Component {
           sortable: true,
         },
         {
-          name: "Attribute Set",
-          selector: "attributeset",
-          sortable: true,
-        },
-        {
-          name: "Filterable",
-          selector: "filterable",
+          name: "Type",
+          selector: "type",
           sortable: true,
         },
         {
@@ -41,7 +36,7 @@ class Options extends React.Component {
       ],
       data: [],
     },
-    requiredPermission: "Delete Tag",
+    requiredPermission: "Delete Options",
     edit: "",
   };
 
@@ -49,15 +44,14 @@ class Options extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/attribute/get")
+      .get("/option/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
             name: val["name"],
-            attributeset: val["attributeSet"]["name"],
-            filterable: val.filterable ? "Yes" : "No",
+            type: val["type"],
             created: format(val["createdAt"]),
             _id: val["_id"],
           };
@@ -77,7 +71,7 @@ class Options extends React.Component {
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
-      .delete("/attribute", { data })
+      .delete("/option", { data })
       .then((res) => {
         console.log(res);
         this.componentDidMount();
@@ -89,7 +83,7 @@ class Options extends React.Component {
 
   render() {
     if (this.state.edit != "") {
-      return <Redirect to={"/products/" + this.state.edit + "/edit"} />;
+      return <Redirect to={"/options/" + this.state.edit + "/edit"} />;
     }
     return (
       <div>

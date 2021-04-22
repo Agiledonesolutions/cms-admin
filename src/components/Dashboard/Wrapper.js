@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { removeAuthToken } from "../../utils/local";
 import {removeUserSession} from '../../utils/session'
 
 const Wrapper = (props) => {
@@ -9,6 +10,7 @@ const Wrapper = (props) => {
   };
   const handleLogout = () =>{
     removeUserSession()
+    removeAuthToken()
     window.location.href ='/'
   }
   return (

@@ -5,6 +5,7 @@ import api from '../../apis/api';
 import Validate from '../../utils/validation'
 import {setUserSession} from '../../utils/session'
 import Loading from "../Loading";
+import { setAuthToken } from "../../utils/local";
 
 
 class Login extends React.Component {
@@ -14,6 +15,7 @@ class Login extends React.Component {
       Password: ""
     },
     submitting: false,
+    rememberMe: false,
     errors: []
   }
   setVal = (key, val) =>{
@@ -64,6 +66,9 @@ class Login extends React.Component {
       api.post('/users/login', {data: data}).then(async(res)=>{
         // console.log(res.data.data.token)
         await setUserSession(res.data.data.token)
+        if(this.state.rememberMe){
+          await setAuthToken(res.data.data.token)
+        }
         window.location.href='/dashboard'
 
       }).catch(error=>{
@@ -126,13 +131,12 @@ class Login extends React.Component {
               Login
             </button>
             <div className="clearfix" />
-            <div className="checkbox pull-left">
-              <input type="hidden" name="remember_me" defaultValue={0} />
+            <div className="check pull-left">
               <input
                 type="checkbox"
-                name="remember_me"
-                defaultValue={1}
+                name="rememberMe"
                 id="remember-me"
+                onChange={(e=>{this.setState({rememberMe: !this.state.rememberMe})})}
               />
               <label htmlFor="remember-me">Remember me</label>
             </div>
