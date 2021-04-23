@@ -1,22 +1,75 @@
 import React from "react";
 import { Link, withRouter } from "react-router-dom";
+import Validate from '../../../utils/validation'
+import api from '../../../apis/api'
 
 class CreateBrand extends React.Component {
   state = {
     activePanel: "general",
     data: {
       name: "",
-      status: "",
+      status: false,
       metaTitle: "",
-      metaDescription: ""
+      metaDescription: "",
+      url: ""
     },
     errors: []
   };
   componentDidMount(){
     if(this.props.edit == "true"){
-      console.log("edit")
+      const url = "/brand/get/" + this.props.match.params.id
+      api.get(url).then(res=>{
+        const {data} = this.state
+        data.name = res.data.data.name
+        data.status = res.data.data.status
+        data.metaTitle = res.data.data.metaTitle
+        data.metaDescription = res.data.data.metaDescription
+        this.setState({data})
+      }).catch(err=>{
+        console.log("error fetching brand")
+      })
     }
   }
+  setVal = (key, val) => {
+    const { data } = this.state;
+    data[key] = val;
+    this.setState({ data });
+  };
+  handleSubmit = () =>{
+    const { errors } = this.state;
+    const { data } = this.state;
+
+    if (!errors.includes("name") && !Validate.validateNotEmpty(data["name"])) {
+      errors.push("name");
+      this.setState({ errors });
+    } else if (
+      errors.includes("name") &&
+      Validate.validateNotEmpty(data["name"])
+    ) {
+      errors.splice(errors.indexOf("name"), 1);
+      this.setState({ errors });
+    }
+
+    if (!Validate.validateNotEmpty(this.state.errors)) {
+      if(this.props.edit == "true"){
+        api.put('/brand', {data: data,_id: this.props.match.params.id ,requiredPermission: "Edit Brand"}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("error updating brand")
+        })
+      }else{
+        api.post('/brand', {data: data, requiredPermission: "Create Brand"}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("error posting brand")
+        })
+      }
+     
+    }else{
+      console.log(this.state.errors)
+    }
+  }
+
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
       return (
@@ -52,9 +105,14 @@ class CreateBrand extends React.Component {
                   <div className="checkbox">
                     <input
                       type="checkbox"
-                      name="enable"
-                      className
+                      name="status"
+                      checked={this.state.data.status}
                       id="is_active"
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.status = !this.state.data.status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="is_active">Enable the brand</label>
                   </div>
@@ -111,6 +169,23 @@ class CreateBrand extends React.Component {
           <h3 className="tab-content-title">SEO</h3>
           <div className="row">
             <div className="col-md-8">
+            {this.props.edit == "true"? <div className="form-group">
+                            <label
+                              htmlFor="name"
+                              className="col-md-3 control-label text-left"
+                            >
+                              Url<span className="m-l-5 text-red">*</span>
+                            </label>
+                            <div className="col-md-9">
+                              <input
+                                name="url"
+                                className="form-control "
+                                type="text"
+                                value={this.state.data.url}
+                                onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                              />
+                            </div>
+                          </div>:""}
               <div className="form-group">
                 <label
                   htmlFor="meta-title"
@@ -121,9 +196,10 @@ class CreateBrand extends React.Component {
                 <div className="col-md-9">
                   <input
                     type="text"
-                    name="meta[meta_title]"
+                    name="metaTitle"
                     className="form-control"
-                    id="meta-title"
+                    value={this.state.data.metaTitle}
+                    onChange={(e)=>this.setVal(e.target.name, e.target.value)}
                   />
                 </div>
               </div>
@@ -136,12 +212,12 @@ class CreateBrand extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="meta[meta_description]"
+                    name="metaDescription"
                     className="form-control"
-                    id="meta-description"
                     rows={10}
                     cols={10}
-                    defaultValue={""}
+                    value={this.state.data.metaDescription}
+                    onChange={(e)=>this.setVal(e.target.name, e.target.value)}
                   />
                 </div>
               </div>
@@ -151,11 +227,7 @@ class CreateBrand extends React.Component {
       );
     }
   };
-  setVal = (key, val) => {
-    const { data } = this.state;
-    data[key] = val;
-    this.setState({ data });
-  };
+
   render() {
     return (
       <div>
@@ -239,7 +311,10 @@ class CreateBrand extends React.Component {
                         <button
                           type="submit"
                           className="btn btn-primary"
-                          data-loading
+                          onClick={(e)=>{
+                            e.preventDefault()
+                            this.handleSubmit()
+                          }}
                         >
                           Save
                         </button>

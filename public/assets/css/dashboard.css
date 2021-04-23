@@ -201,6 +201,7 @@ a {
 .rdt_TableCell{
     font-size: 16px !important; 
 }
+
 @media screen and (max-width: 1199px) {
   .single-grid.total-customers,
   .single-grid.total-products {

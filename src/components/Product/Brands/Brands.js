@@ -34,6 +34,7 @@ class Brands extends React.Component {
           name: "Status",
           selector: "status",
           sortable: true,
+          cell: row=><span className={row.status? "dot green": "dot red"}></span>
         },
         {
           name: "Created",
@@ -50,7 +51,7 @@ class Brands extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/attribute/get")
+      .get("/brand/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
@@ -58,7 +59,7 @@ class Brands extends React.Component {
             id: i,
             logo: "https://via.placeholder.com/50",
             name: val["name"],
-            status: val["attributeSet"]["name"],
+            status: val["status"],
             created: format(val["createdAt"]),
             _id: val["_id"],
           };
@@ -78,7 +79,7 @@ class Brands extends React.Component {
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
-      .delete("/attribute", { data })
+      .delete("/brand", { data })
       .then((res) => {
         console.log(res);
         this.componentDidMount();
