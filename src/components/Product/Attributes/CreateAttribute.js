@@ -31,6 +31,7 @@ class CreateAttribute extends React.Component {
         console.log(res.data.data)
         data.name = res.data.data.name
         data.attributeSetId = res.data.data.attributeSet
+        data.categoryIds = res.data.data.categories
         rolesArray.push(res.data.data.categories.toString())
         data.filterable = res.data.data.filterable
         data.value = res.data.data.value
@@ -242,7 +243,7 @@ class CreateAttribute extends React.Component {
                   Filterable
                 </label>
                 <div className="col-md-9">
-                  <div className="check">
+                  <div className="checkbox">
                     <input
                       type="checkbox"
                       name="filterable"

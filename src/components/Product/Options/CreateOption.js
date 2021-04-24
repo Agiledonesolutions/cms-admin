@@ -364,7 +364,7 @@ class CreateOption extends React.Component {
                   Required
                 </label>
                 <div className="col-md-9">
-                  <div className="check">
+                  <div className="checkbox">
                     <input
                       type="checkbox"
                       name="is_required"

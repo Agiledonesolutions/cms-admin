@@ -131,7 +131,7 @@ a {
   left: 20%;
   top: 8%;
 }
-.form-horizontal .check {
+/*.form-horizontal .check {
   display: flex;
   min-height: 27px;
   padding-top: 7px;
@@ -181,7 +181,7 @@ a {
   border: solid #fff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
-}
+} */
 .msl-grp-title,
 .msl-options .msl-option {
   letter-spacing: 0.5px;
@@ -200,6 +200,9 @@ a {
 }
 .rdt_TableCell{
     font-size: 16px !important; 
+}
+.msl-vars{
+  --menu-max-height: 200px !important;
 }
 
 @media screen and (max-width: 1199px) {

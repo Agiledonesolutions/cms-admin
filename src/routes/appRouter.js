@@ -25,6 +25,7 @@ import PrivateRoute from './privateroutes';
 import PublicRoute from './publicroutes';
 import Catalog from '../components/Product/Products/Catalog';
 import CreateOption from '../components/Product/Options/CreateOption';
+import CreateCoupon from '../components/Coupons/CreateCoupon';
 
 
 const routes = (
@@ -66,7 +67,10 @@ const routes = (
 
 
         <PrivateRoute exact path='/flashsales' component={()=><Dashboard abc={ <FlashSales />} />} />
+
         <PrivateRoute exact path='/coupons' component={()=><Dashboard abc={ <Coupons />} />} />
+        <PrivateRoute exact path='/coupons/create' component={()=><Dashboard abc={ <CreateCoupon />} />} />
+        <PrivateRoute exact path='/coupons/:id/edit' component={()=><Dashboard abc={ <CreateCoupon edit="true"/>} />} />
 
       </Switch>
     </React.Fragment>
