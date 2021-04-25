@@ -20,27 +20,33 @@ class Reviews extends React.Component {
           width: "60px"
         },
         {
-          name: "Name",
-          selector: "name",
+          name: "Product",
+          selector: "product",
           sortable: true,
         },
         {
-          name: "Attribute Set",
-          selector: "attributeset",
+          name: "Reviewer Name",
+          selector: "reviewername",
           sortable: true,
         },
         {
-          name: "Filterable",
-          selector: "filterable",
+          name: "Rating",
+          selector: "rating",
           sortable: true,
         },
         {
-          name: "Created",
-          selector: "created",
+          name: "Approved",
+          selector: "approved",
+          sortable: true,
+          cell: row=><span className={row.approved? "dot green": "dot red"}></span>
+        },
+        {
+          name: "Date",
+          selector: "date",
           sortable: true,
         },
       ],
-      data: [],
+      
     },
     requiredPermission: "Delete Tag",
     edit: "",
@@ -50,16 +56,17 @@ class Reviews extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/attribute/get")
+      .get("/review/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
-            name: val["name"],
-            attributeset: val["attributeSet"]["name"],
-            filterable: val.filterable ? "Yes" : "No",
-            created: format(val["createdAt"]),
+            product: val["product"]["name"],
+            reviewername: val["reviewerName"],
+            rating: val.rating,
+            approved: val.status,
+            date: format(val["createdAt"]),
             _id: val["_id"],
           };
           datalist.push(tmp);
@@ -78,7 +85,7 @@ class Reviews extends React.Component {
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
-      .delete("/attribute", { data })
+      .delete("/review", { data })
       .then((res) => {
         console.log(res);
         this.componentDidMount();

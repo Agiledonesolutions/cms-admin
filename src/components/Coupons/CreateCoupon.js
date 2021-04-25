@@ -45,15 +45,15 @@ class CreateCoupon extends React.Component {
         data.discountType = res.data.data.discountType
         data.value = res.data.data.value
         data.freeshipping = res.data.data.freeshipping
-        data.startDate = res.data.data.startDate.substr(0,10)
-        data.endDate = res.data.data.endDate.substr(0,10)
+        data.startDate = res.data.data.startDate != null?res.data.data.startDate.substr(0,10): ""
+        data.endDate = res.data.data.endDate !=null? res.data.data.endDate.substr(0,10):""
         data.status = res.data.data.status
         data.minimumSpend = res.data.data.minimumSpend
         data.maximumSpend = res.data.data.maximumSpend
         data.usageLimitPerCoupon = res.data.data.usageLimitPerCoupon
         data.usageLimitPerCustomer = res.data.data.usageLimitPerCustomer
-        rolesArray.push(res.data.data.categories.toString()) 
-        rolesArray2.push(res.data.data.excludedCategories.toString())
+        // rolesArray.push(res.data.data.categories.toString()) 
+        // rolesArray2.push(res.data.data.excludedCategories.toString())
         this.setState({data})
         // this.setState({rolesArray})
         // this.setState({rolesArray2})
@@ -480,7 +480,7 @@ class CreateCoupon extends React.Component {
     return (
       <div>
         <section className="content-header clearfix">
-          <h3>Create Coupon</h3>
+          {this.props.edit == "true"? <h3>Edit Coupon</h3>: <h3>Create Coupon</h3>}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>

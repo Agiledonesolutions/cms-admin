@@ -334,7 +334,7 @@ class CreateAttribute extends React.Component {
     return (
       <div>
         <section className="content-header clearfix">
-          <h3>Create Attribute</h3>
+        {this.props.edit == "true"? <h3>Edit Attribute</h3>: <h3>Create Attribute</h3>}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>

@@ -7,10 +7,10 @@ import Validate from '../../../utils/validation'
 
 class CreateRole extends React.Component {
 
-  async componentDidMount(){
+   componentDidMount(){
     if(this.props.edit == "true"){
       const url = "/roles/get/" + this.props.match.params.id
-      await api.get(url).then(res=>{
+       api.get(url).then(res=>{
         const {data} = this.state
         data.Name = res.data.data.Name
         data.Permissions = res.data.data.Permissions
@@ -644,7 +644,7 @@ class CreateRole extends React.Component {
     return (
       <React.Fragment>
         <section className="content-header clearfix">
-          <h3>Create Role</h3>
+        {this.props.edit == "true"? <h3>Edit Role</h3>: <h3>Create Role</h3>}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>

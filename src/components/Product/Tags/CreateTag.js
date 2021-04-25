@@ -12,11 +12,11 @@ class CreateTag extends React.Component {
     requiredPermission: "Create Tag",
     errors: []
   }
-  async UNSAFE_componentWillMount(){
+  componentDidMount(){
     if(this.props.edit == "true"){
       const url = "/tag/get/" + this.props.match.params.id
       const {data} = this.state
-       await api.get(url).then(res=>{
+        api.get(url).then(res=>{
         data.name = res.data.data.name
         data.url = res.data.data.url
       }).catch(err=>{
@@ -74,7 +74,7 @@ class CreateTag extends React.Component {
     return (
       <React.Fragment>
         <section className="content-header clearfix">
-          <h3>Create Tag</h3>
+        {this.props.edit == "true"? <h3>Edit Tag</h3>: <h3>Create Tag</h3>}
           <ol className="breadcrumb">
             <li>
               <Link to='/dashboard'>Dashboard</Link>

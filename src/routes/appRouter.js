@@ -26,6 +26,7 @@ import PublicRoute from './publicroutes';
 import Catalog from '../components/Product/Products/Catalog';
 import CreateOption from '../components/Product/Options/CreateOption';
 import CreateCoupon from '../components/Coupons/CreateCoupon';
+import CreateReview from '../components/Product/Reviews/CreateReview';
 
 
 const routes = (
@@ -51,6 +52,8 @@ const routes = (
         <PrivateRoute exact path='/brands/:id/edit' component={()=><Dashboard abc={ <CreateBrand edit="true"/>} />} />
 
         <PrivateRoute exact path='/reviews' component={()=><Dashboard abc={ <Reviews />} />} />
+        <PrivateRoute exact path='/reviews/:id/edit' component={()=><Dashboard abc={ <CreateReview edit="true"/>} />} />
+
         <PrivateRoute exact path='/tags' component={()=><Dashboard abc={ <Tags />} />} />
         <PrivateRoute exact path='/tags/create' component={()=><Dashboard abc={ <CreateTag />} />} />
         <PrivateRoute exact path='/tags/:id/edit' component={()=><Dashboard abc={ <CreateTag edit="true"/>} />} />

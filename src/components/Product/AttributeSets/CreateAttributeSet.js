@@ -73,7 +73,7 @@ class CreateAttributeSet extends React.Component {
     return (
       <React.Fragment>
         <section className="content-header clearfix">
-          <h3>Create Attribute Set</h3>
+        {this.props.edit == "true"? <h3>Edit Attribute Set</h3>: <h3>Create Attribute Set</h3>}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>

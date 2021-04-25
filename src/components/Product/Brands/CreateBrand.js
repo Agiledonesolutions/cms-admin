@@ -232,7 +232,7 @@ class CreateBrand extends React.Component {
     return (
       <div>
         <section className="content-header clearfix">
-          <h3>Create Brand</h3>
+        {this.props.edit == "true"? <h3>Edit Brand</h3>: <h3>Create Brand</h3>}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
