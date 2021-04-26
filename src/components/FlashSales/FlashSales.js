@@ -17,20 +17,11 @@ class FlashSales extends React.Component {
           name: "Id",
           selector: "id",
           sortable: true,
+          width: "60px"
         },
         {
-          name: "Name",
-          selector: "name",
-          sortable: true,
-        },
-        {
-          name: "Attribute Set",
-          selector: "attributeset",
-          sortable: true,
-        },
-        {
-          name: "Filterable",
-          selector: "filterable",
+          name: "Campaign Name",
+          selector: "campaignname",
           sortable: true,
         },
         {
@@ -39,9 +30,8 @@ class FlashSales extends React.Component {
           sortable: true,
         },
       ],
-      data: [],
     },
-    requiredPermission: "Delete Tag",
+    requiredPermission: "Delete Flash Sales",
     edit: "",
   };
 
@@ -49,15 +39,13 @@ class FlashSales extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/attribute/get")
+      .get("/flashsale/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
-            name: val["name"],
-            attributeset: val["attributeSet"]["name"],
-            filterable: val.filterable ? "Yes" : "No",
+            campaignname: val["campaignName"],
             created: format(val["createdAt"]),
             _id: val["_id"],
           };
@@ -77,7 +65,7 @@ class FlashSales extends React.Component {
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
-      .delete("/attribute", { data })
+      .delete("/flashsale", { data })
       .then((res) => {
         console.log(res);
         this.componentDidMount();
