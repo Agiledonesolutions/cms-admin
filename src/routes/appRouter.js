@@ -27,6 +27,7 @@ import Catalog from '../components/Product/Products/Catalog';
 import CreateOption from '../components/Product/Options/CreateOption';
 import CreateCoupon from '../components/Coupons/CreateCoupon';
 import CreateReview from '../components/Product/Reviews/CreateReview';
+import CreateFlashSale from '../components/FlashSales/CreateFlashSale';
 
 
 const routes = (
@@ -36,8 +37,6 @@ const routes = (
         <PublicRoute exact path='/'  component={Login} />
         <PublicRoute exact path='/reset-password' component={ResetPassword} />
         <PrivateRoute exact path='/dashboard' component={()=><Dashboard abc={ <Home />} />} />
-        <PrivateRoute exact path='/products' component={()=><Dashboard abc={ <Catalog />} />} />
-        <PrivateRoute exact path='/products/create' component={()=><Dashboard abc={ <CreateProduct />} />} />
 
         <PrivateRoute exact path='/users' component={()=><Dashboard abc={<Users />} />} />
         <PrivateRoute exact path='/users/create' component={()=><Dashboard abc={<CreateUser />} />} />
@@ -47,29 +46,40 @@ const routes = (
         <PrivateRoute exact path='/roles/create' component={()=><Dashboard abc={<CreateRole />} />} />
         <PrivateRoute exact path='/roles/:id/edit' component={()=><Dashboard abc={<CreateRole edit="true"/>} />} />
 
+        <PrivateRoute exact path='/products' component={()=><Dashboard abc={ <Catalog />} />} />
+        <PrivateRoute exact path='/products/create' component={()=><Dashboard abc={ <CreateProduct />} />} />
+        <PrivateRoute exact path='/products/:id/edit' component={()=><Dashboard abc={ <CreateProduct edit="true"/>} />} />
+
+        {/* Categories */}
+
         <PrivateRoute exact path='/brands' component={()=><Dashboard abc={ <Brands />} />} />
         <PrivateRoute exact path='/brands/create' component={()=><Dashboard abc={ <CreateBrand />} />} />
         <PrivateRoute exact path='/brands/:id/edit' component={()=><Dashboard abc={ <CreateBrand edit="true"/>} />} />
 
-        <PrivateRoute exact path='/reviews' component={()=><Dashboard abc={ <Reviews />} />} />
-        <PrivateRoute exact path='/reviews/:id/edit' component={()=><Dashboard abc={ <CreateReview edit="true"/>} />} />
-
-        <PrivateRoute exact path='/tags' component={()=><Dashboard abc={ <Tags />} />} />
-        <PrivateRoute exact path='/tags/create' component={()=><Dashboard abc={ <CreateTag />} />} />
-        <PrivateRoute exact path='/tags/:id/edit' component={()=><Dashboard abc={ <CreateTag edit="true"/>} />} />
         <PrivateRoute exact path='/attribute-sets' component={()=><Dashboard abc={ <AttributeSets />} />} />
         <PrivateRoute exact path='/attribute-sets/create' component={()=><Dashboard abc={ <CreateAttributeSet />} />} />
         <PrivateRoute exact path='/attribute-sets/:id/edit' component={()=><Dashboard abc={ <CreateAttributeSet edit="true"/>} />} />
+
         <PrivateRoute exact path='/attributes' component={()=><Dashboard abc={ <Attributes />} />} />
         <PrivateRoute exact path='/attributes/create' component={()=><Dashboard abc={ <CreateAttribute />} />} />
         <PrivateRoute exact path='/attributes/:id/edit' component={()=><Dashboard abc={ <CreateAttribute edit="true"/>} />} />
-
+        
         <PrivateRoute exact path='/options' component={()=><Dashboard abc={ <Options />} />} />
         <PrivateRoute exact path='/options/create' component={()=><Dashboard abc={ <CreateOption />} />} />
         <PrivateRoute exact path='/options/:id/edit' component={()=><Dashboard abc={ <CreateOption edit="true"/>} />} />
+        
+        <PrivateRoute exact path='/tags' component={()=><Dashboard abc={ <Tags />} />} />
+        <PrivateRoute exact path='/tags/create' component={()=><Dashboard abc={ <CreateTag />} />} />
+        <PrivateRoute exact path='/tags/:id/edit' component={()=><Dashboard abc={ <CreateTag edit="true"/>} />} />
 
+        <PrivateRoute exact path='/reviews' component={()=><Dashboard abc={ <Reviews />} />} />
+        <PrivateRoute exact path='/reviews/:id/edit' component={()=><Dashboard abc={ <CreateReview edit="true"/>} />} />
+
+        {/* Sales */}
 
         <PrivateRoute exact path='/flashsales' component={()=><Dashboard abc={ <FlashSales />} />} />
+        <PrivateRoute exact path='/flashsales/create' component={()=><Dashboard abc={ <CreateFlashSale />} />} />
+        <PrivateRoute exact path='/flashsales/:id/edit' component={()=><Dashboard abc={ <CreateFlashSale edit="true"/>} />} />
 
         <PrivateRoute exact path='/coupons' component={()=><Dashboard abc={ <Coupons />} />} />
         <PrivateRoute exact path='/coupons/create' component={()=><Dashboard abc={ <CreateCoupon />} />} />
