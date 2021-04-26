@@ -14,7 +14,7 @@ class CreateCoupon extends React.Component {
     data: {
       name: "",
       code: "",
-      discountType: "",
+      discountType: "fixed",
       value: "",
       freeshipping: false,
       status: "",
@@ -22,7 +22,7 @@ class CreateCoupon extends React.Component {
       usageLimitPerCustomer: "",
       startDate: "",
       endDate: "",
-      minimumSpend: "",
+      minimumSpend: "0",
       maximumSpend: "",
       
     },
@@ -39,7 +39,6 @@ class CreateCoupon extends React.Component {
         const {data} = this.state
         const { rolesArray} = this.state
         const {rolesArray2} = this.state
-        console.log(res.data.data)
         data.name = res.data.data.name
         data.code = res.data.data.code
         data.discountType = res.data.data.discountType
@@ -52,11 +51,11 @@ class CreateCoupon extends React.Component {
         data.maximumSpend = res.data.data.maximumSpend
         data.usageLimitPerCoupon = res.data.data.usageLimitPerCoupon
         data.usageLimitPerCustomer = res.data.data.usageLimitPerCustomer
-        // rolesArray.push(res.data.data.categories.toString()) 
-        // rolesArray2.push(res.data.data.excludedCategories.toString())
+        rolesArray.push(res.data.data.categories.toString()) 
+        rolesArray2.push(res.data.data.excludedCategories.toString())
         this.setState({data})
-        // this.setState({rolesArray})
-        // this.setState({rolesArray2})
+        this.setState({rolesArray})
+        this.setState({rolesArray2})
       }).catch(err=>{
         console.log("error fetching coupon")
       })
@@ -141,18 +140,14 @@ class CreateCoupon extends React.Component {
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
       if (this.props.edit == "true") {
-        // api
-        //   .put("/brand", {
-        //     data: data,
-        //     _id: this.props.match.params.id,
-        //     requiredPermission: "Edit Brand",
-        //   })
-        //   .then((res) => {
-        //     console.log(res);
-        //   })
-        //   .catch((err) => {
-        //     console.log("error updating brand");
-        //   });
+        api
+          .put("/coupon", { data: data, _id: this.props.match.params.id, productIds: this.state.productIds, excludedProductIds: this.state.excludedProductIds, categoryIds: this.state.categoryIds, excludedCategoryIds: this.state.excludedCategoryIds,  requiredPermission: "Edit Coupons" })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log("error updating brand");
+          });
       } else {
         api
           .post("/coupon", { data: data, productIds: this.state.productIds, excludedProductIds: this.state.excludedProductIds, categoryIds: this.state.categoryIds, excludedCategoryIds: this.state.excludedCategoryIds,  requiredPermission: "Create Coupons" })
@@ -365,7 +360,7 @@ class CreateCoupon extends React.Component {
                     className="form-control "
                     min="0"
                     type="number"
-                    value={this.state.data.maximumSpend}
+                    value={this.state.data.maximumSpend != null? this.state.data.maximumSpend: ""}
                     onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                   />
                 </div>
