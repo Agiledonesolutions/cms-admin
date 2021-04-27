@@ -28,6 +28,7 @@ import CreateOption from '../components/Product/Options/CreateOption';
 import CreateCoupon from '../components/Coupons/CreateCoupon';
 import CreateReview from '../components/Product/Reviews/CreateReview';
 import CreateFlashSale from '../components/FlashSales/CreateFlashSale';
+import Taxes from '../components/Localization/Taxes/Taxes';
 
 
 const routes = (
@@ -84,6 +85,9 @@ const routes = (
         <PrivateRoute exact path='/coupons' component={()=><Dashboard abc={ <Coupons />} />} />
         <PrivateRoute exact path='/coupons/create' component={()=><Dashboard abc={ <CreateCoupon />} />} />
         <PrivateRoute exact path='/coupons/:id/edit' component={()=><Dashboard abc={ <CreateCoupon edit="true"/>} />} />
+
+        <PrivateRoute exact path='/taxes' component={()=><Dashboard abc={ <Taxes />} />} />
+
 
       </Switch>
     </React.Fragment>

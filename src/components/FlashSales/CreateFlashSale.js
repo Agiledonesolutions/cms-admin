@@ -8,6 +8,7 @@ import Validate from "../../utils/validation";
 class CreateFlashSale extends React.Component {
   state = {
     activePanel: "products",
+    productOptions: [],
     data: {
       campaignName: "",
       products: [
@@ -21,12 +22,46 @@ class CreateFlashSale extends React.Component {
     },
     errors: [],
   };
+  
 
   componentDidMount() {
+    
     if (this.props.edit == "true") {
-      const url = "/flashsales/get/" + this.props.match.params.id;
+      const url = "/flashsale/get/" + this.props.match.params.id;
+      api.get(url).then(res=>{
+        const {data} = this.state
+        data.products = []
+        data.campaignName = res.data.data.campaignName
+        res.data.data.products.map(val=>{
+          let tmp = {}
+          tmp.productId = val._id
+          tmp.price = val.price
+          tmp.endDate = val.endDate.substr(0,10)
+          tmp.quantity = val.quantity
+          
+          data.products.push(tmp);
+        })
+        this.setState({data})
+      }).catch(err=>{
+        console.log("error fetching flash sale")
+      })
     }
+
+    api.get('/product/get').then(res=>{
+      const {productOptions} = this.state
+      res.data.data.map(val => {
+        let tmp ={}
+        tmp.value = val._id
+        tmp.label = val.name
+        productOptions.push(tmp)
+      });
+      this.setState({productOptions})
+    }).catch(err=>{
+      console.log("error fetching products")
+    })
+
   }
+
   setValues = (name, val, idx) => {
     const { data } = this.state;
     data["products"][idx][name] = val;
@@ -56,22 +91,42 @@ class CreateFlashSale extends React.Component {
   handleSubmit = () => {
     const { errors } = this.state;
     const { data } = this.state;
+    if (!errors.includes("campaignName") && !Validate.validateNotEmpty(data["campaignName"])) {
+      errors.push("campaignName");
+      this.setState({ errors });
+    } else if (
+      errors.includes("campaignName") &&
+      Validate.validateNotEmpty(data["campaignName"])
+    ) {
+      errors.splice(errors.indexOf("campaignName"), 1);
+      this.setState({ errors });
+    }
 
-    // if (!errors.includes("name") && !Validate.validateNotEmpty(data["name"])) {
-    //   errors.push("name");
-    //   this.setState({ errors });
-    // } else if (
-    //   errors.includes("name") &&
-    //   Validate.validateNotEmpty(data["name"])
-    // ) {
-    //   errors.splice(errors.indexOf("name"), 1);
-    //   this.setState({ errors });
-    // }
-
+    data.products.forEach((val, idx)=>{
+      for(var elem in val){
+        if (!errors.includes(elem) && !Validate.validateNotEmpty(data["products"][idx][elem])) {
+          errors.push(elem);
+          this.setState({ errors });
+        } else if (
+          errors.includes(elem) &&
+          Validate.validateNotEmpty(data["products"][idx][elem])
+        ) {
+          errors.splice(errors.indexOf(elem), 1);
+          this.setState({ errors });
+        }
+      }
+    })
+    console.log(this.state)
     if (!Validate.validateNotEmpty(this.state.errors)) {
       if (this.props.edit == "true") {
+        
       } else {
-        console.log(this.state.data);
+        
+        api.post('/flashsale', {data: data, requiredPermission: "Create Flash Sales"}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("error adding flash sale")
+        })
       }
     } else {
       console.log(errors);
@@ -86,7 +141,6 @@ class CreateFlashSale extends React.Component {
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="name"
                   className="col-md-3 control-label text-left"
                 >
                   Campaign Name<span className="m-l-5 text-red">*</span>
@@ -141,16 +195,15 @@ class CreateFlashSale extends React.Component {
                           Product<span className="m-l-5 text-red">*</span>
                         </label>
 
-                        <select
-                          name="productId"
-                          className="form-control  "
-                          value={this.state.data.products[idx].productId}
-                          onChange={(e) => {
-                            this.setValues(e.target.name, e.target.value, idx);
-                          }}
-                        >
-                          <option value="123">Fixed</option>
-                        </select>
+                        <MultiSelect
+                    onChange={(val)=>{
+                      this.setValues("productId", val, idx)
+                    }}
+                    singleSelect={true}
+                    largeData={true}
+                    options={this.state.productOptions}
+                    defaultValue={this.state.data.products[idx].productId}
+                  />
                       </div>
                     </div>
                   </div>
@@ -237,7 +290,11 @@ class CreateFlashSale extends React.Component {
             <li>
               <Link to="/flashsales">Flash Sales</Link>
             </li>
+             {this.props.edit == "true" ? (
+            <li className="active">Edit Flash Sale</li>
+          ) : (
             <li className="active">Create Flash Sale</li>
+          )}
           </ol>
         </section>
         <section className="content">

@@ -7,7 +7,7 @@ const PublicRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     component={(props) =>
-      !getToken() || getAuthToken() ? (
+      !getToken() && !getAuthToken() ? (
         <React.Fragment>
           <Component {...props} />
         </React.Fragment>
