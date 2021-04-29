@@ -29,6 +29,7 @@ import CreateCoupon from '../components/Coupons/CreateCoupon';
 import CreateReview from '../components/Product/Reviews/CreateReview';
 import CreateFlashSale from '../components/FlashSales/CreateFlashSale';
 import Taxes from '../components/Localization/Taxes/Taxes';
+import CreateTax from '../components/Localization/Taxes/CreateTax';
 
 
 const routes = (
@@ -87,6 +88,8 @@ const routes = (
         <PrivateRoute exact path='/coupons/:id/edit' component={()=><Dashboard abc={ <CreateCoupon edit="true"/>} />} />
 
         <PrivateRoute exact path='/taxes' component={()=><Dashboard abc={ <Taxes />} />} />
+        <PrivateRoute exact path='/taxes/create' component={()=><Dashboard abc={ <CreateTax />} />} />
+        <PrivateRoute exact path='/taxes/:id/edit' component={()=><Dashboard abc={ <CreateTax edit="true"/>} />} />
 
 
       </Switch>
