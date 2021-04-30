@@ -131,6 +131,35 @@ a {
   left: 20%;
   top: 8%;
 }
+.dropzone .dz-preview.dz-image-preview{
+  background: none !important;
+}
+.dropzone.dz-clickable{
+  border: 1px dashed #d2d6de ;
+  border-bottom: none !important;
+  min-height: 232px;
+  background: white !important;
+}
+.dropzone .dz-message{
+  color: #646c7f;
+    font-size: 20px;
+    margin-top: 82px !important;
+}
+.dz-progress{
+  display: none !important;
+}
+.image-upload{
+  margin-bottom: 20px;
+  width: 100%;
+  border: 1px dashed #d2d6de !important;
+  border-top: none !important;
+  background: rgba(255, 255, 255, 0.507);
+  color: #646c7f;
+    font-size: 20px;
+}
+.image-upload:hover{
+  background: #f1f3f7cc;
+}
 /*.form-horizontal .check {
   display: flex;
   min-height: 27px;
