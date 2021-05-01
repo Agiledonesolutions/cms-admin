@@ -2,42 +2,172 @@ import React from "react";
 import { Link } from "react-router-dom";
 import BraftEditor from "braft-editor";
 import table from "braft-extensions/dist/table";
-
 import "braft-editor/dist/index.css";
 import "braft-extensions/dist/table.css";
+import api from "../../../apis/api";
+import MultiSelect from "react-multiple-select-dropdown-lite";
+import "react-multiple-select-dropdown-lite/dist/index.css";
 
 const options = {
-  defaultColumns: 3, 
-  defaultRows: 2, 
-  withDropdown: false, 
-  columnResizable: true, 
-  exportAttrString: "" 
+  defaultColumns: 3,
+  defaultRows: 2,
+  withDropdown: false,
+  columnResizable: true,
+  exportAttrString: "",
 };
-BraftEditor.use(
-  table(options)
-);
+BraftEditor.use(table(options));
 
 class CreateProduct extends React.Component {
- 
   state = {
+    categoryOptions: [],
+    tagOptions: [],
+    tagArray: [],
+    categoryArray: [],
+    brands: [],
+    taxes: [],
     activePanel: "general",
     activeTab: "basic",
-    editorState: BraftEditor.createEditorState()
+    data: {
+      name: "",
+      taxClass: "",
+      virtual: false,
+      status: false,
+      description: "",
+      price: "",
+      speacialPrice: "",
+      specialPriceType: "Fixed",
+      speacialPriceStart: "",
+      specialPriceEnd: "",
+      inventoryManagement: "Do Not Track Inventory",
+      SKU: "",
+      stockAvailability: "In Stock",
+      metaTitle: "",
+      metaDescription: ""
+    },
+    brandId: "",
+    categoryIds: [],
+    tagIds: [],
+
+    editorState: BraftEditor.createEditorState(),
   };
 
-  onChange = editorState => {
-    this.setState({
-      editorState
-    });
+  componentDidMount() {
+    const { brands } = this.state;
+    api
+      .get("/brand/get")
+      .then((res) => {
+        res.data.data.map((val) => {
+          let tmp = {};
+          tmp = {
+            name: val.name,
+            id: val._id,
+          };
+          brands.push(tmp);
+        });
+        this.setState({ brands });
+      })
+      .catch((err) => {
+        console.log("error fetching brands");
+      });
+    const { taxes } = this.state;
+    api
+      .get("/tax/get")
+      .then((res) => {
+        res.data.data.map((val) => {
+          let tmp = {};
+          tmp = {
+            name: val.taxClass,
+            id: val._id,
+          };
+          taxes.push(tmp);
+        });
+        this.setState({ taxes });
+      })
+      .catch((err) => {
+        console.log("error fetching brands");
+      });
+    const { categoryOptions } = this.state;
+    const { tagOptions } = this.state;
+    const addToCategories = (x, sub) => {
+      let tmp = {};
+      let name = "";
+      for (var i = 0; i < sub.length; i++) {
+        name += "| - - ";
+      }
+      tmp["label"] = name + x.name;
+      tmp["value"] = x._id;
+      categoryOptions.push(tmp);
+      if (x.childrenCategory.length > 0) {
+        sub.push("sub");
+        x.childrenCategory.forEach((y) => {
+          addToCategories(y, sub);
+        });
+      } else {
+        return;
+      }
+    };
+
+    api
+      .get("/category/get")
+      .then((res) => {
+        res.data.data.forEach((val) => {
+          addToCategories(val, []);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    this.setState({ categoryOptions });
+
+    api
+      .get("/tag/get")
+      .then((res) => {
+        res.data.data.forEach((val) => {
+          let tmp = {};
+          tmp = {
+            label: val.name,
+            value: val._id,
+          };
+          tagOptions.push(tmp);
+        });
+      })
+      .catch((err) => {
+        console.log("Error fetching tags");
+      });
+    this.setState({ tagOptions });
+  }
+  setCategoryArray = (val) => {
+    const { categoryArray } = this.state;
+    categoryArray.push(val);
+    var n = categoryArray.length;
+    var { categoryIds } = this.state;
+    categoryIds = categoryArray[n - 1].split(",");
+    this.setState({ categoryArray });
+    this.setState({ categoryIds });
+  };
+  setTagArray = (val) => {
+    const { tagArray } = this.state;
+    tagArray.push(val);
+    var n = tagArray.length;
+    var { tagIds } = this.state;
+    tagIds = tagArray[n - 1].split(",");
+    this.setState({ tagArray });
+    this.setState({ tagIds });
+  };
+  setVal = (key, val) => {
+    const { data } = this.state;
+    data[key] = val;
+    this.setState({ data });
   };
 
-  mergeState = () => {
-    const { editorState } = this.state;
-    var str = "new state";
-    var newState = BraftEditor.createEditorState(str);
+  onChange = (editorState) => {
     this.setState({
-      editorState: editorState.push(newState)
+      editorState,
     });
+    this.setVal("description", this.state.editorState.toHTML());
+  };
+  handleSubmit = () => {
+    console.log(this.state);
   };
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
@@ -52,10 +182,11 @@ class CreateProduct extends React.Component {
               <input
                 name="name"
                 className="form-control "
-                id="name"
-                defaultValue
-                labelcol={2}
                 type="text"
+                value={this.state.data.name}
+                onChange={(e) => {
+                  this.setVal(e.target.name, e.target.value);
+                }}
               />
             </div>
           </div>
@@ -67,7 +198,11 @@ class CreateProduct extends React.Component {
               Description<span className="m-l-5 text-red">*</span>
             </label>
             <div className="col-md-10">
-            <BraftEditor language="en" onChange={this.onChange}/>
+              <BraftEditor
+                language="en"
+                editorState={this.editorState}
+                onChange={this.onChange}
+              />
             </div>
           </div>
           <div className="row">
@@ -81,29 +216,21 @@ class CreateProduct extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="brand_id"
+                    name="brandId"
                     className="form-control custom-select-black "
-                    id="brand_id"
+                    value={this.state.brandId}
+                    onChange={(e) => {
+                      this.setState({ brandId: e.target.value });
+                    }}
                   >
-                    <option value>Please Select</option>
-                    <option value={8}>ASUS</option>
-                    <option value={7}>Acer</option>
-                    <option value={16}>Adidas</option>
-                    <option value={1}>Apple</option>
-                    <option value={15}>Beats</option>
-                    <option value={6}>Dell</option>
-                    <option value={5}>HP</option>
-                    <option value={3}>Huawei</option>
-                    <option value={14}>LG</option>
-                    <option value={10}>Lenovo</option>
-                    <option value={12}>MSI</option>
-                    <option value={9}>Microsoft</option>
-                    <option value={17}>NIKE</option>
-                    <option value={19}>NOKIA</option>
-                    <option value={4}>OnePlus</option>
-                    <option value={11}>Reebok</option>
-                    <option value={18}>SONY</option>
-                    <option value={2}>Samsung</option>
+                    <option value="">Please Select</option>
+                    {this.state.brands.map((val, key) => {
+                      return (
+                        <option key={key} value={val.id}>
+                          {val.name}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               </div>
@@ -115,17 +242,15 @@ class CreateProduct extends React.Component {
                   Categories
                 </label>
                 <div className="col-md-9">
-                  <select
-                    name="categories[]"
-                    className="form-control custom-select-black selectize prevent-creation"
-                    id="categories[]"
-                    multiple={1}
-                  >
-                    <option value={181}>Electronics</option>
-                    <option value={183}>¦–– Mobiles</option>
-                    <option value={192}>¦–– ¦–– Smartphones</option>
-       
-                  </select>
+                  <MultiSelect
+                    onChange={this.setCategoryArray}
+                    options={this.state.categoryOptions}
+                    defaultValue={
+                      this.state.categoryArray[
+                        this.state.categoryArray.length - 1
+                      ]
+                    }
+                  />
                 </div>
               </div>
               <div className="form-group">
@@ -137,12 +262,21 @@ class CreateProduct extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="tax_class_id"
+                    name="taxClass"
                     className="form-control custom-select-black "
-                    id="tax_class_id"
+                    value={this.state.data.taxClass}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   >
-                    <option value>Please Select</option>
-                    <option value={1}>BD Dhaka Tax</option>
+                    <option value="">Please Select</option>
+                    {this.state.taxes.map((val, key) => {
+                      return (
+                        <option key={key} value={val.id}>
+                          {val.name}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               </div>
@@ -154,53 +288,13 @@ class CreateProduct extends React.Component {
                   Tags
                 </label>
                 <div className="col-md-9">
-                  <select
-                    name="tags[]"
-                    className="form-control custom-select-black selectize prevent-creation"
-                    id="tags[]"
-                    multiple={1}
-                  >
-                    <option value={33}>Accessories</option>
-                    <option value={24}>Aviators</option>
-                    <option value={16}>Casual</option>
-                    <option value={32}>Cellphone</option>
-                    <option value={30}>Denim</option>
-                    <option value={22}>Dustproof</option>
-                    <option value={4}>Electronics</option>
-                    <option value={9}>Entertainment</option>
-                    <option value={3}>Fashion</option>
-                    <option value={17}>Formal</option>
-                    <option value={6}>Gadgets</option>
-                    <option value={34}>Gear</option>
-                    <option value={42}>HD TV</option>
-                    <option value={8}>Hot deals</option>
-                    <option value={37}>Intel</option>
-                    <option value={27}>Jeans</option>
-                    <option value={40}>Jewelry design</option>
-                    <option value={31}>Lifestyle</option>
-                    <option value={5}>Luxury Watch</option>
-                    <option value={18}>Minimal</option>
-                    <option value={39}>Necklace</option>
-                    <option value={35}>Networking</option>
-                    <option value={12}>New Arrivals</option>
-                    <option value={36}>Notebook</option>
-                    <option value={28}>Outfit</option>
-                    <option value={38}>Pendant</option>
-                    <option value={23}>Sapphire Glass</option>
-                    <option value={19}>Ski Jacket</option>
-                    <option value={10}>Slim Laptop</option>
-                    <option value={14}>Smart TV</option>
-                    <option value={41}>Smart TV</option>
-                    <option value={7}>Smartphone</option>
-                    <option value={13}>Smartwatch</option>
-                    <option value={25}>Sports Eye-wear</option>
-                    <option value={29}>Streetwear</option>
-                    <option value={11}>Trendy</option>
-                    <option value={21}>Waterproof</option>
-                    <option value={26}>Wayfarers</option>
-                    <option value={15}>WiFi TV</option>
-                    <option value={20}>Winter Jacket</option>
-                  </select>
+                  <MultiSelect
+                    onChange={this.setTagArray}
+                    options={this.state.tagOptions}
+                    defaultValue={
+                      this.state.tagArray[this.state.tagArray.length - 1]
+                    }
+                  />
                 </div>
               </div>
               <div className="form-group">
@@ -212,12 +306,16 @@ class CreateProduct extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input type="hidden" defaultValue={0} name="virtual" />
                     <input
                       type="checkbox"
                       name="virtual"
                       id="virtual"
-                      defaultValue={1}
+                      value={this.state.data.virtual}
+                      onChange={(e) => {
+                        const { data } = this.state;
+                        data.virtual = !this.state.data.virtual;
+                        this.setState({ data });
+                      }}
                     />
                     <label htmlFor="virtual">
                       The product won't be shipped
@@ -234,13 +332,16 @@ class CreateProduct extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input type="hidden" defaultValue={0} name="is_active" />
                     <input
                       type="checkbox"
-                      name="is_active"
+                      name="status"
                       id="is_active"
-                      defaultChecked={1}
-                      defaultValue={1}
+                      value={this.state.data.status}
+                      onChange={(e) => {
+                        const { data } = this.state;
+                        data.status = !this.state.data.status;
+                        this.setState({ data });
+                      }}
                     />
                     <label htmlFor="is_active">Enable the product</label>
                   </div>
@@ -267,28 +368,29 @@ class CreateProduct extends React.Component {
                   <input
                     name="price"
                     className="form-control "
-                    id="price"
-                    defaultValue
                     min={0}
                     type="number"
+                    value={this.state.data.price}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  htmlFor="special_price"
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Special Price
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="special_price"
+                    name="specialPrice"
                     className="form-control "
-                    id="special_price"
-                    defaultValue
                     min={0}
                     type="number"
+                    value={this.state.data.specialPrice}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
@@ -301,46 +403,47 @@ class CreateProduct extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="special_price_type"
+                    name="specialPriceType"
                     className="form-control custom-select-black "
-                    id="special_price_type"
+                    value={this.state.data.specialPriceType}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   >
-                    <option value="fixed">Fixed</option>
-                    <option value="percent">Percent</option>
+                    <option value="Fixed">Fixed</option>
+                    <option value="Percent">Percent</option>
                   </select>
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  htmlFor="special_price_start"
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Special Price Start
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="special_price_start"
+                    name="specialPriceStart"
                     className="form-control datetime-picker"
-                    id="special_price_start"
-                    defaultValue
-                    type="text"
+                    type="date"
+                    value={this.state.data.specialPriceStart}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  htmlFor="special_price_end"
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Special Price End
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="special_price_end"
+                    name="specialPriceEnd"
                     className="form-control datetime-picker"
-                    id="special_price_end"
-                    defaultValue
-                    type="text"
+                    type="date"
+                    value={this.state.data.specialPriceEnd}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
@@ -355,41 +458,47 @@ class CreateProduct extends React.Component {
           <div className="row">
             <div className="col-md-8">
               <div className="form-group">
-                <label
-                  htmlFor="sku"
-                  className="col-md-3 control-label text-left"
-                >
-                  SKU
-                </label>
+                <label className="col-md-3 control-label text-left">SKU</label>
                 <div className="col-md-9">
                   <input
-                    name="sku"
+                    name="SKU"
                     className="form-control "
-                    id="sku"
-                    defaultValue
                     type="text"
+                    value={this.state.data.SKU}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  htmlFor="manage_stock"
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Inventory Management
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="manage_stock"
+                    name="inventoryManagement"
                     className="form-control custom-select-black "
-                    id="manage_stock"
+                    value={this.state.data.inventoryManagement}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   >
-                    <option value={0}>Don't Track Inventory</option>
-                    <option value={1}>Track Inventory</option>
+                    <option value="Do Not Track Inventory">
+                      Don't Track Inventory
+                    </option>
+                    <option value="Track Inventory">Track Inventory</option>
                   </select>
                 </div>
               </div>
-              <div className="hide" id="qty-field">
+              <div
+                className={
+                  this.state.data.inventoryManagement == "Track Inventory"
+                    ? ""
+                    : "hide"
+                }
+                id="qty-field"
+              >
                 <div className="form-group">
                   <label
                     htmlFor="qty"
@@ -409,20 +518,20 @@ class CreateProduct extends React.Component {
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  htmlFor="in_stock"
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Stock Availability
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="in_stock"
+                    name="stockAvailability"
                     className="form-control custom-select-black "
-                    id="in_stock"
+                    value={this.state.data.stockAvailability}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   >
-                    <option value={1}>In Stock</option>
-                    <option value={0}>Out of Stock</option>
+                    <option value="In Stock">In Stock</option>
+                    <option value="Out of Stock">Out of Stock</option>
                   </select>
                 </div>
               </div>
@@ -485,7 +594,6 @@ class CreateProduct extends React.Component {
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="meta-title"
                   className="col-md-3 control-label text-left"
                 >
                   Meta Title
@@ -493,10 +601,12 @@ class CreateProduct extends React.Component {
                 <div className="col-md-9">
                   <input
                     type="text"
-                    name="meta[meta_title]"
+                    name="metaTitle"
                     className="form-control"
-                    id="meta-title"
-                    defaultValue
+                    value={this.state.data.metaTitle}
+                    onChange={(e)=>{
+                      this.setVal(e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -509,12 +619,14 @@ class CreateProduct extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="meta[meta_description]"
+                    name="metaDescription"
                     className="form-control"
-                    id="meta-description"
                     rows={10}
                     cols={10}
-                    defaultValue={""}
+                    value={this.state.data.metaDescription}
+                    onChange={(e)=>{
+                      this.setVal(e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -762,7 +874,7 @@ class CreateProduct extends React.Component {
     return (
       <div>
         <section className="content-header clearfix">
-          <h3>Create Product</h3>
+        {this.props.edit == "true"? <h3>Edit Product</h3>: <h3>Create Product</h3>}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
@@ -770,14 +882,11 @@ class CreateProduct extends React.Component {
             <li>
               <Link to="/products">Products</Link>
             </li>
-            <li className="active">Create Product</li>
+            {this.props.edit == "true"? <li className="active">Edit Product</li>: <li className="active">Create Product</li>}
           </ol>
         </section>
         <section className="content">
-          <form
-            className="form-horizontal"
-            
-          >
+          <form className="form-horizontal">
             <input type="hidden" name="_token" defaultValue="" />
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
@@ -999,7 +1108,10 @@ class CreateProduct extends React.Component {
                         <button
                           type="submit"
                           className="btn btn-primary"
-                          data-loading
+                          onClick={(e) => {
+                            e.preventDefault();
+                            this.handleSubmit();
+                          }}
                         >
                           Save
                         </button>

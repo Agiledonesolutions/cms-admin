@@ -483,7 +483,7 @@ class CreateCoupon extends React.Component {
             <li>
               <Link to="/coupons">Coupons</Link>
             </li>
-            <li className="active">Create coupon</li>
+            {this.props.edit == "true"? <li className="active">Edit Coupon</li>: <li className="active">Create Coupon</li>}
           </ol>
         </section>
         <section className="content">

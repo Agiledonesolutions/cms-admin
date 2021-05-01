@@ -20,19 +20,33 @@ class Catalog extends React.Component {
           width: "60px"
         },
         {
+          name: "Thumbnail",
+          selector: "thumbnail",
+          sortable: true,
+          cell: (row) => (
+            <img
+              src={"https://big-cms.herokuapp.com/" + row.thumbnail}
+              height={60}
+              width={60}
+            />
+          ),
+          width: "110px",
+        },
+        {
           name: "Name",
           selector: "name",
           sortable: true,
         },
         {
-          name: "Attribute Set",
-          selector: "attributeset",
+          name: "Price",
+          selector: "price",
           sortable: true,
         },
         {
-          name: "Filterable",
-          selector: "filterable",
+          name: "Status",
+          selector: "status",
           sortable: true,
+          cell: row=><span className={row.status? "dot green": "dot red"}></span>
         },
         {
           name: "Created",
@@ -42,7 +56,7 @@ class Catalog extends React.Component {
       ],
       data: [],
     },
-    requiredPermission: "Delete Tag",
+    requiredPermission: "Delete Products",
     edit: "",
   };
 
@@ -50,15 +64,16 @@ class Catalog extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/attribute/get")
+      .get("/product/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
+            thumbnail: "uploads/images/1619905424904-blob",
             name: val["name"],
-            attributeset: val["attributeSet"]["name"],
-            filterable: val.filterable ? "Yes" : "No",
+            price: val["price"],
+            status: val.status,
             created: format(val["createdAt"]),
             _id: val["_id"],
           };
@@ -78,7 +93,7 @@ class Catalog extends React.Component {
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
-      .delete("/attribute", { data })
+      .delete("/product", { data })
       .then((res) => {
         console.log(res);
         this.componentDidMount();

@@ -418,7 +418,7 @@ class CreateOption extends React.Component {
             <li>
               <Link to="/options">Options</Link>
             </li>
-            <li className="active">Create Option</li>
+            {this.props.edit == "true"? <li className="active">Edit Option</li>: <li className="active">Create Option</li>}
           </ol>
         </section>
         <section className="content">

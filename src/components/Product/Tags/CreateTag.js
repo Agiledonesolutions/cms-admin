@@ -82,7 +82,7 @@ class CreateTag extends React.Component {
             <li>
               <Link to='/tags'>Tags</Link>
             </li>
-            <li className="active">Create Tag</li>
+            {this.props.edit == "true"? <li className="active">Edit Tag</li>: <li className="active">Create Tag</li>}
           </ol>
         </section>
         <section className="content">

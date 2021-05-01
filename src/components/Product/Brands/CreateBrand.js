@@ -240,7 +240,7 @@ class CreateBrand extends React.Component {
             <li>
               <Link to="/brands">Brands</Link>
             </li>
-            <li className="active">Create Brand</li>
+            {this.props.edit == "true"? <li className="active">Edit Brand</li>: <li className="active">Create Brand</li>}
           </ol>
         </section>
         <section className="content">

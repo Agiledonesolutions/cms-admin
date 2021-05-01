@@ -14,6 +14,7 @@ const SideBar = () => {
 
     const NavLinkToggle = (e) =>{
       e.currentTarget.classList.toggle('selected')
+      e.currentTarget.classList.toggle('active')
       e.currentTarget.querySelector('.treeview-menu').classList.toggle('display-block')
     }
 
@@ -34,13 +35,13 @@ const SideBar = () => {
           </header>
           <section className="sidebar">
             <ul className="sidebar-menu">
-              <li className="active">
+              <li className="">
                 <Link to='/dashboard'  >
                   <i className="fa fa-dashboard" />
                   <span>Dashboard</span>
                 </Link>
               </li>
-              <li className="treeview" onClick={NavLinkToggle}>
+              <li className="treeview " onClick={NavLinkToggle}>
                 <a >
                   <i className="fa fa-cube" />
                   <span>Products</span>

@@ -342,7 +342,7 @@ class CreateAttribute extends React.Component {
             <li>
               <Link to="/attributes">Attributes</Link>
             </li>
-            <li className="active">Create Attribute</li>
+            {this.props.edit == "true"? <li className="active">Edit Attribute</li>: <li className="active">Create Attribute</li>}
           </ol>
         </section>
         <section className="content">

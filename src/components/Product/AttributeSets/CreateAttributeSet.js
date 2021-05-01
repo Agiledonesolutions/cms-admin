@@ -81,7 +81,7 @@ class CreateAttributeSet extends React.Component {
             <li>
               <Link to="/attribute-sets">Attribute Sets</Link>
             </li>
-            <li className="active">Create Attribute Set</li>
+            {this.props.edit == "true"? <li className="active">Edit Attribute Set</li>: <li className="active">Create Attribute Set</li>}
           </ol>
         </section>
         <section className="content">
