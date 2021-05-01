@@ -14671,7 +14671,7 @@ textarea:focus {
     transition: border-color .2s ease-in-out
 }
 
-input:not([type=checkbox]):not([type=radio]):not([type=select-multiple]):not([type=select-one]) {
+input:not([type=checkbox]):not([type=radio]):not([type=select-multiple]):not([type=select-one]):not([type="file"]) {
     border-radius: 3px;
     border-color: #d9d9d9;
     height: 40px !important;

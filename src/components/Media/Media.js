@@ -10,8 +10,7 @@ import { format } from "timeago.js";
 import DropzoneComponent from "react-dropzone-component";
 import "react-dropzone-component/styles/filepicker.css";
 import "dropzone/dist/min/dropzone.min.css";
-import ReactDOMServer from "react-dom/server";
-
+import imageCompression from "browser-image-compression";
 class Media extends React.Component {
   constructor(props) {
     super(props);
@@ -19,14 +18,13 @@ class Media extends React.Component {
     this.djsConfig = {
       addRemoveLinks: true,
       acceptedFiles: "image/*, video/*",
-      autoProcessQueue: false
+      autoProcessQueue: false,
     };
 
     this.componentConfig = {
       postUrl: "#",
     };
 
-    this.dropzone = null;
   }
   state = {
     files: [],
@@ -44,7 +42,11 @@ class Media extends React.Component {
           selector: "thumbnail",
           sortable: true,
           cell: (row) => (
-            <img src={"https://big-cms.herokuapp.com/" + row.thumbnail} />
+            <img
+              src={"https://big-cms.herokuapp.com/" + row.thumbnail}
+              height={60}
+              width={60}
+            />
           ),
           width: "110px",
         },
@@ -104,44 +106,50 @@ class Media extends React.Component {
       });
   };
   handleFileAdded = (file) => {
-      const {files} = this.state
-      files.push(file)
-      this.setState({files})
+    const { files } = this.state;
+    files.push(file);
+    this.setState({ files });
   };
-  handleRemoveFile = (file)=>{
-    const {files} = this.state
-    files.splice(file, 1)
-    this.setState({files})
-  }
+  handleRemoveFile = (file) => {
+    const { files } = this.state;
+    files.splice(file, 1);
+    this.setState({ files });
+  };
 
-  handlePost = async(file, done) =>{
+  handlePost = async (file) => {
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+    const compressedFile = await imageCompression(file, options);
     var formData = new FormData();
-    await formData.append("image", file)
-    api.post('/media', formData, {
+    await formData.append("image", compressedFile);
+    api
+      .post("/media", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-    }).then(res=>{
-        console.log(res)
-        
-    }).catch(err=>{
-        console.log(err)
-    })
-
-    
-  }
-  handleImagePost = ()=>{
-      this.state.files.forEach(file=>{
-          
-          this.handlePost(file, false);
-        
       })
-  }
-
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  handleImagePost = () => {
+      this.state.files.map( (file) => {
+         this.handlePost(file);
+     });
+    
+      console.log("here")
+    
+     
+  };
 
   render() {
     const eventHandlers = {
-      init: dz => this.dropzone = dz,
       addedfile: (file) => this.handleFileAdded(file),
       removedfile: (file) => this.handleRemoveFile(file),
     };
@@ -164,9 +172,15 @@ class Media extends React.Component {
                 djsConfig={this.djsConfig}
                 eventHandlers={eventHandlers}
                 action="#"
-                
               />
-              <button className="btn image-upload"  onClick={this.handleImagePost}>Click to Save</button>
+              <button
+                className="btn image-upload"
+                onClick={() => {
+                   this.handleImagePost();
+                }}
+              >
+                Click to Save
+              </button>
             </div>
           </div>
           <div className="box box-primary">

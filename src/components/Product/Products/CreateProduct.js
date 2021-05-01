@@ -1,10 +1,43 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import BraftEditor from "braft-editor";
+import table from "braft-extensions/dist/table";
+
+import "braft-editor/dist/index.css";
+import "braft-extensions/dist/table.css";
+
+const options = {
+  defaultColumns: 3, 
+  defaultRows: 2, 
+  withDropdown: false, 
+  columnResizable: true, 
+  exportAttrString: "" 
+};
+BraftEditor.use(
+  table(options)
+);
 
 class CreateProduct extends React.Component {
+ 
   state = {
     activePanel: "general",
     activeTab: "basic",
+    editorState: BraftEditor.createEditorState()
+  };
+
+  onChange = editorState => {
+    this.setState({
+      editorState
+    });
+  };
+
+  mergeState = () => {
+    const { editorState } = this.state;
+    var str = "new state";
+    var newState = BraftEditor.createEditorState(str);
+    this.setState({
+      editorState: editorState.push(newState)
+    });
   };
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
@@ -34,15 +67,7 @@ class CreateProduct extends React.Component {
               Description<span className="m-l-5 text-red">*</span>
             </label>
             <div className="col-md-10">
-              <textarea
-                name="description"
-                className="form-control  wysiwyg"
-                id="description"
-                rows={10}
-                cols={10}
-                labelcol={2}
-                defaultValue={""}
-              />
+            <BraftEditor language="en" onChange={this.onChange}/>
             </div>
           </div>
           <div className="row">
@@ -99,154 +124,7 @@ class CreateProduct extends React.Component {
                     <option value={181}>Electronics</option>
                     <option value={183}>¦–– Mobiles</option>
                     <option value={192}>¦–– ¦–– Smartphones</option>
-                    <option value={193}>¦–– ¦–– Android</option>
-                    <option value={194}>¦–– ¦–– iPhone</option>
-                    <option value={195}>¦–– ¦–– Featured</option>
-                    <option value={196}>¦–– ¦–– Refurbished</option>
-                    <option value={197}>¦–– ¦–– Brands</option>
-                    <option value={185}>¦–– Mobile Accessories</option>
-                    <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                    <option value={199}>¦–– ¦–– Cables</option>
-                    <option value={200}>¦–– ¦–– Chargers</option>
-                    <option value={201}>¦–– ¦–– Power Bank</option>
-                    <option value={202}>¦–– ¦–– Headphones</option>
-                    <option value={203}>¦–– ¦–– Screen Protectors</option>
-                    <option value={184}>¦–– Hot Brands</option>
-                    <option value={187}>¦–– ¦–– OnePlus</option>
-                    <option value={188}>¦–– ¦–– Apple</option>
-                    <option value={189}>¦–– ¦–– Samsung</option>
-                    <option value={190}>¦–– ¦–– Huawei</option>
-                    <option value={191}>¦–– ¦–– Sony</option>
-                    <option value={182}>¦–– Laptops</option>
-                    <option value={204}>¦–– ¦–– Mackbook</option>
-                    <option value={205}>¦–– ¦–– Gaming</option>
-                    <option value={206}>¦–– ¦–– Ultraslim</option>
-                    <option value={207}>¦–– ¦–– Tablets</option>
-                    <option value={212}>¦–– ¦–– All Laptops</option>
-                    <option value={186}>¦–– Computer Accessories</option>
-                    <option value={208}>¦–– ¦–– Monitors</option>
-                    <option value={209}>¦–– ¦–– Keyboard &amp; Mouse</option>
-                    <option value={210}>¦–– ¦–– Pendrive</option>
-                    <option value={211}>¦–– ¦–– Speaker</option>
-                    <option value={12}>Men's Fashion</option>
-                    <option value={13}>¦–– Clothing</option>
-                    <option value={15}>¦–– ¦–– Shirts</option>
-                    <option value={14}>¦–– ¦–– All Clothing</option>
-                    <option value={16}>¦–– ¦–– Sportswear</option>
-                    <option value={17}>¦–– ¦–– Belts</option>
-                    <option value={18}>¦–– ¦–– Pants</option>
-                    <option value={26}>¦–– ¦–– Formal Shoes</option>
-                    <option value={19}>¦–– Shoes</option>
-                    <option value={20}>¦–– ¦–– All Shoes</option>
-                    <option value={21}>¦–– ¦–– Sneakers</option>
-                    <option value={22}>¦–– ¦–– Boots</option>
-                    <option value={23}>¦–– ¦–– Sandals</option>
-                    <option value={24}>
-                      ¦–– ¦–– Slippers &amp; Flip-flops
-                    </option>
-                    <option value={25}>¦–– ¦–– Sports Shoes</option>
-                    <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                    <option value={28}>¦–– ¦–– Trench</option>
-                    <option value={30}>¦–– ¦–– Genuine Leather</option>
-                    <option value={32}>¦–– ¦–– Down Jackets</option>
-                    <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                    <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                    <option value={35}>¦–– Hot Sale</option>
-                    <option value={36}>¦–– ¦–– Glasses</option>
-                    <option value={37}>¦–– ¦–– Jackets</option>
-                    <option value={38}>¦–– ¦–– T-Shirts</option>
-                    <option value={39}>¦–– ¦–– Shirts</option>
-                    <option value={40}>¦–– ¦–– Belts</option>
-                    <option value={52}>¦–– Bottoms</option>
-                    <option value={53}>¦–– ¦–– Casual Pants</option>
-                    <option value={54}>¦–– ¦–– Sweatpants</option>
-                    <option value={55}>¦–– ¦–– Cargo Pants</option>
-                    <option value={56}>¦–– ¦–– Jeans</option>
-                    <option value={57}>¦–– ¦–– Harem Pants</option>
-                    <option value={59}>Consumer Electronics</option>
-                    <option value={120}>¦–– Televisions</option>
-                    <option value={7}>¦–– Gadgets</option>
-                    <option value={142}>¦–– Drones</option>
-                    <option value={108}>¦–– Supplies</option>
-                    <option value={109}>¦–– Camera &amp; Photo</option>
-                    <option value={110}>¦–– Car &amp; Vehicle</option>
-                    <option value={111}>¦–– Cell Phones</option>
-                    <option value={112}>¦–– Computer</option>
-                    <option value={113}>¦–– GPS &amp; Navigation</option>
-                    <option value={114}>¦–– Headphones</option>
-                    <option value={115}>¦–– Home Audio</option>
-                    <option value={116}>¦–– Office Electronics</option>
-                    <option value={117}>¦–– Audio &amp; Video</option>
-                    <option value={118}>¦–– Security</option>
-                    <option value={119}>¦–– Service Plans</option>
-                    <option value={121}>¦–– Video Game</option>
-                    <option value={122}>¦–– Video Projectors</option>
-                    <option value={123}>¦–– Wearable Technology</option>
-                    <option value={124}>¦–– eBook Readers</option>
-                    <option value={60}>¦–– Office Supplies</option>
-                    <option value={61}>¦–– All Computers</option>
-                    <option value={63}>¦–– Desktops &amp; Monitors</option>
-                    <option value={64}>¦–– Drives &amp; Storage</option>
-                    <option value={65}>¦–– Networking</option>
-                    <option value={66}>¦–– Keyboards &amp; Mice</option>
-                    <option value={67}>¦–– PC Gaming</option>
-                    <option value={68}>¦–– Computer Accessories</option>
-                    <option value={69}>¦–– Printers &amp; Ink</option>
-                    <option value={70}>¦–– Office Supplies</option>
-                    <option value={82}>Watches</option>
-                    <option value={83}>¦–– Men's Watches</option>
-                    <option value={84}>¦–– ¦–– Analog Watches</option>
-                    <option value={85}>¦–– ¦–– Sports Watches</option>
-                    <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                    <option value={87}>¦–– ¦–– Digital Watches</option>
-                    <option value={88}>¦–– Women's Watches</option>
-                    <option value={89}>¦–– Children's Watches</option>
-                    <option value={90}>¦–– Pocket Watches</option>
-                    <option value={91}>¦–– Watch Accessories</option>
-                    <option value={92}>¦–– Women's Bracelets</option>
-                    <option value={156}>Home Appliances</option>
-                    <option value={157}>¦–– Bedding</option>
-                    <option value={158}>¦–– Furniture</option>
-                    <option value={159}>¦–– Decor</option>
-                    <option value={160}>¦–– Curtains</option>
-                    <option value={161}>¦–– Kitchen Utensils</option>
-                    <option value={162}>¦–– Cooking &amp; Baking</option>
-                    <option value={163}>¦–– Gas &amp; Stove</option>
-                    <option value={164}>¦–– Plastics &amp; Melamine</option>
-                    <option value={165}>¦–– Ceramics &amp; Dinnerware</option>
-                    <option value={166}>¦–– Storage &amp; Organisation</option>
-                    <option value={167}>¦–– Home Care</option>
-                    <option value={168}>¦–– Cleaning Tools</option>
-                    <option value={169}>¦–– Laundry</option>
-                    <option value={170}>¦–– Towel</option>
-                    <option value={171}>¦–– Travel Accessories</option>
-                    <option value={172}>¦–– Pest Control</option>
-                    <option value={98}>Backpacks</option>
-                    <option value={99}>¦–– Men's Bags</option>
-                    <option value={100}>¦–– Women's Bags</option>
-                    <option value={102}>¦–– Wallets</option>
-                    <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                    <option value={104}>¦–– Travel Bags</option>
-                    <option value={105}>¦–– Functional Bags</option>
-                    <option value={106}>¦–– Coin Purses</option>
-                    <option value={107}>¦–– Bag Parts</option>
-                    <option value={126}>Women's Fashion</option>
-                    <option value={127}>¦–– All Beauty</option>
-                    <option value={128}>¦–– Make-up</option>
-                    <option value={129}>¦–– Luxury Beauty</option>
-                    <option value={130}>¦–– Watches</option>
-                    <option value={213}>¦–– Necklace</option>
-                    <option value={133}>¦–– Rings</option>
-                    <option value={131}>¦–– Glasses</option>
-                    <option value={132}>¦–– All Perfumes</option>
-                    <option value={134}>¦–– Women Perfumes</option>
-                    <option value={135}>¦–– Gift Sets</option>
-                    <option value={136}>¦–– All Health</option>
-                    <option value={137}>¦–– Personal Care</option>
-                    <option value={138}>¦–– Hair Care &amp; Styling</option>
-                    <option value={139}>¦–– Bath &amp; Body</option>
-                    <option value={140}>¦–– Dental Care</option>
-                    <option value={141}>¦–– Diet &amp; Nutrition</option>
+       
                   </select>
                 </div>
               </div>
