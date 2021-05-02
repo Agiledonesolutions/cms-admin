@@ -31,6 +31,7 @@ import CreateFlashSale from '../components/FlashSales/CreateFlashSale';
 import Taxes from '../components/Localization/Taxes/Taxes';
 import CreateTax from '../components/Localization/Taxes/CreateTax';
 import Media from '../components/Media/Media';
+import Settings from '../components/Settings/Settings';
 
 
 const routes = (
@@ -93,6 +94,8 @@ const routes = (
         <PrivateRoute exact path='/taxes' component={()=><Dashboard abc={ <Taxes />} />} />
         <PrivateRoute exact path='/taxes/create' component={()=><Dashboard abc={ <CreateTax />} />} />
         <PrivateRoute exact path='/taxes/:id/edit' component={()=><Dashboard abc={ <CreateTax edit="true"/>} />} />
+
+        <PrivateRoute exact path='/settings' component={()=><Dashboard abc={ <Settings />} />} />
 
 
       </Switch>

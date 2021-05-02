@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import BraftEditor from "braft-editor";
 import table from "braft-extensions/dist/table";
 import "braft-editor/dist/index.css";
@@ -1128,4 +1128,4 @@ class CreateProduct extends React.Component {
   }
 }
 
-export default CreateProduct;
+export default withRouter(CreateProduct);
