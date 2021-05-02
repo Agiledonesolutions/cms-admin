@@ -76,7 +76,8 @@ class FileManager extends React.Component {
   };
 
   componentDidMount() {
-      document.querySelector('html').style.overflowY = "hidden"
+      document.querySelector('html').style.overflowY = "hidden";
+      console.log(this.props.multiple)
     const datalist = [];
     var i = 0;
     api

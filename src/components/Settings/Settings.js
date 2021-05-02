@@ -8,12 +8,94 @@ class Settings extends React.Component {
   state = {
     activePanel: "general",
     activeTab: "generalsettings",
-    data: {},
+    data: {
+      ShippingMethods: {
+        FreeShipping: {
+          Status: "",
+          Label: "",
+          MinimumAmount: ""
+        },
+        LocalPickup: {
+          Status: "",
+          Label: "",
+          Cost: ""
+        },
+        FlatRate: {
+          Status: "",
+          Label: "",
+          Cost: ""
+        }
+      },
+      PaymentMethods: {
+        Paypal: {
+          Status: false,
+          Label: "",
+          Description: "",
+          Sandbox: false,
+          ClientId: "",
+          Secret: ""
+        },
+        Stripe: {
+          Status: false,
+          Label: "",
+          Description: "",
+          PublishableKey: "",
+          SecretKey: ""
+        },
+        Paytm: {
+          Status: false,
+          Label: "",
+          Description: "",
+          Sandbox: false,
+          MerchantID: "",
+          MerchantKey: ""
+        },
+        Razorpay: {
+          Status: false,
+          Label: "",
+          Description: "",
+          KeyID: "",
+          KeySecret: ""
+        },
+        Instamojo: {
+          Status: false,
+          Label: "",
+          Description: "",
+          Sandbox: false,
+          APIKey: "",
+          AuthToken: ""
+        },
+        CashonDelivery: {
+          Status: false,
+          Label: "",
+          Description: "",
+        },
+        BankTransfer: {
+          Status: false,
+          Label: "",
+          Description: "",
+          Instructions: ""
+        },
+        ChequeMoneyOrder: {
+          Status: false,
+          Label: "",
+          Description: "",
+          Instructions: ""
+        }
+      }
+    },
   };
-
-  setVal = (key, val) => {
+  componentDidMount(){
+    api.get('/settings/get').then(res=>{
+      this.setState({data: res.data.data[0]})
+      
+    }).catch(err=>{
+      console.log("error fetching settings")
+    })
+  }
+  setVal = (key,key2,key3, val) => {
     const { data } = this.state;
-    data[key] = val;
+    data[key][key2][key3] = val;
     this.setState({ data });
   };
 
@@ -4501,7 +4583,7 @@ class Settings extends React.Component {
       );
     } else if (this.state.activePanel == "freeshipping") {
       return (
-        <div className="tab-pane fade in active" id="free_shipping">
+        <div className="tab-pane fade in active">
           <h3 className="tab-content-title">Free Shipping</h3>
           <div className="row">
             <div className="col-md-8">
@@ -4514,18 +4596,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="free_shipping_enabled"
-                    />
+                  
                     <input
                       type="checkbox"
-                      name="free_shipping_enabled"
-                      className
+                      name="Status"
                       id="free_shipping_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.ShippingMethods.FreeShipping.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.ShippingMethods.FreeShipping.Status = !this.state.data.ShippingMethods.FreeShipping.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="free_shipping_enabled">
                       Enable Free Shipping
@@ -4535,35 +4616,37 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[free_shipping_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[free_shipping_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[free_shipping_label]"
-                    defaultValue="Free Shipping"
                     type="text"
+                    value={this.state.data.ShippingMethods.FreeShipping.Label}
+                    onChange={(e)=>{
+                      this.setVal("ShippingMethods", "FreeShipping", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="free_shipping_min_amount"
                   className="col-md-3 control-label text-left"
                 >
                   Minimum Amount
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="free_shipping_min_amount"
+                    name="MinimumAmount"
                     className="form-control "
-                    id="free_shipping_min_amount"
-                    defaultValue
                     type="number"
+                    value={this.state.data.ShippingMethods.FreeShipping.MinimumAmount}
+                    onChange={(e)=>{
+                      this.setVal("ShippingMethods", "FreeShipping", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -4573,7 +4656,7 @@ class Settings extends React.Component {
       );
     } else if (this.state.activePanel == "localpickup") {
       return (
-        <div className="tab-pane fade in active" id="local_pickup">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Local Pickup</h3>
           <div className="row">
             <div className="col-md-8">
@@ -4586,18 +4669,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="local_pickup_enabled"
-                    />
+                   
                     <input
                       type="checkbox"
-                      name="local_pickup_enabled"
-                      className
+                      name="Status"
                       id="local_pickup_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.ShippingMethods.LocalPickup.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.ShippingMethods.LocalPickup.Status = !this.state.data.ShippingMethods.LocalPickup.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="local_pickup_enabled">
                       Enable Local Pickup
@@ -4607,36 +4689,38 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[local_pickup_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[local_pickup_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[local_pickup_label]"
-                    defaultValue="Local Pickup"
                     type="text"
+                    value={this.state.data.ShippingMethods.LocalPickup.Label}
+                    onChange={(e)=>{
+                      this.setVal("ShippingMethods", "LocalPickup", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="local_pickup_cost"
                   className="col-md-3 control-label text-left"
                 >
                   Cost<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="local_pickup_cost"
+                    name="Cost"
                     className="form-control "
-                    id="local_pickup_cost"
-                    defaultValue={20}
                     min={0}
                     type="number"
+                    value={this.state.data.ShippingMethods.LocalPickup.Cost}
+                    onChange={(e)=>{
+                      this.setVal("ShippingMethods", "LocalPickup", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -4646,7 +4730,7 @@ class Settings extends React.Component {
       );
     } else if (this.state.activePanel == "flatrate") {
       return (
-        <div className="tab-pane fade in active" id="flat_rate">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Flat Rate</h3>
           <div className="row">
             <div className="col-md-8">
@@ -4659,18 +4743,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="flat_rate_enabled"
-                    />
+                   
                     <input
                       type="checkbox"
-                      name="flat_rate_enabled"
-                      className
+                      name="Status"
                       id="flat_rate_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.ShippingMethods.FlatRate.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.ShippingMethods.FlatRate.Status = !this.state.data.ShippingMethods.FlatRate.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="flat_rate_enabled">Enable Flat Rate</label>
                   </div>
@@ -4678,36 +4761,38 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[flat_rate_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[flat_rate_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[flat_rate_label]"
-                    defaultValue="Flat Rate"
                     type="text"
+                    value={this.state.data.ShippingMethods.FlatRate.Label}
+                    onChange={(e)=>{
+                      this.setVal("ShippingMethods", "FlatRate", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="flat_rate_cost"
                   className="col-md-3 control-label text-left"
                 >
                   Cost<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="flat_rate_cost"
+                    name="Cost"
                     className="form-control "
-                    id="flat_rate_cost"
-                    defaultValue={25}
                     min={0}
                     type="number"
+                    value={this.state.data.ShippingMethods.FlatRate.Cost}
+                    onChange={(e)=>{
+                      this.setVal("ShippingMethods", "FlatRate", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -4717,7 +4802,7 @@ class Settings extends React.Component {
       );
     } else if (this.state.activePanel == "paypal") {
       return (
-        <div className="tab-pane fade in active" id="paypal">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">PayPal</h3>
           <div className="row">
             <div className="col-md-8">
@@ -4730,18 +4815,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="paypal_enabled"
-                    />
+                    
                     <input
                       type="checkbox"
-                      name="paypal_enabled"
-                      className
+                      name="Status"
                       id="paypal_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.PaymentMethods.Paypal.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.Paypal.Status = !this.state.data.PaymentMethods.Paypal.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="paypal_enabled">Enable PayPal</label>
                   </div>
@@ -4749,18 +4833,19 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[paypal_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[paypal_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[paypal_label]"
-                    defaultValue="PayPal"
                     type="text"
+                    value={this.state.data.PaymentMethods.Paypal.Label}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Paypal", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -4773,12 +4858,14 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="translatable[paypal_description]"
+                    name="Description"
                     className="form-control "
-                    id="translatable[paypal_description]"
                     rows={3}
                     cols={10}
-                    defaultValue={"Pay via your PayPal account."}
+                    value={this.state.data.PaymentMethods.Paypal.Description}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Paypal", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -4791,18 +4878,18 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="paypal_test_mode"
-                    />
+                   
                     <input
                       type="checkbox"
-                      name="paypal_test_mode"
-                      className
+                      name="Sandbox"
                       id="paypal_test_mode"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.PaymentMethods.Paypal.Sandbox}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.Paypal.Sandbox = !this.state.data.PaymentMethods.Paypal.Sandbox
+                        this.setState({data})
+                      }}
+                      
                     />
                     <label htmlFor="paypal_test_mode">
                       Use sandbox for test payments
@@ -4810,7 +4897,7 @@ class Settings extends React.Component {
                   </div>
                 </div>
               </div>
-              <div className id="paypal-fields">
+              {this.state.data.PaymentMethods.Paypal.Status? <div className id="paypal-fields">
                 <div className="form-group">
                   <label
                     htmlFor="paypal_client_id"
@@ -4820,11 +4907,13 @@ class Settings extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="paypal_client_id"
+                      name="ClientId"
                       className="form-control "
-                      id="paypal_client_id"
-                      defaultValue
                       type="text"
+                      value={this.state.data.PaymentMethods.Paypal.ClientId}
+                      onChange={(e)=>{
+                        this.setVal("PaymentMethods", "Paypal", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
@@ -4837,22 +4926,25 @@ class Settings extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="paypal_secret"
+                      name="Secret"
                       className="form-control "
-                      id="paypal_secret"
-                      defaultValue
                       type="password"
+                      value={this.state.data.PaymentMethods.Paypal.Secret}
+                      onChange={(e)=>{
+                        this.setVal("PaymentMethods", "Paypal", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
-              </div>
+              </div>: ""}
+            
             </div>
           </div>
         </div>
       );
     } else if (this.state.activePanel == "stripe") {
       return (
-        <div className="tab-pane fade in active" id="stripe">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Stripe</h3>
           <div className="row">
             <div className="col-md-8">
@@ -4865,18 +4957,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="stripe_enabled"
-                    />
+                    
                     <input
                       type="checkbox"
-                      name="stripe_enabled"
-                      className
+                      name="Status"
                       id="stripe_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.PaymentMethods.Stripe.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.Stripe.Status = !this.state.data.PaymentMethods.Stripe.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="stripe_enabled">Enable Stripe</label>
                   </div>
@@ -4884,82 +4975,87 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[stripe_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[stripe_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[stripe_label]"
-                    defaultValue="Stripe"
                     type="text"
+                    value={this.state.data.PaymentMethods.Stripe.Label}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Stripe", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[stripe_description]"
                   className="col-md-3 control-label text-left"
                 >
                   Description<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="translatable[stripe_description]"
+                    name="Description"
                     className="form-control "
-                    id="translatable[stripe_description]"
                     rows={3}
                     cols={10}
-                    defaultValue={"Pay via credit or debit card."}
+                    value={this.state.data.PaymentMethods.Stripe.Description}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Stripe", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
-              <div className id="stripe-fields">
+              {this.state.data.PaymentMethods.Stripe.Status?<div className id="stripe-fields">
                 <div className="form-group">
                   <label
-                    htmlFor="stripe_publishable_key"
                     className="col-md-3 control-label text-left"
                   >
                     Publishable Key<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="stripe_publishable_key"
+                      name="PublishableKey"
                       className="form-control "
-                      id="stripe_publishable_key"
-                      defaultValue
                       type="text"
+                      value={this.state.data.PaymentMethods.Stripe.PublishableKey}
+                      onChange={(e)=>{
+                        this.setVal("PaymentMethods", "Stripe", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="stripe_secret_key"
                     className="col-md-3 control-label text-left"
                   >
                     Secret Key<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="stripe_secret_key"
+                      name="SecretKey"
                       className="form-control "
-                      id="stripe_secret_key"
-                      defaultValue
                       type="password"
+                      value={this.state.data.PaymentMethods.Stripe.SecretKey}
+                      onChange={(e)=>{
+                        this.setVal("PaymentMethods", "Stripe", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
-              </div>
+              </div> :""}
+              
             </div>
           </div>
         </div>
       );
     } else if (this.state.activePanel == "paytm") {
       return (
-        <div className="tab-pane fade in active" id="paytm">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Paytm</h3>
           <div className="row">
             <div className="col-md-8">
@@ -4972,18 +5068,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="paytm_enabled"
-                    />
+                   
                     <input
                       type="checkbox"
-                      name="paytm_enabled"
-                      className
+                      name="Status"
                       id="paytm_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.PaymentMethods.Paytm.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.Paytm.Status = !this.state.data.PaymentMethods.Paytm.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="paytm_enabled">Enable Paytm</label>
                   </div>
@@ -4991,38 +5086,38 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[paytm_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[paytm_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[paytm_label]"
-                    defaultValue="Paytm"
                     type="text"
+                    value={this.state.data.PaymentMethods.Paytm.Label}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Paytm", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[paytm_description]"
                   className="col-md-3 control-label text-left"
                 >
                   Description<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="translatable[paytm_description]"
+                    name="Description"
                     className="form-control "
-                    id="translatable[paytm_description]"
                     rows={3}
                     cols={10}
-                    defaultValue={
-                      "The best payment gateway provider in India for e-payment through credit card, debit card & net banking."
-                    }
+                    value={this.state.data.PaymentMethods.Paytm.Description}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Paytm", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -5035,18 +5130,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="paytm_test_mode"
-                    />
+                   
                     <input
                       type="checkbox"
-                      name="paytm_test_mode"
-                      className
+                      name="Sandbox"
                       id="paytm_test_mode"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.PaymentMethods.Paytm.Sandbox}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.Paytm.Sandbox = !this.state.data.PaymentMethods.Paytm.Sandbox
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="paytm_test_mode">
                       Use sandbox for test payments
@@ -5054,49 +5148,52 @@ class Settings extends React.Component {
                   </div>
                 </div>
               </div>
-              <div className id="paytm-fields">
+              {this.state.data.PaymentMethods.Paytm.Status?<div className id="paytm-fields">
                 <div className="form-group">
                   <label
-                    htmlFor="paytm_merchant_id"
                     className="col-md-3 control-label text-left"
                   >
                     Merchant ID<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="paytm_merchant_id"
+                      name="MerchantID"
                       className="form-control "
-                      id="paytm_merchant_id"
-                      defaultValue
                       type="text"
+                      value={this.state.data.PaymentMethods.Paytm.MerchantID}
+                      onChange={(e)=>{
+                        this.setVal("PaymentMethods", "Paytm", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="paytm_merchant_key"
                     className="col-md-3 control-label text-left"
                   >
                     Merchant Key<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="paytm_merchant_key"
+                      name="MerchantKey"
                       className="form-control "
-                      id="paytm_merchant_key"
-                      defaultValue
                       type="password"
+                      value={this.state.data.PaymentMethods.Paytm.MerchantKey}
+                      onChange={(e)=>{
+                        this.setVal("PaymentMethods", "Paytm", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
-              </div>
+              </div> :""}
+              
             </div>
           </div>
         </div>
       );
     } else if (this.state.activePanel == "razorpay") {
       return (
-        <div className="tab-pane fade in active" id="razorpay">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Razorpay</h3>
           <div className="row">
             <div className="col-md-8">
@@ -5109,18 +5206,18 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="razorpay_enabled"
-                    />
+                   
                     <input
                       type="checkbox"
-                      name="razorpay_enabled"
-                      className
+                      name="Status"
                       id="razorpay_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.PaymentMethods.Razorpay.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.Razorpay.Status = !this.state.data.PaymentMethods.Razorpay.Status
+                        this.setState({data})
+                      }}
+
                     />
                     <label htmlFor="razorpay_enabled">Enable Razorpay</label>
                   </div>
@@ -5128,84 +5225,88 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[razorpay_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[razorpay_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[razorpay_label]"
-                    defaultValue="Razorpay"
                     type="text"
+                    value={this.state.data.PaymentMethods.Razorpay.Label}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Razorpay", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[razorpay_description]"
                   className="col-md-3 control-label text-left"
                 >
                   Description<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="translatable[razorpay_description]"
+                    name="Description"
                     className="form-control "
-                    id="translatable[razorpay_description]"
                     rows={3}
                     cols={10}
-                    defaultValue={
-                      "Pay securely by Credit or Debit card or Internet Banking through Razorpay."
-                    }
+                    value={this.state.data.PaymentMethods.Razorpay.Description}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Razorpay", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
+              {this.state.data.PaymentMethods.Razorpay.Status? 
               <div className id="razorpay-fields">
                 <div className="form-group">
                   <label
-                    htmlFor="razorpay_key_id"
                     className="col-md-3 control-label text-left"
                   >
                     Key Id<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="razorpay_key_id"
+                      name="KeyID"
                       className="form-control "
-                      id="razorpay_key_id"
-                      defaultValue
                       type="text"
+                      value={this.state.data.PaymentMethods.Razorpay.KeyID}
+                      onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Razorpay", e.target.name, e.target.value)
+                    }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="razorpay_key_secret"
                     className="col-md-3 control-label text-left"
                   >
                     Key Secret<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="razorpay_key_secret"
+                      name="KeySecret"
                       className="form-control "
-                      id="razorpay_key_secret"
-                      defaultValue
                       type="password"
+                      value={this.state.data.PaymentMethods.Razorpay.KeySecret}
+                      onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Razorpay", e.target.name, e.target.value)
+                    }}
                     />
                   </div>
                 </div>
               </div>
+              :""}
             </div>
           </div>
         </div>
       );
     } else if (this.state.activePanel == "instamojo") {
       return (
-        <div className="tab-pane fade in active" id="instamojo">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Instamojo</h3>
           <div className="row">
             <div className="col-md-8">
@@ -5218,18 +5319,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="instamojo_enabled"
-                    />
+                   
                     <input
                       type="checkbox"
-                      name="instamojo_enabled"
-                      className
+                      name="Status"
                       id="instamojo_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.PaymentMethods.Instamojo.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.Instamojo.Status = !this.state.data.PaymentMethods.Instamojo.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="instamojo_enabled">Enable Instamojo</label>
                   </div>
@@ -5237,36 +5337,38 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[instamojo_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[instamojo_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[instamojo_label]"
-                    defaultValue="Instamojo"
                     type="text"
+                    value={this.state.data.PaymentMethods.Instamojo.Label}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Instamojo", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[instamojo_description]"
                   className="col-md-3 control-label text-left"
                 >
                   Description<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="translatable[instamojo_description]"
+                    name="Description"
                     className="form-control "
-                    id="translatable[instamojo_description]"
                     rows={3}
                     cols={10}
-                    defaultValue={"CC/DB/NB/Wallets"}
+                    value={this.state.data.PaymentMethods.Instamojo.Description}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Instamojo", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -5279,18 +5381,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="instamojo_test_mode"
-                    />
+                   
                     <input
                       type="checkbox"
-                      name="instamojo_test_mode"
-                      className
+                      name="Sandbox"
                       id="instamojo_test_mode"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.PaymentMethods.Instamojo.Sandbox}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.Instamojo.Sandbox = !this.state.data.PaymentMethods.Instamojo.Sandbox
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="instamojo_test_mode">
                       Use sandbox for test payments
@@ -5298,49 +5399,53 @@ class Settings extends React.Component {
                   </div>
                 </div>
               </div>
+              {this.state.data.PaymentMethods.Instamojo.Status? 
               <div className id="instamojo-fields">
                 <div className="form-group">
                   <label
-                    htmlFor="instamojo_api_key"
                     className="col-md-3 control-label text-left"
                   >
                     API Key<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="instamojo_api_key"
+                      name="APIKey"
                       className="form-control "
-                      id="instamojo_api_key"
-                      defaultValue
                       type="text"
+                      value={this.state.data.PaymentMethods.Razorpay.APIKey}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Instamojo", e.target.name, e.target.value)
+                    }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="instamojo_auth_token"
                     className="col-md-3 control-label text-left"
                   >
                     Auth Token<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="instamojo_auth_token"
+                      name="AuthToken"
                       className="form-control "
-                      id="instamojo_auth_token"
-                      defaultValue
                       type="password"
+                      value={this.state.data.PaymentMethods.Instamojo.AuthToken}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "Instamojo", e.target.name, e.target.value)
+                    }}
                     />
                   </div>
                 </div>
               </div>
+              :""}
             </div>
           </div>
         </div>
       );
     } else if (this.state.activePanel == "cash") {
       return (
-        <div className="tab-pane fade in active" id="cod">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Cash On Delivery</h3>
           <div className="row">
             <div className="col-md-8">
@@ -5353,13 +5458,16 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input type="hidden" defaultValue={0} name="cod_enabled" />
                     <input
                       type="checkbox"
-                      name="cod_enabled"
-                      className
+                      name="Status"
                       id="cod_enabled"
-                      defaultValue={1}
+                      checked={this.state.data.PaymentMethods.CashonDelivery.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.CashonDelivery.Status = !this.state.data.PaymentMethods.CashonDelivery.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="cod_enabled">Enable Cash On Delivery</label>
                   </div>
@@ -5367,36 +5475,38 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[cod_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[cod_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[cod_label]"
-                    defaultValue="Cash On Delivery"
                     type="text"
+                    value={this.state.data.PaymentMethods.CashonDelivery.Label}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "CashonDelivery", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[cod_description]"
                   className="col-md-3 control-label text-left"
                 >
                   Description<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="translatable[cod_description]"
+                    name="Description"
                     className="form-control "
-                    id="translatable[cod_description]"
                     rows={3}
                     cols={10}
-                    defaultValue={"Pay with cash upon delivery."}
+                    value={this.state.data.PaymentMethods.CashonDelivery.Description}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "CashonDelivery", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -5406,7 +5516,7 @@ class Settings extends React.Component {
       );
     } else if (this.state.activePanel == "banktransfer") {
       return (
-        <div className="tab-pane fade in active" id="bank_transfer">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Bank Transfer</h3>
           <div className="row">
             <div className="col-md-8">
@@ -5419,18 +5529,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="bank_transfer_enabled"
-                    />
+                   
                     <input
                       type="checkbox"
-                      name="bank_transfer_enabled"
-                      className
+                      name="Status"
                       id="bank_transfer_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.PaymentMethods.BankTransfer.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.BankTransfer.Status = !this.state.data.PaymentMethods.BankTransfer.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="bank_transfer_enabled">
                       Enable Bank Transfer
@@ -5440,70 +5549,72 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[bank_transfer_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[bank_transfer_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[bank_transfer_label]"
-                    defaultValue="Bank Transfer"
                     type="text"
+                    value={this.state.data.PaymentMethods.BankTransfer.Label}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "BankTransfer", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[bank_transfer_description]"
                   className="col-md-3 control-label text-left"
                 >
                   Description<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="translatable[bank_transfer_description]"
+                    name="Description"
                     className="form-control "
-                    id="translatable[bank_transfer_description]"
                     rows={3}
                     cols={10}
-                    defaultValue={
-                      "Make your payment directly into our bank account. Please use your Order ID as the payment reference."
-                    }
+                    value={this.state.data.PaymentMethods.BankTransfer.Description}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "BankTransfer", e.target.name, e.target.value)
+                    }}
+                    
                   />
                 </div>
               </div>
-              <div className id="bank-transfer-fields">
+              {this.state.data.PaymentMethods.BankTransfer.Status? 
+              <div  id="bank-transfer-fields">
                 <div className="form-group">
                   <label
-                    htmlFor="translatable[bank_transfer_instructions]"
                     className="col-md-3 control-label text-left"
                   >
                     Instructions<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <textarea
-                      name="translatable[bank_transfer_instructions]"
+                      name="Instructions"
                       className="form-control "
-                      id="translatable[bank_transfer_instructions]"
                       rows={3}
                       cols={10}
-                      defaultValue={
-                        "Please send your payment to the following account.\n<br>\nBank Name: Lorem Ipsum.\n<br>\nBeneficiary Name: John Doe.\n<br>\nAccount Number/IBAN: 123456789"
-                      }
+                      value={this.state.data.PaymentMethods.BankTransfer.Instructions}
+                     onChange={(e)=>{
+                      this.setVal("PaymentMethods", "BankTransfer", e.target.name, e.target.value)
+                    }}
                     />
                   </div>
                 </div>
               </div>
+              :""}
             </div>
           </div>
         </div>
       );
     } else if (this.state.activePanel == "check") {
       return (
-        <div className="tab-pane fade in active" id="check_payment">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Check / Money Order</h3>
           <div className="row">
             <div className="col-md-8">
@@ -5517,17 +5628,15 @@ class Settings extends React.Component {
                 <div className="col-md-9">
                   <div className="checkbox">
                     <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="check_payment_enabled"
-                    />
-                    <input
                       type="checkbox"
-                      name="check_payment_enabled"
-                      className
+                      name="Status"
                       id="check_payment_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.PaymentMethods.ChequeMoneyOrder.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.PaymentMethods.ChequeMoneyOrder.Status = !this.state.data.PaymentMethods.ChequeMoneyOrder.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="check_payment_enabled">
                       Enable Check / Money Order
@@ -5537,61 +5646,65 @@ class Settings extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[check_payment_label]"
                   className="col-md-3 control-label text-left"
                 >
                   Label<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[check_payment_label]"
+                    name="Label"
                     className="form-control "
-                    id="translatable[check_payment_label]"
-                    defaultValue="Check / Money Order"
                     type="text"
+                    value={this.state.data.PaymentMethods.ChequeMoneyOrder.Label}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "ChequeMoneyOrder", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[check_payment_description]"
                   className="col-md-3 control-label text-left"
                 >
                   Description<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="translatable[check_payment_description]"
+                    name="Description"
                     className="form-control "
-                    id="translatable[check_payment_description]"
                     rows={3}
                     cols={10}
-                    defaultValue={"Please send a check to our store."}
+                    value={this.state.data.PaymentMethods.ChequeMoneyOrder.Description}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "ChequeMoneyOrder", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
+              {this.state.data.PaymentMethods.ChequeMoneyOrder? 
               <div className id="check-payment-fields">
                 <div className="form-group">
                   <label
-                    htmlFor="translatable[check_payment_instructions]"
                     className="col-md-3 control-label text-left"
                   >
                     Instructions<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <textarea
-                      name="translatable[check_payment_instructions]"
+                      name="Instructions"
                       className="form-control "
-                      id="translatable[check_payment_instructions]"
                       rows={3}
                       cols={10}
-                      defaultValue={
-                        "Please send your payment to the following account.\n<br>\nBank Name: Lorem Ipsum.\n<br>\nBeneficiary Name: John Doe.\n<br>\nAccount Number/IBAN: 123456789"
-                      }
+                      value={this.state.data.PaymentMethods.ChequeMoneyOrder.Instructions}
+                    onChange={(e)=>{
+                      this.setVal("PaymentMethods", "ChequeMoneyOrder", e.target.name, e.target.value)
+                    }}
+                      
                     />
                   </div>
                 </div>
               </div>
+              :""}
             </div>
           </div>
         </div>

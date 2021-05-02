@@ -24,6 +24,7 @@ BraftEditor.use(table(options));
 class CreateProduct extends React.Component {
   state = {
     showModal: false,
+    multiple: false,
     categoryOptions: [],
     tagOptions: [],
     tagArray: [],
@@ -553,7 +554,7 @@ class CreateProduct extends React.Component {
           <h3 className="tab-content-title">Images</h3>
           <div className="single-image-wrapper">
             <h4>Base Image</h4>
-            <button type="button" className="image-picker btn btn-default" onClick={()=>this.setState({showModal: true})}>
+            <button type="button" className="image-picker btn btn-default" onClick={()=>this.setState({multiple: false,showModal: true})}>
               <i className="fa fa-folder-open m-r-5" />
               Browse
             </button>
@@ -570,8 +571,7 @@ class CreateProduct extends React.Component {
             <button
               type="button"
               className="image-picker btn btn-default"
-              data-input-name="files[additional_images][]"
-              data-multiple
+              onClick={()=>this.setState({multiple: true,showModal: true})}
             >
               <i className="fa fa-folder-open m-r-5" />
               Browse
@@ -883,7 +883,7 @@ class CreateProduct extends React.Component {
           <div className="modal-header">
                   <h4 className="modal-title">File Manager</h4>
                 </div>
-          <FileManager />
+          <FileManager multiple={this.state.multiple}/>
           
         </Modal>
       <div>
@@ -1139,7 +1139,7 @@ class CreateProduct extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-offset-2 col-md-10">
+                      <div className=" col-md-10" style={{marginTop: "10px"}}>
                         <button
                           type="submit"
                           className="btn btn-primary"
