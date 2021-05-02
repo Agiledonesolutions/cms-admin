@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, withRouter } from "react-router-dom";
+import "./products.css";
 import BraftEditor from "braft-editor";
 import table from "braft-extensions/dist/table";
 import "braft-editor/dist/index.css";
@@ -7,6 +8,9 @@ import "braft-extensions/dist/table.css";
 import api from "../../../apis/api";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
+import "react-responsive-modal/styles.css";
+import { Modal } from "react-responsive-modal";
+import FileManager from "../../Media/FileManager";
 
 const options = {
   defaultColumns: 3,
@@ -19,6 +23,7 @@ BraftEditor.use(table(options));
 
 class CreateProduct extends React.Component {
   state = {
+    showModal: false,
     categoryOptions: [],
     tagOptions: [],
     tagArray: [],
@@ -39,10 +44,11 @@ class CreateProduct extends React.Component {
       speacialPriceStart: "",
       specialPriceEnd: "",
       inventoryManagement: "Do Not Track Inventory",
+      Qty: "",
       SKU: "",
       stockAvailability: "In Stock",
       metaTitle: "",
-      metaDescription: ""
+      metaDescription: "",
     },
     brandId: "",
     categoryIds: [],
@@ -497,7 +503,6 @@ class CreateProduct extends React.Component {
                     ? ""
                     : "hide"
                 }
-                id="qty-field"
               >
                 <div className="form-group">
                   <label
@@ -508,11 +513,14 @@ class CreateProduct extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="qty"
+                      name="Qty"
                       className="form-control "
-                      id="qty"
-                      defaultValue
                       type="number"
+                      min={0}
+                      value={this.state.data.Qty}
+                      onChange={(e) => {
+                        this.setVal(e.target.name, e.target.value);
+                      }}
                     />
                   </div>
                 </div>
@@ -545,11 +553,7 @@ class CreateProduct extends React.Component {
           <h3 className="tab-content-title">Images</h3>
           <div className="single-image-wrapper">
             <h4>Base Image</h4>
-            <button
-              type="button"
-              className="image-picker btn btn-default"
-              data-input-name="files[base_image]"
-            >
+            <button type="button" className="image-picker btn btn-default" onClick={()=>this.setState({showModal: true})}>
               <i className="fa fa-folder-open m-r-5" />
               Browse
             </button>
@@ -593,9 +597,7 @@ class CreateProduct extends React.Component {
           <div className="row">
             <div className="col-md-8">
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Meta Title
                 </label>
                 <div className="col-md-9">
@@ -604,8 +606,8 @@ class CreateProduct extends React.Component {
                     name="metaTitle"
                     className="form-control"
                     value={this.state.data.metaTitle}
-                    onChange={(e)=>{
-                      this.setVal(e.target.name, e.target.value)
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
                     }}
                   />
                 </div>
@@ -624,8 +626,8 @@ class CreateProduct extends React.Component {
                     rows={10}
                     cols={10}
                     value={this.state.data.metaDescription}
-                    onChange={(e)=>{
-                      this.setVal(e.target.name, e.target.value)
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
                     }}
                   />
                 </div>
@@ -872,9 +874,26 @@ class CreateProduct extends React.Component {
   };
   render() {
     return (
+      <React.Fragment>
+        <Modal open={this.state.showModal} onClose={()=>{
+          document.querySelector('html').style.overflowY = "auto"
+
+          this.setState({showModal: false})
+          }} >
+          <div className="modal-header">
+                  <h4 className="modal-title">File Manager</h4>
+                </div>
+          <FileManager />
+          
+        </Modal>
       <div>
+
         <section className="content-header clearfix">
-        {this.props.edit == "true"? <h3>Edit Product</h3>: <h3>Create Product</h3>}
+          {this.props.edit == "true" ? (
+            <h3>Edit Product</h3>
+          ) : (
+            <h3>Create Product</h3>
+          )}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
@@ -882,7 +901,11 @@ class CreateProduct extends React.Component {
             <li>
               <Link to="/products">Products</Link>
             </li>
-            {this.props.edit == "true"? <li className="active">Edit Product</li>: <li className="active">Create Product</li>}
+            {this.props.edit == "true" ? (
+              <li className="active">Edit Product</li>
+            ) : (
+              <li className="active">Create Product</li>
+            )}
           </ol>
         </section>
         <section className="content">
@@ -970,6 +993,18 @@ class CreateProduct extends React.Component {
                               }}
                             >
                               <a data-toggle="tab">Images</a>
+                            </li>
+                            <li
+                              className={
+                                this.state.activePanel == "downloads"
+                                  ? "active"
+                                  : ""
+                              }
+                              onClick={(e) => {
+                                this.setState({ activePanel: "downloads" });
+                              }}
+                            >
+                              <a data-toggle="tab">Downloads</a>
                             </li>
                             <li
                               className={
@@ -1124,6 +1159,7 @@ class CreateProduct extends React.Component {
           </form>
         </section>
       </div>
+      </React.Fragment>
     );
   }
 }
