@@ -23,7 +23,7 @@ class Brands extends React.Component {
           name: "Logo",
           selector: "logo",
           sortable: true,
-          cell: row => <img src={row.logo}/>
+          cell: row => <img height={50} width={50} src={"https://big-cms.herokuapp.com/"+row.logo}/>
         },
         {
           name: "Name",
@@ -57,7 +57,7 @@ class Brands extends React.Component {
           i++;
           var tmp = {
             id: i,
-            logo: "https://via.placeholder.com/50",
+            logo: val.logo.image,
             name: val["name"],
             status: val["status"],
             created: format(val["createdAt"]),

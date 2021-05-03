@@ -2,9 +2,17 @@ import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import Validate from '../../../utils/validation'
 import api from '../../../apis/api'
+import "react-responsive-modal/styles.css";
+import { Modal } from "react-responsive-modal";
+import FileManager from "../../Media/FileManager";
 
 class CreateBrand extends React.Component {
   state = {
+    imageType: "",
+    logoImage: "",
+    bannerImage: "",
+    showModal: false,
+    multiple: false,
     activePanel: "general",
     data: {
       name: "",
@@ -13,18 +21,30 @@ class CreateBrand extends React.Component {
       metaDescription: "",
       url: ""
     },
+    logo: "",
+    banner: "",
     errors: []
+  };
+  setImageId = (id, multiple,image) => {  
+    if(this.state.imageType == "logo"){
+      this.setState({ logo: id, logoImage:  image });
+    }else if(this.state.imageType == "banner"){
+      this.setState({ banner: id, bannerImage:  image });
+    }
   };
   componentDidMount(){
     if(this.props.edit == "true"){
       const url = "/brand/get/" + this.props.match.params.id
       api.get(url).then(res=>{
+        console.log(res)
         const {data} = this.state
         data.name = res.data.data.name
         data.status = res.data.data.status
+        data.url = res.data.data.url
         data.metaTitle = res.data.data.metaTitle
         data.metaDescription = res.data.data.metaDescription
         this.setState({data})
+        this.setState({banner: res.data.data.banner._id, bannerImage: res.data.data.banner.image, logo: res.data.data.logo._id, logoImage: res.data.data.logo.image})
       }).catch(err=>{
         console.log("error fetching brand")
       })
@@ -52,13 +72,13 @@ class CreateBrand extends React.Component {
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
       if(this.props.edit == "true"){
-        api.put('/brand', {data: data,_id: this.props.match.params.id ,requiredPermission: "Edit Brand"}).then(res=>{
+        api.put('/brand', {data: data, _id: this.props.match.params.id, logo: this.state.logo, banner: this.state.banner, requiredPermission: "Edit Brand"}).then(res=>{
           console.log(res)
         }).catch(err=>{
           console.log("error updating brand")
         })
       }else{
-        api.post('/brand', {data: data, requiredPermission: "Create Brand"}).then(res=>{
+        api.post('/brand', {data: data, logo: this.state.logo, banner: this.state.banner, requiredPermission: "Create Brand"}).then(res=>{
           console.log(res)
         }).catch(err=>{
           console.log("error posting brand")
@@ -131,16 +151,19 @@ class CreateBrand extends React.Component {
             <button
               type="button"
               className="image-picker btn btn-default"
-              data-input-name="files[logo]"
+              onClick={() =>
+                
+                this.setState({ multiple: false, showModal: true, imageType: "logo" })
+              }
             >
               <i className="fa fa-folder-open m-r-5" />
               Browse
             </button>
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
-              <div className="image-holder placeholder">
+            {this.state.logoImage? <div className="image-holder"><img src={"https://big-cms.herokuapp.com/"+this.state.logoImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
                 <i className="fa fa-picture-o" />
-              </div>
+              </div>}
             </div>
           </div>
           <div className="media-picker-divider" />
@@ -149,16 +172,18 @@ class CreateBrand extends React.Component {
             <button
               type="button"
               className="image-picker btn btn-default"
-              data-input-name="files[banner]"
+              onClick={() =>
+                this.setState({ multiple: false, showModal: true, imageType: "banner" })
+              }
             >
               <i className="fa fa-folder-open m-r-5" />
               Browse
             </button>
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
-              <div className="image-holder placeholder">
+            {this.state.bannerImage? <div className="image-holder"><img src={"https://big-cms.herokuapp.com/"+this.state.bannerImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
                 <i className="fa fa-picture-o" />
-              </div>
+              </div>}
             </div>
           </div>
         </div>
@@ -230,6 +255,28 @@ class CreateBrand extends React.Component {
 
   render() {
     return (
+      <React.Fragment>
+         <Modal
+          open={this.state.showModal}
+          onClose={() => {
+            document.querySelector("html").style.overflowY = "auto";
+
+            this.setState({ showModal: false });
+          }}
+        >
+          <div className="modal-header">
+            <h4 className="modal-title">File Manager</h4>
+          </div>
+          <FileManager
+            multiple={this.state.multiple}
+            setImageId={this.setImageId}
+            close={() => {
+              document.querySelector("html").style.overflowY = "auto";
+
+              this.setState({ showModal: false });
+            }}
+          />
+        </Modal>
       <div>
         <section className="content-header clearfix">
         {this.props.edit == "true"? <h3>Edit Brand</h3>: <h3>Create Brand</h3>}
@@ -327,6 +374,7 @@ class CreateBrand extends React.Component {
           </form>
         </section>
       </div>
+      </React.Fragment>
     );
   }
 }
