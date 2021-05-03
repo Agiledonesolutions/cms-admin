@@ -31,6 +31,8 @@ class CreateProduct extends React.Component {
     categoryArray: [],
     brands: [],
     taxes: [],
+    baseImage: "",
+    additionalImages: [],
     activePanel: "general",
     activeTab: "basic",
     data: {
@@ -50,10 +52,15 @@ class CreateProduct extends React.Component {
       stockAvailability: "In Stock",
       metaTitle: "",
       metaDescription: "",
+      shortDescription: "",
+      productNewFrom: "",
+      productNewTo: ""
     },
     brandId: "",
     categoryIds: [],
     tagIds: [],
+    baseImageId: "",
+    additionalImageIds: [],
 
     editorState: BraftEditor.createEditorState(),
   };
@@ -166,7 +173,17 @@ class CreateProduct extends React.Component {
     data[key] = val;
     this.setState({ data });
   };
-
+  setImageId = (id, multiple,image) => {
+    if (multiple) {
+      const { additionalImageIds } = this.state;
+      const {additionalImages} =this.state
+      additionalImageIds.push(id);
+      additionalImages.push(image)
+      this.setState({ additionalImageIds, additionalImages });
+    } else {
+      this.setState({ baseImageId: id, baseImage:  image });
+    }
+  };
   onChange = (editorState) => {
     this.setState({
       editorState,
@@ -317,7 +334,7 @@ class CreateProduct extends React.Component {
                       type="checkbox"
                       name="virtual"
                       id="virtual"
-                      value={this.state.data.virtual}
+                      checked={this.state.data.virtual}
                       onChange={(e) => {
                         const { data } = this.state;
                         data.virtual = !this.state.data.virtual;
@@ -343,7 +360,7 @@ class CreateProduct extends React.Component {
                       type="checkbox"
                       name="status"
                       id="is_active"
-                      value={this.state.data.status}
+                      checked={this.state.data.status}
                       onChange={(e) => {
                         const { data } = this.state;
                         data.status = !this.state.data.status;
@@ -554,15 +571,22 @@ class CreateProduct extends React.Component {
           <h3 className="tab-content-title">Images</h3>
           <div className="single-image-wrapper">
             <h4>Base Image</h4>
-            <button type="button" className="image-picker btn btn-default" onClick={()=>this.setState({multiple: false,showModal: true})}>
+            <button
+              type="button"
+              className="image-picker btn btn-default"
+              onClick={() =>
+                this.setState({ multiple: false, showModal: true })
+              }
+            >
               <i className="fa fa-folder-open m-r-5" />
               Browse
             </button>
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
-              <div className="image-holder placeholder">
+              {this.state.baseImage? <div className="image-holder"><img src={"https://big-cms.herokuapp.com/"+this.state.baseImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
                 <i className="fa fa-picture-o" />
-              </div>
+              </div>}
+             
             </div>
           </div>
           <div className="media-picker-divider" />
@@ -571,7 +595,7 @@ class CreateProduct extends React.Component {
             <button
               type="button"
               className="image-picker btn btn-default"
-              onClick={()=>this.setState({multiple: true,showModal: true})}
+              onClick={() => this.setState({ multiple: true, showModal: true })}
             >
               <i className="fa fa-folder-open m-r-5" />
               Browse
@@ -580,9 +604,14 @@ class CreateProduct extends React.Component {
               <div className="col-md-12">
                 <div className="row">
                   <div className="image-list image-holder-wrapper clearfix">
-                    <div className="image-holder placeholder cursor-auto">
+                  {this.state.additionalImages.length > 0? 
+                  this.state.additionalImages.map((image, key)=>{
+                    return <div className="image-holder" key={key}><img src={"https://big-cms.herokuapp.com/"+image} height={120} width={120}/></div>
+                  })
+                  :<div className="image-holder placeholder cursor-auto">
                       <i className="fa fa-picture-o" />
-                    </div>
+                    </div>}
+                    
                   </div>
                 </div>
               </div>
@@ -816,53 +845,50 @@ class CreateProduct extends React.Component {
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="short_description"
                   className="col-md-3 control-label text-left"
                 >
                   Short Description
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="short_description"
+                    name="shortDescription"
                     className="form-control "
-                    id="short_description"
                     rows={10}
                     cols={10}
-                    defaultValue={""}
+                    value={this.state.data.shortDescription}
+                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="new_from"
                   className="col-md-3 control-label text-left"
                 >
                   Product New From
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="new_from"
+                    name="productNewFrom"
                     className="form-control datetime-picker"
-                    id="new_from"
-                    defaultValue
-                    type="text"
+                    type="date"
+                    value={this.state.data.productNewFrom}
+                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="new_to"
                   className="col-md-3 control-label text-left"
                 >
                   Product New To
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="new_to"
+                    name="productNewTo"
                     className="form-control datetime-picker"
-                    id="new_to"
-                    defaultValue
-                    type="text"
+                    type="date"
+                    value={this.state.data.productNewTo}
+                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                   />
                 </div>
               </div>
@@ -875,290 +901,306 @@ class CreateProduct extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Modal open={this.state.showModal} onClose={()=>{
-          document.querySelector('html').style.overflowY = "auto"
+        <Modal
+          open={this.state.showModal}
+          onClose={() => {
+            document.querySelector("html").style.overflowY = "auto";
 
-          this.setState({showModal: false})
-          }} >
+            this.setState({ showModal: false });
+          }}
+        >
           <div className="modal-header">
-                  <h4 className="modal-title">File Manager</h4>
-                </div>
-          <FileManager multiple={this.state.multiple}/>
-          
-        </Modal>
-      <div>
+            <h4 className="modal-title">File Manager</h4>
+          </div>
+          <FileManager
+            multiple={this.state.multiple}
+            setImageId={this.setImageId}
+            close={() => {
+              document.querySelector("html").style.overflowY = "auto";
 
-        <section className="content-header clearfix">
-          {this.props.edit == "true" ? (
-            <h3>Edit Product</h3>
-          ) : (
-            <h3>Create Product</h3>
-          )}
-          <ol className="breadcrumb">
-            <li>
-              <Link to="/dashboard">Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/products">Products</Link>
-            </li>
+              this.setState({ showModal: false });
+            }}
+          />
+        </Modal>
+        <div>
+          <section className="content-header clearfix">
             {this.props.edit == "true" ? (
-              <li className="active">Edit Product</li>
+              <h3>Edit Product</h3>
             ) : (
-              <li className="active">Create Product</li>
+              <h3>Create Product</h3>
             )}
-          </ol>
-        </section>
-        <section className="content">
-          <form className="form-horizontal">
-            <input type="hidden" name="_token" defaultValue="" />
-            <div className="accordion-content clearfix">
-              <div className="col-lg-3 col-md-4">
-                <div className="accordion-box">
-                  <div className="panel-group" id="ProductTabs">
-                    <div className="panel panel-default">
-                      <div className="panel-heading">
-                        <h4 className="panel-title">
-                          <a
-                            className={
-                              this.state.activeTab == "basic" ? "" : "collapsed"
-                            }
-                            data-toggle="collapse"
-                            data-parent="#ProductTabs"
-                            onClick={() => {
-                              if (this.state.activeTab == "basic") {
-                                this.setState({ activeTab: "none" });
-                              } else {
-                                this.setState({ activeTab: "basic" });
-                              }
-                            }}
-                          >
-                            Basic Information
-                          </a>
-                        </h4>
-                      </div>
-                      <div
-                        id="basic_information"
-                        className={
-                          this.state.activeTab == "basic"
-                            ? "panel-collapse collapse in"
-                            : "panel-collapse collapse"
-                        }
-                      >
-                        <div className="panel-body">
-                          <ul className="accordion-tab nav nav-tabs">
-                            <li
+            <ol className="breadcrumb">
+              <li>
+                <Link to="/dashboard">Dashboard</Link>
+              </li>
+              <li>
+                <Link to="/products">Products</Link>
+              </li>
+              {this.props.edit == "true" ? (
+                <li className="active">Edit Product</li>
+              ) : (
+                <li className="active">Create Product</li>
+              )}
+            </ol>
+          </section>
+          <section className="content">
+            <form className="form-horizontal">
+              <input type="hidden" name="_token" defaultValue="" />
+              <div className="accordion-content clearfix">
+                <div className="col-lg-3 col-md-4">
+                  <div className="accordion-box">
+                    <div className="panel-group" id="ProductTabs">
+                      <div className="panel panel-default">
+                        <div className="panel-heading">
+                          <h4 className="panel-title">
+                            <a
                               className={
-                                this.state.activePanel == "general"
-                                  ? "active"
-                                  : ""
+                                this.state.activeTab == "basic"
+                                  ? ""
+                                  : "collapsed"
                               }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "general" });
+                              data-toggle="collapse"
+                              data-parent="#ProductTabs"
+                              onClick={() => {
+                                if (this.state.activeTab == "basic") {
+                                  this.setState({ activeTab: "none" });
+                                } else {
+                                  this.setState({ activeTab: "basic" });
+                                }
                               }}
                             >
-                              <a data-toggle="tab">General</a>
-                            </li>
-                            <li
-                              className={
-                                this.state.activePanel == "price"
-                                  ? "active"
-                                  : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "price" });
-                              }}
-                            >
-                              <a data-toggle="tab">Price</a>
-                            </li>
-                            <li
-                              className={
-                                this.state.activePanel == "inventory"
-                                  ? "active"
-                                  : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "inventory" });
-                              }}
-                            >
-                              <a data-toggle="tab">Inventory</a>
-                            </li>
-                            <li
-                              className={
-                                this.state.activePanel == "images"
-                                  ? "active"
-                                  : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "images" });
-                              }}
-                            >
-                              <a data-toggle="tab">Images</a>
-                            </li>
-                            <li
-                              className={
-                                this.state.activePanel == "downloads"
-                                  ? "active"
-                                  : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "downloads" });
-                              }}
-                            >
-                              <a data-toggle="tab">Downloads</a>
-                            </li>
-                            <li
-                              className={
-                                this.state.activePanel == "seo" ? "active" : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "seo" });
-                              }}
-                            >
-                              <a data-toggle="tab">SEO</a>
-                            </li>
-                          </ul>
+                              Basic Information
+                            </a>
+                          </h4>
                         </div>
-                      </div>
-                    </div>
-                    <div className="panel panel-default">
-                      <div className="panel-heading">
-                        <h4 className="panel-title">
-                          <a
-                            className={
-                              this.state.activeTab == "advance"
-                                ? ""
-                                : "collapsed"
-                            }
-                            data-toggle="collapse"
-                            data-parent="#ProductTabs"
-                            onClick={() => {
-                              if (this.state.activeTab == "advance") {
-                                this.setState({ activeTab: "none" });
-                              } else {
-                                this.setState({ activeTab: "advance" });
-                              }
-                            }}
-                          >
-                            Advanced Information
-                          </a>
-                        </h4>
-                      </div>
-                      <div
-                        id="advanced_information"
-                        className={
-                          this.state.activeTab == "advance"
-                            ? "panel-collapse collapse in"
-                            : "panel-collapse collapse"
-                        }
-                      >
-                        <div className="panel-body">
-                          <ul className="accordion-tab nav nav-tabs">
-                            <li
-                              className={
-                                this.state.activePanel == "attributes"
-                                  ? "active"
-                                  : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "attributes" });
-                              }}
-                            >
-                              <a data-toggle="tab">Attributes</a>
-                            </li>
-                            <li
-                              className={
-                                this.state.activePanel == "options"
-                                  ? "active"
-                                  : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "options" });
-                              }}
-                            >
-                              <a data-toggle="tab">Options</a>
-                            </li>
-                            <li
-                              className={
-                                this.state.activePanel == "relatedProducts"
-                                  ? "active"
-                                  : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({
-                                  activePanel: "relatedProducts",
-                                });
-                              }}
-                            >
-                              <a data-toggle="tab">Related Products</a>
-                            </li>
-                            <li
-                              className={
-                                this.state.activePanel == "upSells"
-                                  ? "active"
-                                  : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "upSells" });
-                              }}
-                            >
-                              <a data-toggle="tab">Up-Sells</a>
-                            </li>
-                            <li
-                              className={
-                                this.state.activePanel == "crossSells"
-                                  ? "active"
-                                  : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "crossSells" });
-                              }}
-                            >
-                              <a data-toggle="tab">Cross-Sells</a>
-                            </li>
-                            <li
-                              className={
-                                this.state.activePanel == "additional"
-                                  ? "active"
-                                  : ""
-                              }
-                              onClick={(e) => {
-                                this.setState({ activePanel: "additional" });
-                              }}
-                            >
-                              <a data-toggle="tab">Additional</a>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-9 col-md-8">
-                <div className="accordion-box-content">
-                  <div className="tab-content clearfix">
-                    {this.tabContentToggle()}
-                    <div className="form-group">
-                      <div className=" col-md-10" style={{marginTop: "10px"}}>
-                        <button
-                          type="submit"
-                          className="btn btn-primary"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            this.handleSubmit();
-                          }}
+                        <div
+                          id="basic_information"
+                          className={
+                            this.state.activeTab == "basic"
+                              ? "panel-collapse collapse in"
+                              : "panel-collapse collapse"
+                          }
                         >
-                          Save
-                        </button>
+                          <div className="panel-body">
+                            <ul className="accordion-tab nav nav-tabs">
+                              <li
+                                className={
+                                  this.state.activePanel == "general"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "general" });
+                                }}
+                              >
+                                <a data-toggle="tab">General</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "price"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "price" });
+                                }}
+                              >
+                                <a data-toggle="tab">Price</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "inventory"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "inventory" });
+                                }}
+                              >
+                                <a data-toggle="tab">Inventory</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "images"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "images" });
+                                }}
+                              >
+                                <a data-toggle="tab">Images</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "downloads"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "downloads" });
+                                }}
+                              >
+                                <a data-toggle="tab">Downloads</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "seo"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "seo" });
+                                }}
+                              >
+                                <a data-toggle="tab">SEO</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="panel panel-default">
+                        <div className="panel-heading">
+                          <h4 className="panel-title">
+                            <a
+                              className={
+                                this.state.activeTab == "advance"
+                                  ? ""
+                                  : "collapsed"
+                              }
+                              data-toggle="collapse"
+                              data-parent="#ProductTabs"
+                              onClick={() => {
+                                if (this.state.activeTab == "advance") {
+                                  this.setState({ activeTab: "none" });
+                                } else {
+                                  this.setState({ activeTab: "advance" });
+                                }
+                              }}
+                            >
+                              Advanced Information
+                            </a>
+                          </h4>
+                        </div>
+                        <div
+                          id="advanced_information"
+                          className={
+                            this.state.activeTab == "advance"
+                              ? "panel-collapse collapse in"
+                              : "panel-collapse collapse"
+                          }
+                        >
+                          <div className="panel-body">
+                            <ul className="accordion-tab nav nav-tabs">
+                              <li
+                                className={
+                                  this.state.activePanel == "attributes"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "attributes" });
+                                }}
+                              >
+                                <a data-toggle="tab">Attributes</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "options"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "options" });
+                                }}
+                              >
+                                <a data-toggle="tab">Options</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "relatedProducts"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({
+                                    activePanel: "relatedProducts",
+                                  });
+                                }}
+                              >
+                                <a data-toggle="tab">Related Products</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "upSells"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "upSells" });
+                                }}
+                              >
+                                <a data-toggle="tab">Up-Sells</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "crossSells"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "crossSells" });
+                                }}
+                              >
+                                <a data-toggle="tab">Cross-Sells</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "additional"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "additional" });
+                                }}
+                              >
+                                <a data-toggle="tab">Additional</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-lg-9 col-md-8">
+                  <div className="accordion-box-content">
+                    <div className="tab-content clearfix">
+                      {this.tabContentToggle()}
+                      <div className="form-group">
+                        <div
+                          className=" col-md-10"
+                          style={{ marginTop: "10px" }}
+                        >
+                          <button
+                            type="submit"
+                            className="btn btn-primary"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              this.handleSubmit();
+                            }}
+                          >
+                            Save
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </form>
-        </section>
-      </div>
+            </form>
+          </section>
+        </div>
       </React.Fragment>
     );
   }

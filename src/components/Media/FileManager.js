@@ -31,6 +31,7 @@ class FileManager extends React.Component {
   state = {
     files: [],
     selectedRows: [],
+    ImageIds: [],
     tableData: {
       columns: [
         {
@@ -65,7 +66,10 @@ class FileManager extends React.Component {
         {
             name: "Select",
             selector: "_id",
-            cell: row=><button type="button" className="btn btn-default select-media"  data-icon="fa-picture-o"  data-original-title="Select this file">
+            cell: row=><button type="button" className="btn btn-default select-media"  data-icon="fa-picture-o"  data-original-title="Select this file" onClick={(e)=>{
+              e.preventDefault();
+              this.setId(row._id, row.thumbnail)
+            }}>
             <i className="fa fa-check-square-o" />
           </button>
           
@@ -74,6 +78,16 @@ class FileManager extends React.Component {
     },
     requiredPermission: "Delete Media",
   };
+
+  setId = (id, image) =>{
+    if(this.props.multiple){
+      this.props.setImageId(id, true, image)
+      console.log("added")
+    }else{
+      this.props.setImageId(id, false, image)
+      this.props.close()
+    }
+  }
 
   componentDidMount() {
       document.querySelector('html').style.overflowY = "hidden";
@@ -145,6 +159,7 @@ class FileManager extends React.Component {
       })
       .then((res) => {
         console.log(res);
+        this.componentDidMount()
       })
       .catch((err) => {
         console.log(err);
