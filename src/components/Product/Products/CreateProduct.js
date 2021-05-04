@@ -1,6 +1,12 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import "./products.css";
+import DataTable from "react-data-table-component";
+import SortIcon from "@material-ui/icons/SortRounded";
+import Checkbox from "@material-ui/core/Checkbox";
+import DataTableExtensions from "react-data-table-component-extensions";
+import "react-data-table-component-extensions/dist/index.css";
+import { format } from "timeago.js";
 import BraftEditor from "braft-editor";
 import table from "braft-extensions/dist/table";
 import "braft-editor/dist/index.css";
@@ -11,6 +17,11 @@ import "react-multiple-select-dropdown-lite/dist/index.css";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import FileManager from "../../Media/FileManager";
+import imageCompression from "browser-image-compression";
+import Related from "./Related";
+import UpSells from "./UpSells";
+import CrossSells from "./CrossSells";
+
 
 const options = {
   defaultColumns: 3,
@@ -19,10 +30,57 @@ const options = {
   columnResizable: true,
   exportAttrString: "",
 };
+
+
 BraftEditor.use(table(options));
 
 class CreateProduct extends React.Component {
   state = {
+    tableData: {
+      columns: [
+        {
+          name: "Id",
+          selector: "id",
+          sortable: true,
+          width: "60px"
+        },
+        {
+          name: "Thumbnail",
+          selector: "thumbnail",
+          sortable: true,
+          cell: (row) => (
+            <img
+              src={"https://big-cms.herokuapp.com/" + row.thumbnail}
+              height={60}
+              width={60}
+            />
+          ),
+          width: "110px",
+        },
+        {
+          name: "Name",
+          selector: "name",
+          sortable: true,
+        },
+        {
+          name: "Price",
+          selector: "price",
+          sortable: true,
+        },
+        {
+          name: "Status",
+          selector: "status",
+          sortable: true,
+          cell: row=><span className={row.status? "dot green": "dot red"}></span>
+        },
+        {
+          name: "Created",
+          selector: "created",
+          sortable: true,
+        },
+      ],
+      data: [],
+    },
     showModal: false,
     multiple: false,
     categoryOptions: [],
@@ -61,7 +119,10 @@ class CreateProduct extends React.Component {
     tagIds: [],
     baseImageId: "",
     additionalImageIds: [],
-
+    relatedProductIds: [],
+    upSellsIds: [],
+    crossSellsIds: [],
+    edit: "",
     editorState: BraftEditor.createEditorState(),
   };
 
@@ -149,6 +210,34 @@ class CreateProduct extends React.Component {
         console.log("Error fetching tags");
       });
     this.setState({ tagOptions });
+    const datalist = [];
+    var i = 0;
+    api
+      .get("/product/get")
+      .then((res) => {
+        res.data.data.map((val) => {
+          i++;
+          var tmp = {
+            id: i,
+            thumbnail: "uploads/images/1620124610162-blob",
+            name: val["name"],
+            price: val["price"],
+            status: val.status,
+            created: format(val["createdAt"]),
+            related: true,
+            upsells: false,
+            crosssells: true,
+            _id: val["_id"],
+          };
+          datalist.push(tmp);
+        });
+        const { tableData } = this.state;
+        tableData["data"] = datalist;
+        this.setState({ tableData });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
   setCategoryArray = (val) => {
     const { categoryArray } = this.state;
@@ -186,13 +275,39 @@ class CreateProduct extends React.Component {
   };
   onChange = (editorState) => {
     this.setState({
-      editorState,
+      editorState
     });
     this.setVal("description", this.state.editorState.toHTML());
   };
   handleSubmit = () => {
     console.log(this.state);
   };
+  uploadImageEditor = async(param) =>{
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+    const compressedFile = await imageCompression(param.file, options);
+    var formData = new FormData();
+    await formData.append("image", compressedFile);
+    api
+    .post("/media", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      console.log(res.data.data);
+      param.success({
+        url: "https://big-cms.herokuapp.com/"+res.data.data.image
+      })
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  }
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
       return (
@@ -224,8 +339,10 @@ class CreateProduct extends React.Component {
             <div className="col-md-10">
               <BraftEditor
                 language="en"
+                value={this.editorState}
+                media={{uploadFn: (param)=>this.uploadImageEditor(param)}}
                 editorState={this.editorState}
-                onChange={this.onChange}
+                onChange={(editorState)=>this.onChange(editorState)}
               />
             </div>
           </div>
@@ -746,97 +863,16 @@ class CreateProduct extends React.Component {
       );
     } else if (this.state.activePanel == "relatedProducts") {
       return (
-        <div className="tab-pane fade in active">
-          <h3 className="tab-content-title">Related Products</h3>
-          <div className="table-responsive">
-            <table className="table table-striped table-hover ">
-              <thead>
-                <tr>
-                  <th>
-                    <div className="checkbox">
-                      <input
-                        type="checkbox"
-                        className="select-all"
-                        id="related_products-select-all"
-                      />
-                      <label htmlFor="related_products-select-all" />
-                    </div>
-                  </th>
-                  <th>ID</th>
-                  <th>Thumbnail</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                  <th data-sort>Created</th>
-                </tr>
-              </thead>
-              <tbody />
-            </table>
-          </div>
-        </div>
+        <Related tableData={this.state.tableData}/>
       );
     } else if (this.state.activePanel == "upSells") {
       return (
-        <div className="tab-pane fade in active">
-          <h3 className="tab-content-title">Up-Sells</h3>
-          <div className="table-responsive">
-            <table className="table table-striped table-hover ">
-              <thead>
-                <tr>
-                  <th>
-                    <div className="checkbox">
-                      <input
-                        type="checkbox"
-                        className="select-all"
-                        id="up_sells-select-all"
-                      />
-                      <label htmlFor="up_sells-select-all" />
-                    </div>
-                  </th>
-                  <th>ID</th>
-                  <th>Thumbnail</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                  <th data-sort>Created</th>
-                </tr>
-              </thead>
-              <tbody />
-            </table>
-          </div>
-        </div>
+        <UpSells tableData={this.state.tableData}/>
       );
     } else if (this.state.activePanel == "crossSells") {
       return (
-        <div className="tab-pane fade in active">
-          <h3 className="tab-content-title">Cross-Sells</h3>
-          <div className="table-responsive">
-            <table className="table table-striped table-hover ">
-              <thead>
-                <tr>
-                  <th>
-                    <div className="checkbox">
-                      <input
-                        type="checkbox"
-                        className="select-all"
-                        id="cross_sells-select-all"
-                      />
-                      <label htmlFor="cross_sells-select-all" />
-                    </div>
-                  </th>
-                  <th>ID</th>
-                  <th>Thumbnail</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                  <th data-sort>Created</th>
-                </tr>
-              </thead>
-              <tbody />
-            </table>
-          </div>
-        </div>
-      );
+        <CrossSells tableData={this.state.tableData}/>
+       );
     } else if (this.state.activePanel == "additional") {
       return (
         <div className="tab-pane fade in active">
@@ -899,6 +935,9 @@ class CreateProduct extends React.Component {
     }
   };
   render() {
+    if (this.state.edit != "") {
+      return <Redirect to={"/products/" + this.state.edit + "/edit"} />;
+    }
     return (
       <React.Fragment>
         <Modal
