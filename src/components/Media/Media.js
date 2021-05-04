@@ -17,7 +17,6 @@ class Media extends React.Component {
 
     this.djsConfig = {
       addRemoveLinks: true,
-      acceptedFiles: "image/*, video/*",
       autoProcessQueue: false,
     };
 

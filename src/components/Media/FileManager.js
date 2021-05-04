@@ -19,7 +19,6 @@ class FileManager extends React.Component {
 
     this.djsConfig = {
       addRemoveLinks: true,
-      acceptedFiles: "image/*, video/*",
       autoProcessQueue: false,
     };
 
@@ -68,7 +67,7 @@ class FileManager extends React.Component {
             selector: "_id",
             cell: row=><button type="button" className="btn btn-default select-media"  data-icon="fa-picture-o"  data-original-title="Select this file" onClick={(e)=>{
               e.preventDefault();
-              this.setId(row._id, row.thumbnail)
+              this.setId(row._id, row.thumbnail, row.filename)
             }}>
             <i className="fa fa-check-square-o" />
           </button>
@@ -79,12 +78,12 @@ class FileManager extends React.Component {
     requiredPermission: "Delete Media",
   };
 
-  setId = (id, image) =>{
+  setId = (id, image, filename) =>{
     if(this.props.multiple){
-      this.props.setImageId(id, true, image)
+      this.props.setMediaId(id, true, image, filename)
       console.log("added")
     }else{
-      this.props.setImageId(id, false, image)
+      this.props.setMediaId(id, false, image, filename)
       this.props.close()
     }
   }
@@ -143,14 +142,14 @@ class FileManager extends React.Component {
   };
 
   handlePost = async (file) => {
-    const options = {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-    };
-    const compressedFile = await imageCompression(file, options);
+    // const options = {
+    //   maxSizeMB: 0.5,
+    //   maxWidthOrHeight: 1920,
+    //   useWebWorker: true,
+    // };
+    // const compressedFile = await imageCompression(file, options);
     var formData = new FormData();
-    await formData.append("image", compressedFile);
+    await formData.append("image", file);
     api
       .post("/media", formData, {
         headers: {
@@ -168,10 +167,7 @@ class FileManager extends React.Component {
   handleImagePost = () => {
       this.state.files.map( (file) => {
          this.handlePost(file);
-     });
-    
-      console.log("here")
-    
+     });    
      
   };
 

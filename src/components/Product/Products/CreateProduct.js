@@ -91,6 +91,7 @@ class CreateProduct extends React.Component {
     taxes: [],
     baseImage: "",
     additionalImages: [],
+    downloadFilenames: [],
     activePanel: "general",
     activeTab: "basic",
     data: {
@@ -122,6 +123,7 @@ class CreateProduct extends React.Component {
     relatedProductIds: [],
     upSellsIds: [],
     crossSellsIds: [],
+    downloadsIds: [" "],
     edit: "",
     editorState: BraftEditor.createEditorState(),
   };
@@ -224,9 +226,9 @@ class CreateProduct extends React.Component {
             price: val["price"],
             status: val.status,
             created: format(val["createdAt"]),
-            related: true,
-            upsells: false,
-            crosssells: true,
+            related: this.state.relatedProductIds.includes(val._id)?true:false,
+            upsells: this.state.upSellsIds.includes(val._id)?true:false,
+            crosssells: this.state.crossSellsIds.includes(val._id)?true:false,
             _id: val["_id"],
           };
           datalist.push(tmp);
@@ -273,6 +275,12 @@ class CreateProduct extends React.Component {
       this.setState({ baseImageId: id, baseImage:  image });
     }
   };
+  setDownloadId = (id, multiple, image, filename) =>{
+    const {downloadsIds, downloadFilenames} =  this.state
+    downloadsIds[downloadsIds.length-1] = id
+    downloadFilenames.push(filename)
+    this.setState({downloadsIds})
+  }
   onChange = (editorState) => {
     this.setState({
       editorState
@@ -308,6 +316,17 @@ class CreateProduct extends React.Component {
     });
 
   }
+  handleAddRow = () => {
+    const {downloadsIds} =this.state
+    downloadsIds.push("")
+    this.setState({downloadsIds})
+  };
+  handleRemoveSpecificRow = (idx)  => {
+    const {downloadsIds, downloadFilenames} = this.state
+    downloadsIds.splice(idx, 1)
+    downloadFilenames.splice(idx,1)
+    this.setState({downloadsIds, downloadFilenames})
+  };
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
       return (
@@ -863,7 +882,7 @@ class CreateProduct extends React.Component {
       );
     } else if (this.state.activePanel == "relatedProducts") {
       return (
-        <Related tableData={this.state.tableData}/>
+        <Related tableData={this.state.tableData} setEdit={(id)=>this.setState({edit: id})}/>
       );
     } else if (this.state.activePanel == "upSells") {
       return (
@@ -932,6 +951,68 @@ class CreateProduct extends React.Component {
           </div>
         </div>
       );
+    } else if(this.state.activePanel == "downloads"){
+      return(
+        <div className="tab-pane fade in active" id="downloads"><h3 className="tab-content-title">Downloads</h3><style dangerouslySetInnerHTML={{__html: "\n    .slide {\n        border: 1px solid #e9e9e9;\n        border-radius: 3px;\n        margin-bottom: 15px;\n    }\n\n    .slide .slide-header {\n        padding: 15px;\n        background: #f6f6f7;\n        border-bottom: 1px solid #e9e9e9;\n    }\n\n    .slide .slide-header span {\n        font-size: 16px;\n    }\n\n    .slide .slide-body {\n        position: relative;\n        padding: 15px;\n    }\n\n    .product-downloads-wrapper .slide {\n        margin-bottom: 20px;\n    }\n\n    .product-downloads-wrapper .table > tbody > tr > td {\n        vertical-align: middle;\n    }\n\n    .product-downloads-wrapper .options .drag-icon {\n        margin-top: 3px;\n    }\n\n    .product-downloads-wrapper .choose-file-group {\n        display: flex;\n    }\n\n    .product-downloads-wrapper .download-name {\n        flex-grow: 1;\n    }\n\n    .product-downloads-wrapper .btn-choose-file {\n        margin-left: 8px;\n    }\n\n    @media  screen and (max-width: 767px) {\n        .product-downloads-wrapper .table > tbody > tr {\n            border-top: 1px solid #e9e9e9;\n        }\n\n        .product-downloads-wrapper .table > tbody > tr > td:nth-child(2),\n        .product-downloads-wrapper .table > tbody > tr > td:nth-child(3) {\n            display: block;\n            border: none;\n            width: auto;\n            padding-left: 15px;\n            padding-right: 15px;\n            text-align: left;\n            vertical-align: initial;\n        }\n\n        .product-downloads-wrapper .table > tbody > tr > td:nth-child(3) {\n            padding-bottom: 15px;\n        }\n\n        .product-downloads-wrapper .options .drag-icon {\n            margin-top: 0;\n        }\n    }\n" }} />
+  <div id="product-downloads-wrapper" className="product-downloads-wrapper clearfix">
+    <div className="slide">
+      <div className="slide-header clearfix">
+        <span className="pull-left">
+          Downloadable Files
+        </span>
+      </div>
+      <div className="slide-body">
+        <div className="table-responsive">
+          <table className="options table table-bordered">
+            <thead className="hidden-xs">
+              <tr>
+                <th />
+                <th>File</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody >
+              {this.state.downloadsIds.map((val,idx)=>(
+              <tr key={idx}>
+                <td className="text-center">
+                  <span className="drag-icon">
+                    <i className="fa"></i>
+                    <i className="fa"></i>
+                  </span>
+                </td>
+                <td>
+                  <div className="form-group">
+                    <label className="visible-xs">
+                      File
+                    </label>
+                    <div className="choose-file-group">
+                      <input type="text" value={this.state.downloadFilenames[idx]} className="form-control download-name" readOnly={true} />
+                      <span className="btn btn-default btn-choose-file" onClick={() =>
+                this.setState({ multiple: false, showModal: true })
+              }>
+                        Choose
+                      </span>
+                    </div>
+                  </div>
+                </td>
+                <td className="text-center">
+                  <button type="button" className="btn btn-default delete-row" data-toggle="tooltip" data-title="Delete File" onClick={()=>this.handleRemoveSpecificRow(idx)}>
+                    <i className="fa fa-trash" />
+                  </button>
+                </td>
+              </tr>
+              ))}</tbody>
+          </table>
+        </div>
+        <button type="button" className="btn btn-default" onClick={()=>{this.handleAddRow()}}>
+          Add New File
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+      )
     }
   };
   render() {
@@ -953,7 +1034,7 @@ class CreateProduct extends React.Component {
           </div>
           <FileManager
             multiple={this.state.multiple}
-            setImageId={this.setImageId}
+            setMediaId={this.state.activePanel == "downloads"? this.setDownloadId :this.setImageId}
             close={() => {
               document.querySelector("html").style.overflowY = "auto";
 

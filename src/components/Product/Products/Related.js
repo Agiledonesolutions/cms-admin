@@ -47,7 +47,7 @@ class Related extends React.Component{
                   pagination
                   selectableRows
                   onRowClicked={(index) => {
-                    this.setState({ edit: index._id });
+                    this.props.setEdit(index._id)
                   }}
                   pointerOnHover
                   highlightOnHover
