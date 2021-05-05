@@ -38,10 +38,13 @@ class Related extends React.Component{
                   filterPlaceholder="Search"
                   export={false}
                   print={false}
-                  selectableRowSelected={row=>row.related}
+                  selectableRowSelected={row=>{return this.props.getIds.includes(row._id)}}
                   onSelectedRowsChange={(selected) => {
+                    const arr = []
                     selected["selectedRows"].forEach((row) => {
+                      arr.push(row._id)
                     });
+                    this.props.setIds(arr)
                   }}
                   responsive
                   pagination

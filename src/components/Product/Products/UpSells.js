@@ -38,16 +38,19 @@ class UpSells extends React.Component{
                   filterPlaceholder="Search"
                   export={false}
                   print={false}
-                  selectableRowSelected={row=>row.upsells}
+                  selectableRowSelected={row=>{return this.props.getIds.includes(row._id)}}
                   onSelectedRowsChange={(selected) => {
+                    const arr = []
                     selected["selectedRows"].forEach((row) => {
+                      arr.push(row._id)
                     });
+                    this.props.setIds(arr)
                   }}
                   responsive
                   pagination
                   selectableRows
                   onRowClicked={(index) => {
-                    this.setState({ edit: index._id });
+                    this.props.setEdit(index._id)
                   }}
                   pointerOnHover
                   highlightOnHover

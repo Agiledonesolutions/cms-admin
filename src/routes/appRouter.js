@@ -32,6 +32,7 @@ import Taxes from '../components/Localization/Taxes/Taxes';
 import CreateTax from '../components/Localization/Taxes/CreateTax';
 import Media from '../components/Media/Media';
 import Settings from '../components/Settings/Settings';
+import Categories from '../components/Product/Categories/Categories';
 
 
 const routes = (
@@ -54,7 +55,7 @@ const routes = (
         <PrivateRoute exact path='/products/create' component={()=><Dashboard abc={ <CreateProduct />} />} />
         <PrivateRoute exact path='/products/:id/edit' component={()=><Dashboard abc={ <CreateProduct edit="true"/>} />} />
 
-        {/* Categories */}
+        <PrivateRoute exact path='/categories' component={()=><Dashboard abc={ <Categories />} />} />
 
         <PrivateRoute exact path='/brands' component={()=><Dashboard abc={ <Brands />} />} />
         <PrivateRoute exact path='/brands/create' component={()=><Dashboard abc={ <CreateBrand />} />} />
