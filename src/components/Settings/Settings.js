@@ -9,19 +9,48 @@ class Settings extends React.Component {
     activePanel: "general",
     activeTab: "generalsettings",
     data: {
+      General: {
+        SupportedCountries: [],
+        DefaultCountry: "",
+        SupportedLocales: [],
+        DefaultLocale: "",
+        DefaultTimezone: "",
+        CustomerRole: "",
+        RatingsAndReviews: false,
+        AutoApproveReviews: false,
+        CookieBar: false
+      },
+      Maintenance: {
+        MaintenanceMode: false
+      },
+      Store: {
+        StoreName: ""
+      },
+      SocialLogins: {
+        Facebook: {
+          Status: false,
+          AppID: "",
+          Appsecret: ""
+        },
+        Google: {
+          Status: false,
+          ClientID: "",
+          Clientsecret: ""
+        }
+      },
       ShippingMethods: {
         FreeShipping: {
-          Status: "",
+          Status: false,
           Label: "",
           MinimumAmount: ""
         },
         LocalPickup: {
-          Status: "",
+          Status: false,
           Label: "",
           Cost: ""
         },
         FlatRate: {
-          Status: "",
+          Status: false,
           Label: "",
           Cost: ""
         }
@@ -88,8 +117,8 @@ class Settings extends React.Component {
   componentDidMount(){
     api.get('/settings/get').then(res=>{
       this.setState({data: res.data.data[0]})
-      
     }).catch(err=>{
+      console.log(err)
       console.log("error fetching settings")
     })
   }
@@ -4435,7 +4464,7 @@ class Settings extends React.Component {
       );
     } else if (this.state.activePanel == "facebook") {
       return (
-        <div className="tab-pane fade in active" id="facebook">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Facebook</h3>
           <div className="row">
             <div className="col-md-8">
@@ -4448,18 +4477,18 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="facebook_login_enabled"
-                    />
+                   
                     <input
                       type="checkbox"
                       name="facebook_login_enabled"
-                      className
                       id="facebook_login_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.SocialLogins.Facebook.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.SocialLogins.Facebook.Status = !this.state.data.SocialLogins.Facebook.Status
+                        this.setState({data})
+                      }}
+
                     />
                     <label htmlFor="facebook_login_enabled">
                       Enable Facebook Login
@@ -4467,49 +4496,53 @@ class Settings extends React.Component {
                   </div>
                 </div>
               </div>
+              {this.state.data.SocialLogins.Facebook.Status? 
               <div className id="facebook-login-fields">
                 <div className="form-group">
                   <label
-                    htmlFor="facebook_login_app_id"
                     className="col-md-3 control-label text-left"
                   >
                     App ID<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="facebook_login_app_id"
+                      name="AppID"
                       className="form-control "
-                      id="facebook_login_app_id"
-                      defaultValue
                       type="text"
+                      value={this.state.data.SocialLogins.Facebook.AppID}
+                    onChange={(e)=>{
+                      this.setVal("SocialLogins", "Facebook", e.target.name, e.target.value)
+                    }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="facebook_login_app_secret"
                     className="col-md-3 control-label text-left"
                   >
                     App Secret<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="facebook_login_app_secret"
+                      name="Appsecret"
                       className="form-control "
-                      id="facebook_login_app_secret"
-                      defaultValue
                       type="password"
+                      value={this.state.data.SocialLogins.Facebook.Appsecret}
+                    onChange={(e)=>{
+                      this.setVal("SocialLogins", "Facebook", e.target.name, e.target.value)
+                    }}
                     />
                   </div>
                 </div>
               </div>
+              :""}
             </div>
           </div>
         </div>
       );
     } else if (this.state.activePanel == "google") {
       return (
-        <div className="tab-pane fade in active" id="google">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Google</h3>
           <div className="row">
             <div className="col-md-8">
@@ -4522,18 +4555,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="google_login_enabled"
-                    />
+                    
                     <input
                       type="checkbox"
                       name="google_login_enabled"
-                      className
                       id="google_login_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.SocialLogins.Google.Status}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.SocialLogins.Google.Status = !this.state.data.SocialLogins.Google.Status
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="google_login_enabled">
                       Enable Google Login
@@ -4541,42 +4573,46 @@ class Settings extends React.Component {
                   </div>
                 </div>
               </div>
+              {this.state.data.SocialLogins.Google.Status? 
               <div className id="google-login-fields">
                 <div className="form-group">
                   <label
-                    htmlFor="google_login_client_id"
                     className="col-md-3 control-label text-left"
                   >
                     Client ID<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="google_login_client_id"
+                      name="ClientID"
                       className="form-control "
-                      id="google_login_client_id"
-                      defaultValue
                       type="text"
+                      value={this.state.data.SocialLogins.Google.ClientID}
+                    onChange={(e)=>{
+                      this.setVal("SocialLogins", "Google", e.target.name, e.target.value)
+                    }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="google_login_client_secret"
                     className="col-md-3 control-label text-left"
                   >
                     Client Secret<span className="m-l-5 text-red">*</span>
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="google_login_client_secret"
+                      name="Clientsecret"
                       className="form-control "
-                      id="google_login_client_secret"
-                      defaultValue
                       type="password"
+                      value={this.state.data.SocialLogins.Google.Clientsecret}
+                    onChange={(e)=>{
+                      this.setVal("SocialLogins", "Google", e.target.name, e.target.value)
+                    }}
                     />
                   </div>
                 </div>
               </div>
+              :""}
             </div>
           </div>
         </div>
