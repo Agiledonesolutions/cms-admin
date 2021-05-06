@@ -3936,25 +3936,26 @@ class Settings extends React.Component {
       );
     } else if (this.state.activePanel == "sms") {
       return (
-        <div className="tab-pane fade in active" id="sms">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">SMS</h3>
           <div className="row">
             <div className="col-md-8">
               <div className="box-content clearfix">
                 <div className="form-group">
                   <label
-                    htmlFor="sms_from"
                     className="col-md-3 control-label text-left"
                   >
                     SMS From
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="sms_from"
+                      name="SMSFrom"
                       className="form-control "
-                      id="sms_from"
-                      defaultValue
                       type="text"
+                      value={this.state.data.SMS.SMSFrom}
+                      onChange={(e)=>{
+                        this.setVal2("SMS", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
@@ -3967,9 +3968,15 @@ class Settings extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <select
-                      name="sms_service"
+                      name="name"
                       className="form-control custom-select-black "
                       id="sms_service"
+                      value={this.state.data.SMS.SMSService.name}
+                      onChange={(e)=>{
+                        this.setVal("SMS","SMSService", e.target.name, e.target.value)
+                        this.setVal("SMS", "SMSService", "API_KEY", "")
+                        this.setVal("SMS", "SMSService", "APISecret", "")
+                      }}
                     >
                       <option value>Select Service</option>
                       <option value="vonage">Vonage</option>
@@ -3977,80 +3984,88 @@ class Settings extends React.Component {
                     </select>
                   </div>
                 </div>
-                <div className="sms-service hide" id="-service"></div>
-                <div className="sms-service hide" id="vonage-service">
+                {this.state.data.SMS.SMSService.name == "vonage"? 
+                <div className="sms-service " >
                   <div className="form-group">
                     <label
-                      htmlFor="vonage_key"
                       className="col-md-3 control-label text-left"
                     >
                       API Key<span className="m-l-5 text-red">*</span>
                     </label>
                     <div className="col-md-9">
                       <input
-                        name="vonage_key"
+                        name="API_KEY"
                         className="form-control "
-                        id="vonage_key"
-                        defaultValue
                         type="text"
+                        value={this.state.data.SMS.SMSService.API_KEY}
+                      onChange={(e)=>{
+                        this.setVal("SMS","SMSService", e.target.name, e.target.value)
+                      }}
                       />
                     </div>
                   </div>
                   <div className="form-group">
                     <label
-                      htmlFor="vonage_secret"
                       className="col-md-3 control-label text-left"
                     >
                       API Secret<span className="m-l-5 text-red">*</span>
                     </label>
                     <div className="col-md-9">
                       <input
-                        name="vonage_secret"
+                        name="APISecret"
                         className="form-control "
-                        id="vonage_secret"
-                        defaultValue
                         type="password"
+                        value={this.state.data.SMS.SMSService.APISecret}
+                      onChange={(e)=>{
+                        this.setVal("SMS","SMSService", e.target.name, e.target.value)
+                      }}
                       />
                     </div>
                   </div>
                 </div>
-                <div className="sms-service hide" id="twilio-service">
+                :""}
+                {this.state.data.SMS.SMSService.name == "twilio"? 
+                <div className="sms-service ">
                   <div className="form-group">
                     <label
-                      htmlFor="twilio_sid"
                       className="col-md-3 control-label text-left"
                     >
                       Account SID<span className="m-l-5 text-red">*</span>
                     </label>
                     <div className="col-md-9">
                       <input
-                        name="twilio_sid"
+                        name="API_KEY"
                         className="form-control "
-                        id="twilio_sid"
-                        defaultValue
                         type="text"
+                        value={this.state.data.SMS.SMSService.API_KEY}
+                      onChange={(e)=>{
+                        this.setVal("SMS","SMSService", e.target.name, e.target.value)
+                      }}
                       />
                     </div>
                   </div>
                   <div className="form-group">
                     <label
-                      htmlFor="twilio_token"
                       className="col-md-3 control-label text-left"
                     >
                       Auth Token<span className="m-l-5 text-red">*</span>
                     </label>
                     <div className="col-md-9">
                       <input
-                        name="twilio_token"
+                        name="APISecret"
                         className="form-control "
-                        id="twilio_token"
-                        defaultValue
                         type="password"
+                        value={this.state.data.SMS.SMSService.APISecret}
+                      onChange={(e)=>{
+                        this.setVal("SMS","SMSService", e.target.name, e.target.value)
+                      }}
                       />
                     </div>
                   </div>
                 </div>
+                :""}
               </div>
+              
               <div className="box-content clearfix">
                 <h4 className="section-title">
                   Customer Notification Settings
@@ -4064,17 +4079,17 @@ class Settings extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <div className="checkbox">
-                      <input
-                        type="hidden"
-                        defaultValue={0}
-                        name="welcome_sms"
-                      />
+                      
                       <input
                         type="checkbox"
                         name="welcome_sms"
-                        className
                         id="welcome_sms"
-                        defaultValue={1}
+                        checked={this.state.data.SMS.WelcomeSMS}
+                        onChange={()=>{
+                          const {data} = this.state
+                          data.SMS.WelcomeSMS = !this.state.data.SMS.WelcomeSMS
+                          this.setState({data})
+                        }}
                       />
                       <label htmlFor="welcome_sms">
                         Send welcome SMS after registration
@@ -4094,17 +4109,18 @@ class Settings extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <div className="checkbox">
-                      <input
-                        type="hidden"
-                        defaultValue={0}
-                        name="new_order_admin_sms"
-                      />
+                      
                       <input
                         type="checkbox"
                         name="new_order_admin_sms"
-                        className
                         id="new_order_admin_sms"
-                        defaultValue={1}
+                        checked={this.state.data.SMS.NewOrderAdminSMS}
+                        onChange={()=>{
+                          const {data} = this.state
+                          data.SMS.NewOrderAdminSMS = !this.state.data.SMS.NewOrderAdminSMS
+                          this.setState({data})
+                        }}
+                        
                       />
                       <label htmlFor="new_order_admin_sms">
                         Send new order notification to the admin
@@ -4121,17 +4137,17 @@ class Settings extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <div className="checkbox">
-                      <input
-                        type="hidden"
-                        defaultValue={0}
-                        name="new_order_sms"
-                      />
+                     
                       <input
                         type="checkbox"
                         name="new_order_sms"
-                        className
                         id="new_order_sms"
-                        defaultValue={1}
+                        checked={this.state.data.SMS.NewOrderSMS}
+                        onChange={()=>{
+                          const {data} = this.state
+                          data.SMS.NewOrderSMS = !this.state.data.SMS.NewOrderSMS
+                          this.setState({data})
+                        }}
                       />
                       <label htmlFor="new_order_sms">
                         Send new order notification to the customer
@@ -4141,26 +4157,20 @@ class Settings extends React.Component {
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="sms_order_statuses[]"
                     className="col-md-3 control-label text-left"
                   >
                     SMS Order Statuses
                   </label>
                   <div className="col-md-9">
-                    <select
-                      name="sms_order_statuses[]"
-                      className="form-control custom-select-black selectize prevent-creation"
-                      id="sms_order_statuses[]"
-                      multiple={1}
-                    >
-                      <option value="canceled">Canceled</option>
-                      <option value="completed">Completed</option>
-                      <option value="on_hold">On Hold</option>
-                      <option value="pending">Pending</option>
-                      <option value="pending_payment">Pending Payment</option>
-                      <option value="processing">Processing</option>
-                      <option value="refunded">Refunded</option>
-                    </select>
+                  <MultiSelect
+                    onChange={(val)=>{
+                      const {data} = this.state
+                      data.SMS.SMSOrderStatuses = val.split(",")
+                      this.setState({data})
+                    }}
+                    options={[{label: "Canceled", value: "Canceled"}, {label: "Completed", value: "Completed"}, {label: "On Hold", value: "On Hold"}, {label: "Pending", value: "Pending"}, {label: "Pending Payment", value: "Pending Payment"}, {label: "Processing", value: "Processing"}, {label: "Refunded", value: "Refunded"}]}
+                    defaultValue={this.state.data.SMS.SMSOrderStatuses.toString()}
+                  />
                   </div>
                 </div>
               </div>

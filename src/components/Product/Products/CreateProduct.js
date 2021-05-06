@@ -124,7 +124,7 @@ class CreateProduct extends React.Component {
     attributes: [
       {
         attribute: "",
-        value: "",
+        value: [],
       },
     ],
     options: [],
@@ -362,12 +362,14 @@ class CreateProduct extends React.Component {
     this.setState({attributes})
   }
   handleRemoveSpecificRowAttribute = (idx) =>{
-    const {attributes} = this.state
+    const {attributes, attributeOptionsValues} = this.state
     attributes.splice(idx,1)
-    this.setState({attributes})
+    attributeOptionsValues.splice(idx,1)
+    this.setState({attributes, attributeOptionsValues})
   }
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
+      const {editorState} = this.state
       return (
         <div className="tab-pane fade in active">
           <h3 className="tab-content-title">General</h3>
@@ -397,9 +399,8 @@ class CreateProduct extends React.Component {
             <div className="col-md-10">
               <BraftEditor
                 language="en"
-                value={this.editorState}
+                value={editorState}
                 media={{ uploadFn: (param) => this.uploadImageEditor(param) }}
-                editorState={this.editorState}
                 onChange={(editorState) => this.onChange(editorState)}
               />
             </div>
@@ -481,7 +482,6 @@ class CreateProduct extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="tags[]"
                   className="col-md-3 control-label text-left"
                 >
                   Tags
@@ -862,7 +862,7 @@ class CreateProduct extends React.Component {
       );
     } else if (this.state.activePanel == "attributes") {
       return (
-        <div className="tab-pane fade in active" id="attributes">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Attributes</h3>
           <div id="product-attributes-wrapper">
             <div className="table-responsive">
@@ -888,15 +888,33 @@ class CreateProduct extends React.Component {
                         <div className="form-group">
                           <label className="visible-xs">Attribute</label>
                           <select
-                            name={this.state.attributes[idx].attribute}
+                            name="attribute"
                             className="form-control attribute custom-select-black"
                             id="product-attribute-select"
+                            value={this.state.attributes[idx].attribute}
+                            onChange={(e)=>{
+                              const {attributes, attributeOptionsValues} = this.state
+                              const arr = e.target.options[e.target.selectedIndex].dataset.values.split(",")
+                              
+                              attributes[idx].attribute = e.target.value
+                              this.setState({attributes})
+                              let tmparr = []
+                              arr.map(val=>{
+                                let tmp ={
+                                  label: val,
+                                  value: val
+                                }
+                                tmparr.push(tmp)
+                              })
+                              attributeOptionsValues[idx] = tmparr
+                              this.setState({attributeOptionsValues})
+                            }}
                           >
                             <option value="">Please Select</option>
-                            {Object.entries(this.state.attributesOptions).map(([key,val])=>(
-                              <optgroup label={key}>
-                                {val.map((option)=>(
-                                  <option value={option.id}>{option.attribute}</option>
+                            {Object.entries(this.state.attributesOptions).map(([key,val],idx2)=>(
+                              <optgroup label={key} key={idx2}>
+                                {val.map((option, idx3)=>(
+                                  <option value={option.id} key={idx3} data-values={option.values}>{option.attribute}</option>
                                   
                                 ))}
                              
@@ -909,7 +927,15 @@ class CreateProduct extends React.Component {
                       <td>
                         <div className="form-group">
                           
-                         <MultiSelect />
+                         <MultiSelect 
+                         options={this.state.attributeOptionsValues[idx]}
+                         onChange={(val)=>{
+                           const {attributes} = this.state
+                           attributes[idx].value = val.split(",")
+                           this.setState({attributes})
+                         }}
+                         defaultValue={this.state.attributes[idx].value.toString()}
+                         />
                         </div>
                       </td>
                       <td className="text-center">
