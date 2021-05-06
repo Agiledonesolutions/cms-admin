@@ -24,7 +24,64 @@ class Settings extends React.Component {
         MaintenanceMode: false
       },
       Store: {
-        StoreName: ""
+        StoreName: "",
+        StoreTagline: "",
+        StoreEmail: "",
+        StorePhone: "",
+        StoreAddress1: "",
+        StoreAddress2: "",
+        StoreCity: "",
+        StoreCountry: "",
+        StoreState: "",
+        StoreZip: "",
+        HideStorePhone: false,
+        HideStoreEmail: false
+      },
+      Currency: {
+        SupportedCurrencies: [],
+        DefaultCurrency: "",
+        ExchangeRateService: {
+          name: "",
+          APIKey: ""
+        },
+        AutoRefresh: {
+          Enable: false,
+          Frequency: ""
+        }
+      },
+      SMS: {
+        SMSFrom: "",
+        SMSService: {
+          name: "",
+          API_KEY: "",
+          APISecret: ""
+        },
+        WelcomeSMS: false,
+        NewOrderAdminSMS: false,
+        NewOrderSMS: false,
+        SMSOrderStatuses: []
+      },
+      Mail: {
+        MailFromAddress: "",
+        MailFromName: "",
+        MailHost: "",
+        MailPort: "",
+        MailUsername: "",
+        MailPassword: "",
+        MailEncryption: "",
+        WelcomeEmail: false,
+        NewOrderAdminEmail: false,
+        InvoiceEmail: false,
+        EmailOrderStatuses: []
+      },
+      Newsletter: {
+        Newsletter: false,
+        MailchimpAPIkey: "",
+        MailchimpListID: ""
+      },
+      CustomCSSJS: {
+        Header: "",
+        Footer: ""
       },
       SocialLogins: {
         Facebook: {
@@ -113,15 +170,28 @@ class Settings extends React.Component {
         }
       }
     },
+    id: ""
   };
   componentDidMount(){
     api.get('/settings/get').then(res=>{
-      this.setState({data: res.data.data[0]})
+      const {data} = this.state
+      for(const [key, value] of Object.entries(res.data.data[0])){
+        if(key != "_id" && key != "__v"){
+          data[key] = value
+        }
+      }
+      this.setState({data, id: res.data.data[0]._id})
     }).catch(err=>{
       console.log(err)
       console.log("error fetching settings")
     })
   }
+  setVal2 = (key, key2, val) => {
+    const { data } = this.state;
+    data[key][key2] = val;
+    this.setState({ data });
+  }
+
   setVal = (key,key2,key3, val) => {
     const { data } = this.state;
     data[key][key2][key3] = val;
@@ -4100,129 +4170,137 @@ class Settings extends React.Component {
       );
     } else if (this.state.activePanel == "mail") {
       return (
-        <div className="tab-pane fade in active" id="mail">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Mail</h3>
           <div className="row">
             <div className="col-md-8">
               <div className="box-content clearfix">
                 <div className="form-group">
                   <label
-                    htmlFor="mail_from_address"
                     className="col-md-3 control-label text-left"
                   >
                     Mail From Address
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="mail_from_address"
+                      name="MailFromAddress"
                       className="form-control "
-                      id="mail_from_address"
-                      defaultValue="customerservice@fleetcart.envaysoft.com"
                       type="text"
+                      value={this.state.data.Mail.MailFromAddress}
+                      onChange={(e)=>{
+                        this.setVal2("Mail", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="mail_from_name"
                     className="col-md-3 control-label text-left"
                   >
                     Mail From Name
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="mail_from_name"
+                      name="MailFromName"
                       className="form-control "
-                      id="mail_from_name"
-                      defaultValue="Customer Service"
                       type="text"
+                      value={this.state.data.Mail.MailFromName}
+                      onChange={(e)=>{
+                        this.setVal2("Mail", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="mail_host"
                     className="col-md-3 control-label text-left"
                   >
                     Mail Host
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="mail_host"
+                      name="MailHost"
                       className="form-control "
-                      id="mail_host"
-                      defaultValue
                       type="text"
+                      value={this.state.data.Mail.MailHost}
+                      onChange={(e)=>{
+                        this.setVal2("Mail", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="mail_port"
                     className="col-md-3 control-label text-left"
                   >
                     Mail Port
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="mail_port"
+                      name="MailPort"
                       className="form-control "
-                      id="mail_port"
-                      defaultValue
                       type="text"
+                      value={this.state.data.Mail.MailPort}
+                      onChange={(e)=>{
+                        this.setVal2("Mail", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="mail_username"
                     className="col-md-3 control-label text-left"
                   >
                     Mail Username
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="mail_username"
+                      name="MailUsername"
                       className="form-control "
-                      id="mail_username"
-                      defaultValue
                       type="text"
+                      value={this.state.data.Mail.MailUsername}
+                      onChange={(e)=>{
+                        this.setVal2("Mail", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="mail_password"
                     className="col-md-3 control-label text-left"
                   >
                     Mail Password
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="mail_password"
+                      name="MailPassword"
                       className="form-control "
-                      id="mail_password"
-                      defaultValue
                       type="password"
+                      value={this.state.data.Mail.MailPassword}
+                      onChange={(e)=>{
+                        this.setVal2("Mail", e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="mail_encryption"
                     className="col-md-3 control-label text-left"
                   >
                     Mail Encryption
                   </label>
                   <div className="col-md-9">
                     <select
-                      name="mail_encryption"
+                      name="MailEncryption"
                       className="form-control custom-select-black "
-                      id="mail_encryption"
+                      value={this.state.data.Mail.MailEncryption}
+                      onChange={(e)=>{
+                        this.setVal2("Mail", e.target.name, e.target.value)
+                      }}
                     >
-                      <option value>Please Select</option>
-                      <option value="ssl">SSL</option>
-                      <option value="tls">Tls</option>
+                      <option value="">Please Select</option>
+                      <option value="SSL">SSL</option>
+                      <option value="Tls">Tls</option>
                     </select>
                   </div>
                 </div>
@@ -4240,17 +4318,17 @@ class Settings extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <div className="checkbox">
-                      <input
-                        type="hidden"
-                        defaultValue={0}
-                        name="welcome_email"
-                      />
+                      
                       <input
                         type="checkbox"
                         name="welcome_email"
-                        className
                         id="welcome_email"
-                        defaultValue={1}
+                        checked={this.state.data.Mail.WelcomeEmail}
+                        onChange={()=>{
+                          const {data} = this.state
+                          data.Mail.WelcomeEmail = !this.state.data.Mail.WelcomeEmail
+                          this.setState({data})
+                        }}
                       />
                       <label htmlFor="welcome_email">
                         Send welcome email after registration
@@ -4270,17 +4348,17 @@ class Settings extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <div className="checkbox">
-                      <input
-                        type="hidden"
-                        defaultValue={0}
-                        name="admin_order_email"
-                      />
+                     
                       <input
                         type="checkbox"
                         name="admin_order_email"
-                        className
                         id="admin_order_email"
-                        defaultValue={1}
+                        checked={this.state.data.Mail.NewOrderAdminEmail}
+                        onChange={()=>{
+                          const {data} = this.state
+                          data.Mail.NewOrderAdminEmail = !this.state.data.Mail.NewOrderAdminEmail
+                          this.setState({data})
+                        }}
                       />
                       <label htmlFor="admin_order_email">
                         Send new order notification to the admin
@@ -4297,17 +4375,17 @@ class Settings extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <div className="checkbox">
-                      <input
-                        type="hidden"
-                        defaultValue={0}
-                        name="invoice_email"
-                      />
+                     
                       <input
                         type="checkbox"
                         name="invoice_email"
-                        className
                         id="invoice_email"
-                        defaultValue={1}
+                        checked={this.state.data.Mail.InvoiceEmail}
+                        onChange={()=>{
+                          const {data} = this.state
+                          data.Mail.InvoiceEmail = !this.state.data.Mail.InvoiceEmail
+                          this.setState({data})
+                        }}
                       />
                       <label htmlFor="invoice_email">
                         Send invoice email to the customer after checkout
@@ -4323,20 +4401,17 @@ class Settings extends React.Component {
                     Email Order Statuses
                   </label>
                   <div className="col-md-9">
-                    <select
-                      name="email_order_statuses[]"
-                      className="form-control custom-select-black selectize prevent-creation"
-                      id="email_order_statuses[]"
-                      multiple={1}
-                    >
-                      <option value="canceled">Canceled</option>
-                      <option value="completed">Completed</option>
-                      <option value="on_hold">On Hold</option>
-                      <option value="pending">Pending</option>
-                      <option value="pending_payment">Pending Payment</option>
-                      <option value="processing">Processing</option>
-                      <option value="refunded">Refunded</option>
-                    </select>
+                  <MultiSelect
+                    onChange={(val)=>{
+                      const {data} = this.state
+                      data.Mail.EmailOrderStatuses = val.split(",")
+                      this.setState({data})
+                    }}
+                    options={[{label: "Canceled", value: "Canceled"}, {label: "Completed", value: "Completed"}, {label: "On Hold", value: "On Hold"}, {label: "Pending", value: "Pending"}, {label: "Pending Payment", value: "Pending Payment"}, {label: "Processing", value: "Processing"}, {label: "Refunded", value: "Refunded"}]}
+                    defaultValue={this.state.data.Mail.EmailOrderStatuses.toString()}
+                  />
+                     
+                   
                   </div>
                 </div>
               </div>
@@ -4346,7 +4421,7 @@ class Settings extends React.Component {
       );
     } else if (this.state.activePanel == "newsletter") {
       return (
-        <div className="tab-pane fade in active" id="newsletter">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Newsletter</h3>
           <div className="row">
             <div className="col-md-8">
@@ -4359,18 +4434,17 @@ class Settings extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="newsletter_enabled"
-                    />
+                   
                     <input
                       type="checkbox"
                       name="newsletter_enabled"
-                      className
                       id="newsletter_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.Newsletter.Newsletter}
+                      onChange={()=>{
+                        const {data} = this.state
+                        data.Newsletter.Newsletter = !this.state.data.Newsletter.Newsletter
+                        this.setState({data})
+                      }}
                     />
                     <label htmlFor="newsletter_enabled">
                       Allow customers to subscribe to your newsletter
@@ -4378,83 +4452,91 @@ class Settings extends React.Component {
                   </div>
                 </div>
               </div>
+              {this.state.data.Newsletter.Newsletter? 
+              <div>
               <div className="form-group">
                 <label
-                  htmlFor="mailchimp_api_key"
                   className="col-md-3 control-label text-left"
                 >
                   Mailchimp API Key
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="mailchimp_api_key"
+                    name="MailchimpAPIkey"
                     className="form-control "
-                    id="mailchimp_api_key"
-                    defaultValue
                     type="password"
+                    value={this.state.data.Newsletter.MailchimpAPIkey}
+                    onChange={(e)=>{
+                      this.setVal2("Newsletter", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="mailchimp_list_id"
                   className="col-md-3 control-label text-left"
                 >
                   Mailchimp List ID
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="mailchimp_list_id"
+                    name="MailchimpListID"
                     className="form-control "
-                    id="mailchimp_list_id"
-                    defaultValue
                     type="text"
+                    value={this.state.data.Newsletter.MailchimpListID}
+                    onChange={(e)=>{
+                      this.setVal2("Newsletter", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
+              </div>
+              :""}
             </div>
           </div>
         </div>
       );
     } else if (this.state.activePanel == "customcssjs") {
       return (
-        <div className="tab-pane fade in active" id="custom_css_js">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Custom CSS/JS</h3>
           <div className="row">
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="custom_header_assets"
                   className="col-md-3 control-label text-left"
                 >
                   Header
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="custom_header_assets"
+                    name="Header"
                     className="form-control "
-                    id="custom_header_assets"
                     rows={10}
                     cols={10}
-                    defaultValue={""}
+                    value={this.state.data.CustomCSSJS.Header}
+                    onChange={(e)=>{
+                      this.setVal2("CustomCSSJS", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="custom_footer_assets"
                   className="col-md-3 control-label text-left"
                 >
                   Footer
                 </label>
                 <div className="col-md-9">
                   <textarea
-                    name="custom_footer_assets"
+                    name="Footer"
                     className="form-control "
-                    id="custom_footer_assets"
                     rows={10}
                     cols={10}
-                    defaultValue={""}
+                    value={this.state.data.CustomCSSJS.Footer}
+                    onChange={(e)=>{
+                      this.setVal2("CustomCSSJS", e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
