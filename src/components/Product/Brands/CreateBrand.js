@@ -269,7 +269,7 @@ class CreateBrand extends React.Component {
           </div>
           <FileManager
             multiple={this.state.multiple}
-            setImageId={this.setImageId}
+            setMediaId={this.setImageId}
             close={() => {
               document.querySelector("html").style.overflowY = "auto";
 

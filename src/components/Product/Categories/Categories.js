@@ -3,7 +3,12 @@ import { Link, withRouter, Redirect } from "react-router-dom";
 import SortableTree, { toggleExpandedForAll } from "react-sortable-tree";
 import FileExplorerTheme from "react-sortable-tree-theme-file-explorer";
 import "react-sortable-tree/style.css";
+import "react-responsive-modal/styles.css";
+import { Modal } from "react-responsive-modal";
 import treeData from "./treeData";
+import FileManager from '../../Media/FileManager'
+import Validate from '../../../utils/validation'
+import api from '../../../apis/api'
 
 const alertNodeInfo = ({ node, path, treeIndex }) => {
   const objectString = Object.keys(node)
@@ -20,8 +25,22 @@ const alertNodeInfo = ({ node, path, treeIndex }) => {
 
 class Categories extends React.Component {
   state = {
+    showModal: false,
+    multiple: false,
+    logoImage: "",
+    bannerImage: "",
+    imageType: "",
     activePanel: "general",
     selectedCategory: "none",
+    data: {
+      name: "",
+      searchable: false,
+      status: false
+    },
+    logoId: "",
+    bannerId: "",
+    parentId: "",
+    errors: [],
     treeData,
   };
 
@@ -37,13 +56,48 @@ class Categories extends React.Component {
       }),
     }));
   };
+  setImageId = (id, multiple, image) =>{
+    if(this.state.imageType == "logo"){
+      this.setState({logoId: id, logoImage: image})
+    }else if(this.state.imageType == "banner"){
+      this.setState({bannerId: id, bannerImage: image})
+    }
+  }
+  setVal =(key, val) =>{
+    const {data} = this.state
+    data[key] = val
+    this.setState({data})
+  }
+  handleSubmit =() =>{
+    const {data, errors} = this.state
+    if (!errors.includes("name") && !Validate.validateNotEmpty(data["name"])) {
+      errors.push("name");
+      this.setState({ errors });
+    } else if (
+      errors.includes("name") &&
+      Validate.validateNotEmpty(data["name"])
+    ) {
+      errors.splice(errors.indexOf("name"), 1);
+      this.setState({ errors });
+    }
+    if (!Validate.validateNotEmpty(this.state.errors)) {
+    if(this.state.parentId == ""){
+      api.post('/category/root', {data: data, logoId: this.state.logoId, bannerId: this.state.bannerId, requiredPermission: "Create Categories"}).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log("error adding root category")
+      })
+    }
+  }
+  }
   ToggleActivePanel = () => {
     if (this.state.activePanel == "general") {
       return (
         <div className="tab-pane fade in active">
           <div className="row">
             <div className="col-md-8">
-              <div id="id-field" className="hide">
+              {this.state.selectedCategory != "none"? 
+              <div id="id-field">
                 <div className="form-group">
                   <label
                     htmlFor="id"
@@ -61,9 +115,9 @@ class Categories extends React.Component {
                   </div>
                 </div>
               </div>
+              :""}
               <div className="form-group">
                 <label
-                  htmlFor="name"
                   className="col-md-3 control-label text-left"
                 >
                   Name<span className="m-l-5 text-red">*</span>
@@ -72,8 +126,11 @@ class Categories extends React.Component {
                   <input
                     name="name"
                     className="form-control "
-                    id="name"
                     type="text"
+                    value={this.state.data.name}
+                    onChange={(e)=>{
+                      this.setVal(e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -87,13 +144,13 @@ class Categories extends React.Component {
                 <div className="col-md-9">
                   <div className="checkbox">
                     <input
-                      type="hidden"
-                      name="is_searchable"
-                    />
-                    <input
                       type="checkbox"
-                      name="is_searchable"
+                      name="searchable"
                       id="is_searchable"
+                      checked={this.state.data.searchable}
+                      onChange={(e)=>{
+                        this.setVal(e.target.name, !this.state.data.searchable)
+                      }}
                     />
                     <label htmlFor="is_searchable">
                       Show this category in search box category list
@@ -112,8 +169,12 @@ class Categories extends React.Component {
                   <div className="checkbox">
                     <input
                       type="checkbox"
-                      name="is_active"
+                      name="status"
                       id="is_active"
+                      checked={this.state.data.status}
+                      onChange={(e)=>{
+                        this.setVal(e.target.name, !this.state.data.status)
+                      }}
                     />
                     <label htmlFor="is_active">Enable the category</label>
                   </div>
@@ -132,15 +193,18 @@ class Categories extends React.Component {
               <button
                 type="button"
                 className="image-picker btn btn-default"
+                onClick={() =>
+                  this.setState({ multiple: false, showModal: true, imageType: "logo" })
+                }
               >
                 <i className="fa fa-folder-open m-r-5" />
                 Browse
               </button>
               <div className="clearfix" />
               <div className="single-image image-holder-wrapper clearfix">
-                <div className="image-holder placeholder">
-                  <i className="fa fa-picture-o" />
-                </div>
+              {this.state.logoImage? <div className="image-holder"><img src={"https://big-cms.herokuapp.com/"+this.state.logoImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
               </div>
             </div>
           </div>
@@ -150,15 +214,18 @@ class Categories extends React.Component {
               <button
                 type="button"
                 className="image-picker btn btn-default"
+                onClick={() =>
+                  this.setState({ multiple: false, showModal: true, imageType: "banner" })
+                }
               >
                 <i className="fa fa-folder-open m-r-5" />
                 Browse
               </button>
               <div className="clearfix" />
               <div className="single-image image-holder-wrapper clearfix">
-                <div className="image-holder placeholder">
-                  <i className="fa fa-picture-o" />
-                </div>
+              {this.state.bannerImage? <div className="image-holder"><img src={"https://big-cms.herokuapp.com/"+this.state.bannerImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
               </div>
             </div>
           </div>
@@ -196,6 +263,27 @@ class Categories extends React.Component {
   render() {
     return (
       <React.Fragment>
+              <Modal
+          open={this.state.showModal}
+          onClose={() => {
+            document.querySelector("html").style.overflowY = "auto";
+
+            this.setState({ showModal: false });
+          }}
+        >
+          <div className="modal-header">
+            <h4 className="modal-title">File Manager</h4>
+          </div>
+          <FileManager
+            multiple={this.state.multiple}
+            setMediaId={this.setImageId}
+            close={() => {
+              document.querySelector("html").style.overflowY = "auto";
+
+              this.setState({ showModal: false });
+            }}
+          />
+        </Modal>
         <section className="content-header clearfix">
           <h3>Categories</h3>
           <ol className="breadcrumb">
@@ -228,7 +316,7 @@ class Categories extends React.Component {
                     }
                     style={{ marginBottom: "5px" }}
                     onClick={() => {
-                      this.setState({ selectedCategory: "none" });
+                      this.setState({ selectedCategory: "someid" });
                     }}
                   >
                     Add Subcategory
@@ -354,21 +442,26 @@ class Categories extends React.Component {
                       ""
                     )}
                   </ul>
-                  <form>
+                  <form className="form-horizontal">
                     <div className="tab-content">
                       {this.ToggleActivePanel()}
                     </div>
                     <div className="form-group" style={{ marginTop: "10px" }}>
                       <div className="col-md-10">
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" className="btn btn-primary" onClick={(e)=>{
+                          e.preventDefault()
+                          this.handleSubmit()
+                        }}>
                           Save
                         </button>
+                        {this.state.selectedCategory != "none"? 
                         <button
                           type="button"
-                          className="btn btn-link text-red btn-delete p-l-0 hide"
+                          className="btn btn-link text-red btn-delete p-l-0 "
                         >
                           Delete
                         </button>
+                        :""}
                       </div>
                     </div>
                   </form>

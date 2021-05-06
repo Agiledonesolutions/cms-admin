@@ -87,6 +87,8 @@ class CreateProduct extends React.Component {
     baseImage: "",
     additionalImages: [],
     downloadFilenames: [],
+    attributesOptions: {},
+    attributeOptionsValues: [],
     activePanel: "general",
     activeTab: "basic",
     data: {
@@ -125,6 +127,7 @@ class CreateProduct extends React.Component {
         value: "",
       },
     ],
+    options: [],
     edit: "",
     editorState: BraftEditor.createEditorState(),
   };
@@ -242,6 +245,28 @@ class CreateProduct extends React.Component {
       .catch((err) => {
         console.log(err);
       });
+
+      api.get('/attribute/get').then((res)=>{
+        const {attributesOptions} = this.state
+        res.data.data.map(val=>{
+          let tmp = {
+            attribute: val.name,
+            values: val.value,
+            id: val._id
+          }
+          if(!(val.attributeSet.name in attributesOptions)){
+            attributesOptions[val.attributeSet.name] = []
+          }
+            
+            attributesOptions[val.attributeSet.name].push(tmp)
+          
+        })
+        this.setState({attributesOptions})
+        
+      }).catch(err=>{
+        console.log(err)
+        console.log("cannot fetch attribute")
+      })
   }
   setCategoryArray = (val) => {
     const { categoryArray } = this.state;
@@ -328,6 +353,19 @@ class CreateProduct extends React.Component {
     downloadFilenames.splice(idx, 1);
     this.setState({ downloadsIds, downloadFilenames });
   };
+  handleAddRowAttribute = () =>{
+    const {attributes} = this.state
+    attributes.push({
+      attribute: "",
+      value: ""
+    })
+    this.setState({attributes})
+  }
+  handleRemoveSpecificRowAttribute = (idx) =>{
+    const {attributes} = this.state
+    attributes.splice(idx,1)
+    this.setState({attributes})
+  }
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
       return (
@@ -839,7 +877,7 @@ class CreateProduct extends React.Component {
                 </thead>
                 <tbody id="product-attributes">
                   {this.state.attributes.map((val, idx) => (
-                    <tr draggable="false" className style={{}}>
+                    <tr key={idx}>
                       <td className="text-center">
                         <span className="drag-icon">
                           <i className="fa"></i>
@@ -850,19 +888,28 @@ class CreateProduct extends React.Component {
                         <div className="form-group">
                           <label className="visible-xs">Attribute</label>
                           <select
-                            name="attributes[0][attribute_id]"
+                            name={this.state.attributes[idx].attribute}
                             className="form-control attribute custom-select-black"
+                            id="product-attribute-select"
                           >
-                            <option value>Please Select</option>
-                            <optgroup label="Camera">
-                              <option value={8}>Selfie Camera</option>
+                            <option value="">Please Select</option>
+                            {Object.entries(this.state.attributesOptions).map(([key,val])=>(
+                              <optgroup label={key}>
+                                {val.map((option)=>(
+                                  <option value={option.id}>{option.attribute}</option>
+                                  
+                                ))}
+                             
                             </optgroup>
+                            ))}
+                            
                           </select>
                         </div>
                       </td>
                       <td>
                         <div className="form-group">
-                         
+                          
+                         <MultiSelect />
                         </div>
                       </td>
                       <td className="text-center">
@@ -870,7 +917,9 @@ class CreateProduct extends React.Component {
                           type="button"
                           className="btn btn-default delete-row"
                           data-toggle="tooltip"
-                          data-title="Delete Attribute"
+                          onClick={(e)=>{
+                            this.handleRemoveSpecificRowAttribute(idx)
+                          }}
                         >
                           <i className="fa fa-trash" />
                         </button>
@@ -884,6 +933,9 @@ class CreateProduct extends React.Component {
               type="button"
               className="btn btn-default"
               id="add-new-attribute"
+              onClick={(e)=>{
+                this.handleAddRowAttribute()
+              }}
             >
               Add New Attribute
             </button>

@@ -1,5 +1,11 @@
 import React from 'react';
+import api from '../../../apis/api'
 
+api.get('category/get').then(res=>{
+  console.log(res.data.data)
+}).catch(err=>{
+  console.log("error fetching categories")
+})
 
 const treeData = [
   {
