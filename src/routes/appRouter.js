@@ -34,6 +34,7 @@ import Media from '../components/Media/Media';
 import Settings from '../components/Settings/Settings';
 import Categories from '../components/Product/Categories/Categories';
 import Pages from '../components/Pages/Pages';
+import CreatePage from '../components/Pages/CreatePage';
 
 
 const routes = (
@@ -92,6 +93,8 @@ const routes = (
         <PrivateRoute exact path='/coupons/:id/edit' component={()=><Dashboard abc={ <CreateCoupon edit="true"/>} />} />
 
         <PrivateRoute exact path='/pages' component={()=><Dashboard abc={ <Pages />} />} />
+        <PrivateRoute exact path='/pages/create' component={()=><Dashboard abc={ <CreatePage />} />} />
+        <PrivateRoute exact path='/pages/:id/edit' component={()=><Dashboard abc={ <CreatePage edit="true"/>} />} />
 
         <PrivateRoute exact path='/media' component={()=><Dashboard abc={ <Media />} />} />
 
