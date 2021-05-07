@@ -33,6 +33,7 @@ import CreateTax from '../components/Localization/Taxes/CreateTax';
 import Media from '../components/Media/Media';
 import Settings from '../components/Settings/Settings';
 import Categories from '../components/Product/Categories/Categories';
+import Pages from '../components/Pages/Pages';
 
 
 const routes = (
@@ -89,6 +90,8 @@ const routes = (
         <PrivateRoute exact path='/coupons' component={()=><Dashboard abc={ <Coupons />} />} />
         <PrivateRoute exact path='/coupons/create' component={()=><Dashboard abc={ <CreateCoupon />} />} />
         <PrivateRoute exact path='/coupons/:id/edit' component={()=><Dashboard abc={ <CreateCoupon edit="true"/>} />} />
+
+        <PrivateRoute exact path='/pages' component={()=><Dashboard abc={ <Pages />} />} />
 
         <PrivateRoute exact path='/media' component={()=><Dashboard abc={ <Media />} />} />
 
