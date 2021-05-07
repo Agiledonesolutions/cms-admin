@@ -89,6 +89,8 @@ class CreateProduct extends React.Component {
     downloadFilenames: [],
     attributesOptions: {},
     attributeOptionsValues: [],
+    optionsGlobal: [],
+    selectedGlobalOption: {},
     activePanel: "general",
     activeTab: "basic",
     data: {
@@ -127,7 +129,20 @@ class CreateProduct extends React.Component {
         value: [],
       },
     ],
-    options: [],
+    options: [
+      {
+        name: "",
+        type: "",
+        required:false,
+        value: [
+          {
+            label: "",
+            price: "",
+            priceType: "",
+          },
+        ],
+      },
+    ],
     edit: "",
     editorState: BraftEditor.createEditorState(),
   };
@@ -246,27 +261,53 @@ class CreateProduct extends React.Component {
         console.log(err);
       });
 
-      api.get('/attribute/get').then((res)=>{
-        const {attributesOptions} = this.state
-        res.data.data.map(val=>{
+    api
+      .get("/attribute/get")
+      .then((res) => {
+        const { attributesOptions } = this.state;
+        res.data.data.map((val) => {
           let tmp = {
             attribute: val.name,
             values: val.value,
-            id: val._id
+            id: val._id,
+          };
+          if (!(val.attributeSet.name in attributesOptions)) {
+            attributesOptions[val.attributeSet.name] = [];
           }
-          if(!(val.attributeSet.name in attributesOptions)){
-            attributesOptions[val.attributeSet.name] = []
-          }
-            
-            attributesOptions[val.attributeSet.name].push(tmp)
-          
-        })
-        this.setState({attributesOptions})
-        
-      }).catch(err=>{
-        console.log(err)
-        console.log("cannot fetch attribute")
+
+          attributesOptions[val.attributeSet.name].push(tmp);
+        });
+        this.setState({ attributesOptions });
       })
+      .catch((err) => {
+        console.log(err);
+        console.log("cannot fetch attribute");
+      });
+    api
+      .get("/option/get")
+      .then((res) => {
+        const { optionsGlobal } = this.state;
+        res.data.data.forEach((val) => {
+          let tmp = {
+            name: val.name,
+            type: val.type,
+            value: [],
+          };
+          val.values.forEach((item) => {
+            let tmp2 = {
+              label: item.label,
+              price: item.price,
+              priceType: item.priceType,
+            };
+            tmp.value.push(tmp2);
+          });
+          optionsGlobal.push(tmp);
+        });
+        this.setState({ optionsGlobal });
+      })
+      .catch((err) => {
+        console.log("error fetching options");
+      });
   }
   setCategoryArray = (val) => {
     const { categoryArray } = this.state;
@@ -353,23 +394,211 @@ class CreateProduct extends React.Component {
     downloadFilenames.splice(idx, 1);
     this.setState({ downloadsIds, downloadFilenames });
   };
-  handleAddRowAttribute = () =>{
-    const {attributes} = this.state
+  handleAddRowAttribute = () => {
+    const { attributes } = this.state;
     attributes.push({
       attribute: "",
-      value: ""
+      value: "",
+    });
+    this.setState({ attributes });
+  };
+  handleRemoveSpecificRowAttribute = (idx) => {
+    const { attributes, attributeOptionsValues } = this.state;
+    attributes.splice(idx, 1);
+    attributeOptionsValues.splice(idx, 1);
+    this.setState({ attributes, attributeOptionsValues });
+  };
+  handleAddRowOption = () => {
+    const {options} = this.state
+    options.push({
+      name: "",
+      type: "",
+      required: false,
+      value: [
+        {
+          label: "",
+          price: "",
+          priceType: "",
+        },
+      ],
     })
-    this.setState({attributes})
-  }
-  handleRemoveSpecificRowAttribute = (idx) =>{
-    const {attributes, attributeOptionsValues} = this.state
-    attributes.splice(idx,1)
-    attributeOptionsValues.splice(idx,1)
-    this.setState({attributes, attributeOptionsValues})
-  }
+    this.setState({options})
+  };
+  handleRemoveSpecificRowOption = (idx) => {
+    const {options} =this.state
+    options.splice(idx,1)
+    this.setState({options})
+  };
+  OptionTypeToggle = (idx) => {
+    if (
+      this.state.options[idx].type == "Dropdown" ||
+      this.state.options[idx].type == "Checkbox" ||
+      this.state.options[idx].type == "Custom Checkbox" ||
+      this.state.options[idx].type == "Radio Button" ||
+      this.state.options[idx].type == "Custom Radio Button" ||
+      this.state.options[idx].type == "Multiple Select"
+    ) {
+      return (
+        <div className="option-values clearfix" >
+          <div className="option-select m-b-15">
+            <div className="table-responsive">
+              <table className="options table table-bordered">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Label</th>
+                    <th>Price</th>
+                    <th>Price Type</th>
+                    <th></th>
+                  </tr>
+                </thead>
+
+                <tbody id="select-values">
+                  {this.state.options[idx].value.map((item, idx2) => (
+                    <tr key={idx} className="option-row">
+                      <td className="text-center">
+                        <span className="drag-icon">
+                          <i className="fa">&#xf142;</i>
+                          <i className="fa">&#xf142;</i>
+                        </span>
+                      </td>
+                      <td>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            name="label"
+                            value={this.state.options[idx].value[idx2].label}
+                            className="form-control"
+                            // onChange={(e) => {
+                            //   this.setValues(
+                            //     e.target.name,
+                            //     e.target.value,
+                            //     true,
+                            //     idx
+                            //   );
+                            // }}
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            name="price"
+                            value={this.state.options[idx].value[idx2].price}
+                            className="form-control"
+                            // onChange={(e) => {
+                            //   this.setValues(
+                            //     e.target.name,
+                            //     e.target.value,
+                            //     true,
+                            //     idx
+                            //   );
+                            // }}
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <select
+                          name="priceType"
+                          className="form-control custom-select-black"
+                          value={this.state.options[idx].value[idx2].priceType}
+                          // onChange={(e) => {
+                          //   this.setValues(
+                          //     e.target.name,
+                          //     e.target.value,
+                          //     true,
+                          //     idx
+                          //   );
+                          // }}
+                        >
+                          <option value="fixed">Fixed</option>
+                          <option value="percent">Percent</option>
+                        </select>
+                      </td>
+                      <td className="text-center">
+                        <button
+                          type="button"
+                          className="btn btn-default delete-row"
+                          data-toggle="tooltip"
+                          name={idx}
+                          data-title="Delete Value"
+                          onClick={(e) => {
+                            // this.handleRemoveSpecificRow(idx);
+                          }}
+                        >
+                          <i className="fa fa-trash" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <button
+              type="button"
+              className="btn btn-default"
+              // onClick={this.handleAddRow}
+            >
+              Add New Value
+            </button>
+          </div>
+        </div>
+      );
+    } else if (
+      this.state.options[idx].type == "Field" ||
+      this.state.options[idx].type == "Textarea" ||
+      this.state.options[idx].type == "Date" ||
+      this.state.options[idx].type == "Date Time" ||
+      this.state.options[idx].type == "Time"
+    ) {
+      return (
+        <div className="option-values clearfix" >
+          <div className="table-responsive option-text">
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Price</th>
+                  <th>Price Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="option-row">
+                  <td>
+                    <input
+                      type="number"
+                      name="price"
+                      className="form-control"
+                      value={this.state.options[idx].value[0].price}
+                      // onChange={(e) => {
+                      //   this.setValues(e.target.name, e.target.value, false);
+                      // }}
+                    />
+                  </td>
+                  <td>
+                    <select
+                      name="priceType"
+                      className="form-control custom-select-black"
+                      value={this.state.options[idx].value[0].priceType}
+                      // onChange={(e) => {
+                      //   this.setValues(e.target.name, e.target.value, false);
+                      // }}
+                    >
+                      <option value="fixed">Fixed</option>
+                      <option value="percent">Percent</option>
+                    </select>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+  };
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
-      const {editorState} = this.state
+      const { editorState } = this.state;
       return (
         <div className="tab-pane fade in active">
           <h3 className="tab-content-title">General</h3>
@@ -481,11 +710,7 @@ class CreateProduct extends React.Component {
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
-                  Tags
-                </label>
+                <label className="col-md-3 control-label text-left">Tags</label>
                 <div className="col-md-9">
                   <MultiSelect
                     onChange={this.setTagArray}
@@ -862,7 +1087,7 @@ class CreateProduct extends React.Component {
       );
     } else if (this.state.activePanel == "attributes") {
       return (
-        <div className="tab-pane fade in active" >
+        <div className="tab-pane fade in active">
           <h3 className="tab-content-title">Attributes</h3>
           <div id="product-attributes-wrapper">
             <div className="table-responsive">
@@ -892,50 +1117,61 @@ class CreateProduct extends React.Component {
                             className="form-control attribute custom-select-black"
                             id="product-attribute-select"
                             value={this.state.attributes[idx].attribute}
-                            onChange={(e)=>{
-                              const {attributes, attributeOptionsValues} = this.state
-                              const arr = e.target.options[e.target.selectedIndex].dataset.values.split(",")
-                              
-                              attributes[idx].attribute = e.target.value
-                              this.setState({attributes})
-                              let tmparr = []
-                              arr.map(val=>{
-                                let tmp ={
+                            onChange={(e) => {
+                              const {
+                                attributes,
+                                attributeOptionsValues,
+                              } = this.state;
+                              const arr = e.target.options[
+                                e.target.selectedIndex
+                              ].dataset.values.split(",");
+
+                              attributes[idx].attribute = e.target.value;
+                              this.setState({ attributes });
+                              let tmparr = [];
+                              arr.map((val) => {
+                                let tmp = {
                                   label: val,
-                                  value: val
-                                }
-                                tmparr.push(tmp)
-                              })
-                              attributeOptionsValues[idx] = tmparr
-                              this.setState({attributeOptionsValues})
+                                  value: val,
+                                };
+                                tmparr.push(tmp);
+                              });
+                              attributeOptionsValues[idx] = tmparr;
+                              this.setState({ attributeOptionsValues });
                             }}
                           >
                             <option value="">Please Select</option>
-                            {Object.entries(this.state.attributesOptions).map(([key,val],idx2)=>(
-                              <optgroup label={key} key={idx2}>
-                                {val.map((option, idx3)=>(
-                                  <option value={option.id} key={idx3} data-values={option.values}>{option.attribute}</option>
-                                  
-                                ))}
-                             
-                            </optgroup>
-                            ))}
-                            
+                            {Object.entries(this.state.attributesOptions).map(
+                              ([key, val], idx2) => (
+                                <optgroup label={key} key={idx2}>
+                                  {val.map((option, idx3) => (
+                                    <option
+                                      value={option.id}
+                                      key={idx3}
+                                      data-values={option.values}
+                                    >
+                                      {option.attribute}
+                                    </option>
+                                  ))}
+                                </optgroup>
+                              )
+                            )}
                           </select>
                         </div>
                       </td>
                       <td>
                         <div className="form-group">
-                          
-                         <MultiSelect 
-                         options={this.state.attributeOptionsValues[idx]}
-                         onChange={(val)=>{
-                           const {attributes} = this.state
-                           attributes[idx].value = val.split(",")
-                           this.setState({attributes})
-                         }}
-                         defaultValue={this.state.attributes[idx].value.toString()}
-                         />
+                          <MultiSelect
+                            options={this.state.attributeOptionsValues[idx]}
+                            onChange={(val) => {
+                              const { attributes } = this.state;
+                              attributes[idx].value = val.split(",");
+                              this.setState({ attributes });
+                            }}
+                            defaultValue={this.state.attributes[
+                              idx
+                            ].value.toString()}
+                          />
                         </div>
                       </td>
                       <td className="text-center">
@@ -943,8 +1179,8 @@ class CreateProduct extends React.Component {
                           type="button"
                           className="btn btn-default delete-row"
                           data-toggle="tooltip"
-                          onClick={(e)=>{
-                            this.handleRemoveSpecificRowAttribute(idx)
+                          onClick={(e) => {
+                            this.handleRemoveSpecificRowAttribute(idx);
                           }}
                         >
                           <i className="fa fa-trash" />
@@ -959,8 +1195,8 @@ class CreateProduct extends React.Component {
               type="button"
               className="btn btn-default"
               id="add-new-attribute"
-              onClick={(e)=>{
-                this.handleAddRowAttribute()
+              onClick={(e) => {
+                this.handleAddRowAttribute();
               }}
             >
               Add New Attribute
@@ -972,14 +1208,141 @@ class CreateProduct extends React.Component {
       return (
         <div className="tab-pane fade in active">
           <h3 className="tab-content-title">Options</h3>
-          <div id="options-group"></div>
+          <div id="options-group" className="sortable">
+            {this.state.options.map((val, idx) => (
+              <div
+                className="content-accordion panel-group options-group-wrapper"
+                id="option-0"
+              >
+                <div className="panel panel-default option">
+                  <div className="panel-heading">
+                    <h4 className="panel-title">
+                      <a
+                        data-toggle="collapse"
+                        data-parent="#option-0"
+                        href="#custom-collapse-0"
+                      >
+                        <span className="drag-icon pull-left">
+                          <i className="fa"></i>
+                          <i className="fa"></i>
+                        </span>
+                        <span id="option-name" className="pull-left">
+                          {this.state.options[idx].name !=""? this.state.options[idx].name: "New Option"}
+                        </span>
+                      </a>
+                    </h4>
+                  </div>
+                  <div
+                    id="custom-collapse-0"
+                    className="panel-collapse collapse in"
+                  >
+                    <div className="panel-body">
+                      <div className="new-option clearfix">
+                        <div className="col-lg-6 col-md-12 p-l-0">
+                          <div className="form-group">
+                            <label htmlFor="option-0-name">Name</label>
+                            <input
+                              type="text"
+                              name="name"
+                              value={this.state.options[idx].name}
+                              className="form-control option-name-field"
+                              onChange={(e)=>{
+                                const{options} = this.state
+                                options[idx].name = e.target.value
+                                this.setState({options})
+
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-3 col-md-12 p-l-0">
+                          <div className="form-group">
+                            <label >Type</label>
+                            <select
+                              name="type"
+                              value={this.state.options[idx].type}
+                              className="form-control custom-select-black"
+                              onChange={(e)=>{
+                                const{options} = this.state
+                                options[idx].type = e.target.value
+                                this.setState({options})
+
+                              }}
+                            >
+                              <option value="">Please Select</option>
+                              <optgroup label="Text">
+                                <option value="Field">Field</option>
+                                <option value="Textarea">Textarea</option>
+                              </optgroup>
+                              <optgroup label="Select">
+                                <option value="Dropdown">Dropdown</option>
+                                <option value="Checkbox">Checkbox</option>
+                                <option value={"Custom Checkbox"}>
+                                  Custom Checkbox
+                                </option>
+                                <option value={"Radio Button"}>
+                                  Radio Button
+                                </option>
+                                <option value={"Custom Radio Button"}>
+                                  Custom Radio Button
+                                </option>
+                                <option value={"Multiple Select"}>
+                                  Multiple Select
+                                </option>
+                              </optgroup>
+                              <optgroup label="Date">
+                                <option value="Date">Date</option>
+                                <option value="Date Time">
+                                  Date &amp; Time
+                                </option>
+                                <option value="Time">Time</option>
+                              </optgroup>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="checkbox">
+                          <input
+                            type="checkbox"
+                            name="required"
+                            className="form-control"
+                            id="option-0-is-required"
+                            checked={this.state.options[idx].required}
+                            onChange={()=>{
+                              const {options} =  this.state
+                              options[idx].required = !this.state.options[idx].required
+                              this.setState({options})
+                            }}
+                          />
+                          <label htmlFor="option-0-is-required">Required</label>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-default delete-option pull-right"
+                          onClick={()=>{
+                            this.handleRemoveSpecificRowOption(idx);
+                          }}
+                        >
+                          <i className="fa fa-trash" />
+                        </button>
+                      </div>
+                      <div className="clearfix" />
+                      {this.OptionTypeToggle(idx)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
           <div className="box-footer no-border p-t-0">
             <div className="form-group pull-left">
               <div className="col-md-10">
                 <button
                   type="button"
                   className="btn btn-default m-r-10"
-                  id="add-new-option"
+                  onClick={()=>{
+                    this.handleAddRowOption()
+                  }}
                 >
                   Add New Option
                 </button>
@@ -989,29 +1352,30 @@ class CreateProduct extends React.Component {
               <div className="form-group pull-left">
                 <select
                   className="form-control custom-select-black"
-                  id="global-option"
+                  onChange={(e) => {
+                    this.setState({
+                      selectedGlobalOption: this.state.optionsGlobal[
+                        e.target.value
+                      ],
+                    });
+                  }}
                 >
-                  <option value>Select Global Option</option>
-                  <option value={1}>Laptop Color</option>
-                  <option value={3}>Jacket Size</option>
-                  <option value={4}>Laptop Ram</option>
-                  <option value={5}>Laptop Storage</option>
-                  <option value={6}>Mobile Ram</option>
-                  <option value={7}>Mobile Color</option>
-                  <option value={8}>Pant/Shirt Size</option>
-                  <option value={9}>Shoe Sizes</option>
-                  <option value={10}>Waist</option>
-                  <option value={12}>Watch Straps</option>
-                  <option value={13}>Warranty</option>
-                  <option value={23}>Dress Color</option>
-                  <option value={28}>Lens Options</option>
+                  <option value="">Select Global Option</option>
+                  {this.state.optionsGlobal.map((val, key) => (
+                    <option value={key} key={key}>
+                      {val.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <button
                 type="button"
                 className="btn btn-default"
-                id="add-global-option"
-                data-loading
+                onClick={() => {
+                  const { options } = this.state;
+                  options.push(this.state.selectedGlobalOption);
+                  this.setState({ options, selectedGlobalOption: {} });
+                }}
               >
                 Add Global Option
               </button>
@@ -1024,14 +1388,34 @@ class CreateProduct extends React.Component {
         <Related
           tableData={this.state.tableData}
           setEdit={(id) => this.setState({ edit: id })}
-          setIds={(ids)=>{this.setState({relatedProductIds: ids})}}
+          setIds={(ids) => {
+            this.setState({ relatedProductIds: ids });
+          }}
           getIds={this.state.relatedProductIds}
         />
       );
     } else if (this.state.activePanel == "upSells") {
-      return <UpSells tableData={this.state.tableData} setEdit={(id) => this.setState({ edit: id })} setIds={(ids)=>{this.setState({upSellsIds: ids})}} getIds={this.state.upSellsIds}/>;
+      return (
+        <UpSells
+          tableData={this.state.tableData}
+          setEdit={(id) => this.setState({ edit: id })}
+          setIds={(ids) => {
+            this.setState({ upSellsIds: ids });
+          }}
+          getIds={this.state.upSellsIds}
+        />
+      );
     } else if (this.state.activePanel == "crossSells") {
-      return <CrossSells tableData={this.state.tableData} setEdit={(id) => this.setState({ edit: id })} setIds={(ids)=>{this.setState({crossSellsIds: ids})}} getIds={this.state.crossSellsIds}/>;
+      return (
+        <CrossSells
+          tableData={this.state.tableData}
+          setEdit={(id) => this.setState({ edit: id })}
+          setIds={(ids) => {
+            this.setState({ crossSellsIds: ids });
+          }}
+          getIds={this.state.crossSellsIds}
+        />
+      );
     } else if (this.state.activePanel == "additional") {
       return (
         <div className="tab-pane fade in active">
@@ -1158,7 +1542,9 @@ class CreateProduct extends React.Component {
                               className="btn btn-default delete-row"
                               data-toggle="tooltip"
                               data-title="Delete File"
-                              onClick={() => this.handleRemoveSpecificRowDownload(idx)}
+                              onClick={() =>
+                                this.handleRemoveSpecificRowDownload(idx)
+                              }
                             >
                               <i className="fa fa-trash" />
                             </button>
