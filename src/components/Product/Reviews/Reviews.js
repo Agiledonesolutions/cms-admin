@@ -60,6 +60,7 @@ class Reviews extends React.Component {
       .then((res) => {
         res.data.data.map((val) => {
           i++;
+          console.log(res.data.data)
           var tmp = {
             id: i,
             product: val["product"]["name"],

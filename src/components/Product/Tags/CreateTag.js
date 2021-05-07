@@ -19,10 +19,10 @@ class CreateTag extends React.Component {
         api.get(url).then(res=>{
         data.name = res.data.data.name
         data.url = res.data.data.url
+        this.setState({data})
       }).catch(err=>{
         console.log("error")
       })
-      this.setState({data})
     }
   }
   setVal = (key,val) => {

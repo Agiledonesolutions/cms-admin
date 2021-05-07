@@ -55,6 +55,7 @@ class Brands extends React.Component {
       .then((res) => {
         res.data.data.map((val) => {
           i++;
+          console.log(val)
           var tmp = {
             id: i,
             logo: val.logo.image,
