@@ -3,7 +3,6 @@ import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import "./options.css";
 import Validate from "../../../utils/validation";
-import { data } from "jquery";
 
 class CreateOption extends React.Component {
   state = {

@@ -16,6 +16,7 @@ import imageCompression from "browser-image-compression";
 import Related from "./Related";
 import UpSells from "./UpSells";
 import CrossSells from "./CrossSells";
+import Validate from '../../../utils/validation'
 
 const options = {
   defaultColumns: 3,
@@ -80,8 +81,6 @@ class CreateProduct extends React.Component {
     multiple: false,
     categoryOptions: [],
     tagOptions: [],
-    tagArray: [],
-    categoryArray: [],
     brands: [],
     taxes: [],
     baseImage: "",
@@ -113,6 +112,7 @@ class CreateProduct extends React.Component {
       shortDescription: "",
       productNewFrom: "",
       productNewTo: "",
+      options: []
     },
     brandId: "",
     categoryIds: [],
@@ -122,10 +122,10 @@ class CreateProduct extends React.Component {
     relatedProductIds: [],
     upSellsIds: [],
     crossSellsIds: [],
-    downloadsIds: [" "],
+    downloadsIds: [""],
     attributes: [
       {
-        attribute: "",
+        attributeId: "",
         value: [],
       },
     ],
@@ -144,10 +144,50 @@ class CreateProduct extends React.Component {
       },
     ],
     edit: "",
+    errors: [],
     editorState: BraftEditor.createEditorState(),
   };
 
   componentDidMount() {
+    if(this.props.edit == "true"){
+      const url = "/product/get/" + this.props.match.params.id;
+      api.get(url).then(res=>{
+        console.log(res.data.data)
+        let tmp= {
+          name: res.data.data.name,
+          taxClass: res.data.data.taxClass,
+          virtual: res.data.data.virtual,
+          status: res.data.data.status,
+          description: res.data.data.description,
+          price: res.data.data.price,
+          speacialPrice: res.data.data.speacialPrice,
+          specialPriceType: res.data.data.specialPriceType,
+          speacialPriceStart: res.data.data.speacialPriceStart == null? "": res.data.data.speacialPriceStart,
+          specialPriceEnd: res.data.data.specialPriceEnd == null? "": res.data.data.specialPriceEnd,
+          inventoryManagement: res.data.data.inventoryManagement,
+          Qty: res.data.data.Qty,
+          SKU: res.data.data.SKU,
+          stockAvailability: res.data.data.stockAvailability,
+          metaTitle: res.data.data.metaTitle? res.data.data.metaTitle: "",
+          metaDescription: res.data.data.metaDescription? res.data.data.metaDescription : "",
+          shortDescription: res.data.data.shortDescription? res.data.data.shortDescription: "",
+          productNewFrom: res.data.data.productNewFrom == null? "":res.data.data.productNewFrom,
+          productNewTo: res.data.data.productNewTo == null? "":res.data.data.productNewTo,
+          options: res.data.data.options
+        }
+        const {tagIds, categoryIds} = this.state
+        res.data.data.tags.forEach(tag=>{
+          tagIds.push(tag._id)
+        })
+        res.data.data.categories.forEach(category=>{
+          categoryIds.push(category._id)
+        })
+        this.setState({data: tmp, editorState: BraftEditor.createEditorState(res.data.data.description), options: res.data.data.options, tagIds, categoryIds})
+      }).catch(err=>{
+        console.log("error fetching product details")
+      })
+
+    }
     const { brands } = this.state;
     api
       .get("/brand/get")
@@ -309,24 +349,7 @@ class CreateProduct extends React.Component {
         console.log("error fetching options");
       });
   }
-  setCategoryArray = (val) => {
-    const { categoryArray } = this.state;
-    categoryArray.push(val);
-    var n = categoryArray.length;
-    var { categoryIds } = this.state;
-    categoryIds = categoryArray[n - 1].split(",");
-    this.setState({ categoryArray });
-    this.setState({ categoryIds });
-  };
-  setTagArray = (val) => {
-    const { tagArray } = this.state;
-    tagArray.push(val);
-    var n = tagArray.length;
-    var { tagIds } = this.state;
-    tagIds = tagArray[n - 1].split(",");
-    this.setState({ tagArray });
-    this.setState({ tagIds });
-  };
+
   setVal = (key, val) => {
     const { data } = this.state;
     data[key] = val;
@@ -356,7 +379,43 @@ class CreateProduct extends React.Component {
     this.setVal("description", this.state.editorState.toHTML());
   };
   handleSubmit = () => {
-    console.log(this.state);
+    const {data, errors} = this.state
+    const required = ["name", "description", "price"]
+    required.forEach(val=>{
+      if (!errors.includes(val) && !Validate.validateNotEmpty(data[val])) {
+        errors.push(val);
+        this.setState({ errors });
+      } else if (
+        errors.includes(val) &&
+        Validate.validateNotEmpty(data[val])
+      ) {
+        errors.splice(errors.indexOf(val), 1);
+        this.setState({ errors });
+      }
+    })
+    if (!Validate.validateNotEmpty(this.state.errors)) {
+      data.options = this.state.options
+      const downloadsIdsNew = this.state.downloadsIds.filter(val=>{
+        return val!="";
+      })
+      const attributesNew = this.state.attributes.filter(val=>{
+        if(val.attributeId != "" && val.value.length >0){
+          return val;
+        }
+      })
+      if(this.props.edit == "true"){
+        console.log(this.state)
+      }else{
+        api.post('/product', {data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Create Products"}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log(err.response.data.message)
+        })
+      }   
+    }else{
+      console.log(this.state.errors)
+    }
+
   };
   uploadImageEditor = async (param) => {
     const options = {
@@ -397,7 +456,7 @@ class CreateProduct extends React.Component {
   handleAddRowAttribute = () => {
     const { attributes } = this.state;
     attributes.push({
-      attribute: "",
+      attributeId: "",
       value: "",
     });
     this.setState({ attributes });
@@ -429,6 +488,20 @@ class CreateProduct extends React.Component {
     options.splice(idx,1)
     this.setState({options})
   };
+  handleAddNewOptionValue= (idx) =>{
+    const {options} = this.state
+    options[idx].value.push({
+      label: "",
+      price: "",
+      priceType: ""
+    })
+    this.setState({options})
+  }
+  handleRemoveSpecificOptionValue = (idx, idx2)=>{
+    const {options} = this.state
+    options[idx].value.splice(idx2,1)
+    this.setState({options})
+  }
   OptionTypeToggle = (idx) => {
     if (
       this.state.options[idx].type == "Dropdown" ||
@@ -469,14 +542,11 @@ class CreateProduct extends React.Component {
                             name="label"
                             value={this.state.options[idx].value[idx2].label}
                             className="form-control"
-                            // onChange={(e) => {
-                            //   this.setValues(
-                            //     e.target.name,
-                            //     e.target.value,
-                            //     true,
-                            //     idx
-                            //   );
-                            // }}
+                            onChange={(e) => {
+                              const {options} = this.state
+                              options[idx].value[idx2][e.target.name] = e.target.value
+                              this.setState({options})
+                            }}
                           />
                         </div>
                       </td>
@@ -487,14 +557,11 @@ class CreateProduct extends React.Component {
                             name="price"
                             value={this.state.options[idx].value[idx2].price}
                             className="form-control"
-                            // onChange={(e) => {
-                            //   this.setValues(
-                            //     e.target.name,
-                            //     e.target.value,
-                            //     true,
-                            //     idx
-                            //   );
-                            // }}
+                            onChange={(e) => {
+                              const {options} = this.state
+                              options[idx].value[idx2][e.target.name] = e.target.value
+                              this.setState({options})
+                            }}
                           />
                         </div>
                       </td>
@@ -503,14 +570,11 @@ class CreateProduct extends React.Component {
                           name="priceType"
                           className="form-control custom-select-black"
                           value={this.state.options[idx].value[idx2].priceType}
-                          // onChange={(e) => {
-                          //   this.setValues(
-                          //     e.target.name,
-                          //     e.target.value,
-                          //     true,
-                          //     idx
-                          //   );
-                          // }}
+                          onChange={(e) => {
+                            const {options} = this.state
+                            options[idx].value[idx2][e.target.name] = e.target.value
+                            this.setState({options})
+                          }}
                         >
                           <option value="fixed">Fixed</option>
                           <option value="percent">Percent</option>
@@ -520,11 +584,8 @@ class CreateProduct extends React.Component {
                         <button
                           type="button"
                           className="btn btn-default delete-row"
-                          data-toggle="tooltip"
-                          name={idx}
-                          data-title="Delete Value"
                           onClick={(e) => {
-                            // this.handleRemoveSpecificRow(idx);
+                            this.handleRemoveSpecificOptionValue(idx,idx2);
                           }}
                         >
                           <i className="fa fa-trash" />
@@ -538,7 +599,7 @@ class CreateProduct extends React.Component {
             <button
               type="button"
               className="btn btn-default"
-              // onClick={this.handleAddRow}
+              onClick={()=>this.handleAddNewOptionValue(idx)}
             >
               Add New Value
             </button>
@@ -570,9 +631,11 @@ class CreateProduct extends React.Component {
                       name="price"
                       className="form-control"
                       value={this.state.options[idx].value[0].price}
-                      // onChange={(e) => {
-                      //   this.setValues(e.target.name, e.target.value, false);
-                      // }}
+                      onChange={(e) => {
+                        const {options} = this.state
+                        options[idx].value[0][e.target.name] = e.target.value
+                        this.setState({options})
+                      }}
                     />
                   </td>
                   <td>
@@ -580,9 +643,11 @@ class CreateProduct extends React.Component {
                       name="priceType"
                       className="form-control custom-select-black"
                       value={this.state.options[idx].value[0].priceType}
-                      // onChange={(e) => {
-                      //   this.setValues(e.target.name, e.target.value, false);
-                      // }}
+                      onChange={(e) => {
+                        const {options} = this.state
+                        options[idx].value[0][e.target.name] = e.target.value
+                        this.setState({options})
+                      }}
                     >
                       <option value="fixed">Fixed</option>
                       <option value="percent">Percent</option>
@@ -672,12 +737,12 @@ class CreateProduct extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <MultiSelect
-                    onChange={this.setCategoryArray}
+                    onChange={(val)=>{
+                      this.setState({categoryIds: val.split(",")})
+                    }}
                     options={this.state.categoryOptions}
                     defaultValue={
-                      this.state.categoryArray[
-                        this.state.categoryArray.length - 1
-                      ]
+                      this.state.categoryIds.toString()
                     }
                   />
                 </div>
@@ -713,10 +778,12 @@ class CreateProduct extends React.Component {
                 <label className="col-md-3 control-label text-left">Tags</label>
                 <div className="col-md-9">
                   <MultiSelect
-                    onChange={this.setTagArray}
+                    onChange={(val)=>{
+                      this.setState({tagIds: val.split(",")})
+                    }}
                     options={this.state.tagOptions}
                     defaultValue={
-                      this.state.tagArray[this.state.tagArray.length - 1]
+                      this.state.tagIds.toString()
                     }
                   />
                 </div>
@@ -1113,10 +1180,10 @@ class CreateProduct extends React.Component {
                         <div className="form-group">
                           <label className="visible-xs">Attribute</label>
                           <select
-                            name="attribute"
+                            name="attributeID"
                             className="form-control attribute custom-select-black"
                             id="product-attribute-select"
-                            value={this.state.attributes[idx].attribute}
+                            value={this.state.attributes[idx].attributeId}
                             onChange={(e) => {
                               const {
                                 attributes,
@@ -1126,7 +1193,7 @@ class CreateProduct extends React.Component {
                                 e.target.selectedIndex
                               ].dataset.values.split(",");
 
-                              attributes[idx].attribute = e.target.value;
+                              attributes[idx].attributeId = e.target.value;
                               this.setState({ attributes });
                               let tmparr = [];
                               arr.map((val) => {
@@ -1213,6 +1280,7 @@ class CreateProduct extends React.Component {
               <div
                 className="content-accordion panel-group options-group-wrapper"
                 id="option-0"
+                key={idx}
               >
                 <div className="panel panel-default option">
                   <div className="panel-heading">
@@ -1477,7 +1545,7 @@ class CreateProduct extends React.Component {
       );
     } else if (this.state.activePanel == "downloads") {
       return (
-        <div className="tab-pane fade in active" id="downloads">
+        <div className="tab-pane fade in active" >
           <h3 className="tab-content-title">Downloads</h3>
           <style
             dangerouslySetInnerHTML={{
@@ -1624,7 +1692,6 @@ class CreateProduct extends React.Component {
           </section>
           <section className="content">
             <form className="form-horizontal">
-              <input type="hidden" name="_token" defaultValue="" />
               <div className="accordion-content clearfix">
                 <div className="col-lg-3 col-md-4">
                   <div className="accordion-box">

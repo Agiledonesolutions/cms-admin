@@ -35,6 +35,8 @@ import Settings from '../components/Settings/Settings';
 import Categories from '../components/Product/Categories/Categories';
 import Pages from '../components/Pages/Pages';
 import CreatePage from '../components/Pages/CreatePage';
+import Sliders from '../components/Appearance/Sliders/Sliders';
+import CreateSlider from '../components/Appearance/Sliders/CreateSlider';
 
 
 const routes = (
@@ -101,6 +103,9 @@ const routes = (
         <PrivateRoute exact path='/taxes' component={()=><Dashboard abc={ <Taxes />} />} />
         <PrivateRoute exact path='/taxes/create' component={()=><Dashboard abc={ <CreateTax />} />} />
         <PrivateRoute exact path='/taxes/:id/edit' component={()=><Dashboard abc={ <CreateTax edit="true"/>} />} />
+
+        <PrivateRoute exact path='/sliders' component={()=><Dashboard abc={ <Sliders />} />} />
+        <PrivateRoute exact path='/sliders/create' component={()=><Dashboard abc={ <CreateSlider />} />} />
 
         <PrivateRoute exact path='/settings' component={()=><Dashboard abc={ <Settings />} />} />
 

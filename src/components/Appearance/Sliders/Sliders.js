@@ -8,7 +8,7 @@ import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
 
-class Catalog extends React.Component {
+class Sliders extends React.Component {
   state = {
     selectedRows: [],
     tableData: {
@@ -17,46 +17,22 @@ class Catalog extends React.Component {
           name: "Id",
           selector: "id",
           sortable: true,
-          width: "60px"
-        },
-        {
-          name: "Thumbnail",
-          selector: "thumbnail",
-          sortable: true,
-          cell: (row) => (
-            <img
-              src={row.thumbnail? "https://big-cms.herokuapp.com/" + row.thumbnail: "https://via.placeholder.com/60"}
-              height={60}
-              width={60}
-            />
-          ),
-          width: "110px",
+          width: "65px"
         },
         {
           name: "Name",
           selector: "name",
           sortable: true,
         },
-        {
-          name: "Price",
-          selector: "price",
-          sortable: true,
-        },
-        {
-          name: "Status",
-          selector: "status",
-          sortable: true,
-          cell: row=><span className={row.status? "dot green": "dot red"}></span>
-        },
+        
         {
           name: "Created",
           selector: "created",
           sortable: true,
         },
       ],
-      data: [],
     },
-    requiredPermission: "Delete Products",
+    requiredPermission: "Delete Sliders",
     edit: "",
   };
 
@@ -64,16 +40,13 @@ class Catalog extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/product/get")
+      .get("/page/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
-            thumbnail: val.baseImage? val.baseImage.image: false,
             name: val["name"],
-            price: val["price"],
-            status: val.status,
             created: format(val["createdAt"]),
             _id: val["_id"],
           };
@@ -93,7 +66,7 @@ class Catalog extends React.Component {
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
-      .delete("/product", { data })
+      .delete("/slides", { data })
       .then((res) => {
         console.log(res);
         this.componentDidMount();
@@ -105,27 +78,27 @@ class Catalog extends React.Component {
 
   render() {
     if (this.state.edit != "") {
-      return <Redirect to={"/products/" + this.state.edit + "/edit"} />;
+      return <Redirect to={"/sliders/" + this.state.edit + "/edit"} />;
     }
     return (
       <div>
         <section className="content-header clearfix">
-          <h3>Products</h3>
+          <h3>Sliders</h3>
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
             </li>
-            <li className="active">Products</li>
+            <li className="active">Sliders</li>
           </ol>
         </section>
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">
               <Link
-                to="/products/create"
+                to="/sliders/create"
                 className="btn btn-primary btn-actions btn-create"
               >
-                Create Product
+                Create Slider
               </Link>
             </div>
           </div>
@@ -155,7 +128,6 @@ class Catalog extends React.Component {
                     selected["selectedRows"].forEach((row) => {
                       arr.push(row._id);
                     });
-                    console.log(arr);
                     this.setState({ selectedRows: arr });
                   }}
                   responsive
@@ -175,4 +147,4 @@ class Catalog extends React.Component {
     );
   }
 }
-export default Catalog;
+export default Sliders;
