@@ -13,7 +13,6 @@ class CreateSlide extends React.Component {
     multiple: false,
     imageTab: "general",
     activePanel: "slides",
-    slideTab: "general",
     data: {
       Name: "",
       Settings: {
@@ -43,6 +42,7 @@ class CreateSlide extends React.Component {
             Effect: "",
           },
         ],
+        slideTab: "general",
       },
     ],
     errors: [],
@@ -92,6 +92,7 @@ class CreateSlide extends React.Component {
           Effect: "",
         },
       ],
+      slideTab: "general"
     })
     this.setState({ slides });
   };
@@ -148,16 +149,20 @@ class CreateSlide extends React.Component {
                 </div>
                 <div className="slide-tabs tab-wrapper">
                   <ul className="nav nav-tabs">
-                    <li className={this.state.imageTab == "general"? "active": ""} onClick={()=>{
-                      this.setState({imageTab: "general"})
+                    <li className={this.state.slides[idx].slideTab == "general"? "active": ""} onClick={()=>{
+                      const {slides} = this.state
+                      slides[idx].slideTab = "general"
+                      this.setState({slides})
                     }}>
                       <a
                       >
                         General
                       </a>
                     </li>
-                    <li className={this.state.imageTab == "options"? "active": ""} onClick={()=>{
-                      this.setState({imageTab: "options"})
+                    <li className={this.state.slides[idx].slideTab == "options"? "active": ""} onClick={()=>{
+                      const {slides} = this.state
+                      slides[idx].slideTab = "options"
+                      this.setState({slides})
                     }}>
                       <a
                       >
@@ -166,7 +171,7 @@ class CreateSlide extends React.Component {
                     </li>
                   </ul>
                   <div className="tab-content">
-                    {this.state.imageTab == "general"? 
+                    {this.state.slides[idx].slideTab == "general"? 
                     <div
                       className="tab-pane fade in clearfix active"
                     >

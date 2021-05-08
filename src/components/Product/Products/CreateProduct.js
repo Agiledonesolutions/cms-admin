@@ -182,15 +182,36 @@ class CreateProduct extends React.Component {
         res.data.data.categories.forEach(category=>{
           categoryIds.push(category._id)
         })
-        downloadFilenames.splice(0,1)
-        downloadsIds.splice(0,1)
+        
         if(res.data.data.additionalImages.length>0){
           res.data.data.additionalImages.forEach(image=>{
             additionalImageIds.push(image._id)
             additionalImages.push(image.image)
           })
         }
+        if(res.data.data.attributes.length>0){
+          const attributesNew = []
+          // const attributeOptionsValuesNew = []
+          res.data.data.attributes.forEach(attr=>{
+            let tmp = {
+              attributeId: attr.attribute._id,
+              value: attr.value
+            }
+            // attr.attribute.value.forEach(val=>{
+            //   let tmp2 ={
+            //     label: val,
+            //     value: val
+            //   }
+            //   attributeOptionsValuesNew.push(tmp2)
+            // })
+           
+            attributesNew.push(tmp)
+          })
+          this.setState({attributes: attributesNew})
+        }
         if(res.data.data.downloads.length>0){
+          downloadFilenames.splice(0,1)
+          downloadsIds.splice(0,1)
           res.data.data.downloads.forEach(down=>{
             downloadFilenames.push(down.fileName)
             downloadsIds.push(down._id)
@@ -434,7 +455,11 @@ class CreateProduct extends React.Component {
         }
       })
       if(this.props.edit == "true"){
-        console.log(this.state)
+        api.put('/product',{data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Edit Products", _id: this.props.match.params.id}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("error updating product")
+        })
       }else{
         api.post('/product', {data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Create Products"}).then(res=>{
           console.log(res)
