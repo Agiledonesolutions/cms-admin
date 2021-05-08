@@ -7,10 +7,12 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
+import Loading from "../../Loading";
 
 class Brands extends React.Component {
   state = {
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -23,7 +25,7 @@ class Brands extends React.Component {
           name: "Logo",
           selector: "logo",
           sortable: true,
-          cell: row => <img height={50} width={50} src={"https://big-cms.herokuapp.com/"+row.logo}/>
+          cell: row => <img height={50} width={50} src={row.logo? "https://big-cms.herokuapp.com/" + row.logo: "https://via.placeholder.com/60"}/>
         },
         {
           name: "Name",
@@ -58,7 +60,7 @@ class Brands extends React.Component {
           console.log(val)
           var tmp = {
             id: i,
-            logo: val.logo.image,
+            logo: val.logo? val.logo.image: false,
             name: val["name"],
             status: val["status"],
             created: format(val["createdAt"]),
@@ -76,6 +78,7 @@ class Brands extends React.Component {
   }
 
   deleteSelectedItems = () => {
+    this.setState({submitting: true})
     const { selectedRows } = this.state;
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
@@ -83,10 +86,13 @@ class Brands extends React.Component {
       .delete("/brand", { data })
       .then((res) => {
         console.log(res);
+        this.setState({submitting: false})
         this.componentDidMount();
       })
       .catch((err) => {
         console.log("delete error");
+        this.setState({submitting: false})
+
       });
   };
 
@@ -116,6 +122,7 @@ class Brands extends React.Component {
               </Link>
             </div>
           </div>
+          <Loading show={this.state.submitting}/>
           <div className="box box-primary">
             <div className="box-body index-table" id="attributes-table">
               <div className="table-delete-button">

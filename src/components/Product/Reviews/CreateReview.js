@@ -2,9 +2,11 @@ import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import Validate from "../../../utils/validation";
+import Loading from "../../Loading";
 
 class CreateReview extends React.Component {
   state = {
+    submitting: false,
     data: {
       reviewerName: "",
       rating: "",
@@ -75,15 +77,20 @@ class CreateReview extends React.Component {
         this.setState({ errors });
       }
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({submitting: true})
       if (this.props.edit == "true") {
         const _id = this.props.match.params.id;
         api
           .put("/review", { data, _id, productId: this.state.productId, requiredPermission: "Edit Review" })
           .then((res) => {
             console.log(res);
+            this.setState({submitting: false})
+
           })
           .catch((err) => {
             console.log("edit review set error");
+            this.setState({submitting: false})
+
           });
       } else {
         console.log("you're not supposed to be here")
@@ -234,7 +241,7 @@ class CreateReview extends React.Component {
                     </div>
 
                     <div className="form-group">
-                      <div className="col-md-offset-2 col-md-10">
+                      <div className="col-md-offset-2 col-md-10" style={{display: "flex"}}>
                         <button
                           className="btn btn-primary "
                           style={{ marginTop: "5px" }}
@@ -245,6 +252,7 @@ class CreateReview extends React.Component {
                         >
                           Save
                         </button>
+                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

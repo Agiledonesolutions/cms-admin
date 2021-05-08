@@ -2,19 +2,21 @@ import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import Validate from '../../../utils/validation'
 import api from '../../../apis/api'
+import Loading from "../../Loading";
 class CreateAttributeSet extends React.Component {
   state = {
+    submitting: false,
     data: {
       name: "",
     },
     requiredPermission: "Create Attribute Set",
     errors: [],
   };
-   async UNSAFE_componentWillMount(){
+   componentDidMount(){
     if(this.props.edit == "true"){
       const url = "/attributeset/get/" + this.props.match.params.id
       const {data} = this.state
-       await api.get(url).then(res=>{
+        api.get(url).then(res=>{
         console.log(res)
         data.name = res.data.data.name
       }).catch(err=>{
@@ -48,20 +50,27 @@ class CreateAttributeSet extends React.Component {
       this.setState({ errors });
     }
     if(!Validate.validateNotEmpty(this.state.errors)){
+      this.setState({submitting: true})
       if(this.props.edit){
         console.log("edit")
         const _id = this.props.match.params.id
         api.put('/attributeset', {data, _id, requiredPermission: "Edit Attribute Set"}).then(res=>{
           console.log(res)
+          this.setState({submitting: false})
         }).catch(err=>{
           console.log("edit attri set error")
+          this.setState({submitting: false})
+
         })
       }else{
         const {requiredPermission} = this.state
         api.post('/attributeset',{data: data, requiredPermission}).then(res=>{
           console.log(res)
+          this.setState({submitting: false})
         }).catch(err=>{
           console.log("tag add error")
+          this.setState({submitting: false})
+
         })
       }
       
@@ -143,7 +152,7 @@ class CreateAttributeSet extends React.Component {
                       </div>
                     </div>
                     <div className="form-group">
-                      <div className="col-md-offset-2 col-md-10">
+                      <div className="col-md-offset-2 col-md-10" style={{display: "flex"}}>
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -154,6 +163,7 @@ class CreateAttributeSet extends React.Component {
                         >
                           Save
                         </button>
+                        <Loading show={this.state.submitting}/>
                       </div>
                     </div>
                   </div>

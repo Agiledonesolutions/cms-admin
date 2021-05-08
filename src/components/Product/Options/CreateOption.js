@@ -3,10 +3,12 @@ import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import "./options.css";
 import Validate from "../../../utils/validation";
+import Loading from '../../Loading'
 
 class CreateOption extends React.Component {
   state = {
     activePanel: "general",
+    submitting: false,
     data: {
       name: "",
       type: "",
@@ -96,6 +98,7 @@ class CreateOption extends React.Component {
     }
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({submitting: true})
       if (this.props.edit == "true") {
         api.put('/option', {
           data: this.state.data,
@@ -103,8 +106,12 @@ class CreateOption extends React.Component {
           requiredPermission: "Edit Options"
         }).then(res=>{
           console.log(res)
+          this.setState({submitting: false})
+
         }).catch(err=>{
           console.log("error updating option")
+          this.setState({submitting: false})
+
         })
       } else {
         api
@@ -114,9 +121,13 @@ class CreateOption extends React.Component {
           })
           .then((res) => {
             console.log(res);
+            this.setState({submitting: false})
+
           })
           .catch((err) => {
             console.log("error creating option");
+            this.setState({submitting: false})
+
           });
       }
     } else {
@@ -247,7 +258,7 @@ class CreateOption extends React.Component {
       this.state.data.type == "Time"
     ) {
       return (
-        <div className="option-values clearfix" id="option-values">
+        <div className="option-values clearfix" >
           <div className="table-responsive option-text">
             <table className="table table-bordered">
               <thead>
@@ -474,7 +485,7 @@ class CreateOption extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-2 col-md-10">
+                      <div className="col-md-2 col-md-10" style={{display: "flex"}}>
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -485,6 +496,7 @@ class CreateOption extends React.Component {
                         >
                           Save
                         </button>
+                        <Loading show={this.state.submitting}/>
                       </div>
                     </div>
                   </div>

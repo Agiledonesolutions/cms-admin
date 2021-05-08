@@ -2,9 +2,11 @@ import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import Validate from '../../../utils/validation'
+import Loading from '../../Loading'
 
 class CreateTag extends React.Component {
   state = {
+    submitting: false,
     data: {
       "name": "",
       "url": ""
@@ -48,20 +50,28 @@ class CreateTag extends React.Component {
       this.setState({ errors });
     }
     if(!Validate.validateNotEmpty(this.state.errors)){
+      this.setState({submitting: true})
       if(this.props.edit == "true"){
         console.log("edit")
         const _id = this.props.match.params.id
         api.put('/tag', {data, _id, requiredPermission: "Edit Tag"}).then(res=>{
           console.log(res)
+          this.setState({submitting: false})
         }).catch(err=>{
           console.log("edit attri set error")
+          this.setState({submitting: false})
+
         })
       }else{
         const {requiredPermission} = this.state
         api.post('/tag',{data: data, requiredPermission}).then(res=>{
           console.log(res)
+          this.setState({submitting: false})
+
         }).catch(err=>{
           console.log("tag add error")
+          this.setState({submitting: false})
+
         })
       }
     
@@ -162,7 +172,7 @@ class CreateTag extends React.Component {
                       </div>
                     </div>
                     <div className="form-group">
-                      <div className="col-md-offset-2 col-md-10">
+                      <div className="col-md-offset-2 col-md-10" style={{display: "flex"}}>
                         <button
                           className="btn btn-primary "
                           style={{marginTop: "5px"}}
@@ -173,6 +183,7 @@ class CreateTag extends React.Component {
                         >
                           Save
                         </button>
+                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

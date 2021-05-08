@@ -7,9 +7,11 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
+import Loading from '../../Loading'
 
 class Reviews extends React.Component {
   state = {
+    submitting: false,
     selectedRows: [],
     tableData: {
       columns: [
@@ -63,7 +65,7 @@ class Reviews extends React.Component {
           console.log(res.data.data)
           var tmp = {
             id: i,
-            product: val["product"]["name"],
+            // product: val["product"]["name"],
             reviewername: val["reviewerName"],
             rating: val.rating,
             approved: val.status,
@@ -82,6 +84,7 @@ class Reviews extends React.Component {
   }
 
   deleteSelectedItems = () => {
+    this.setState({submitting: true})
     const { selectedRows } = this.state;
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
@@ -89,10 +92,14 @@ class Reviews extends React.Component {
       .delete("/review", { data })
       .then((res) => {
         console.log(res);
+        this.setState({submitting: false})
+
         this.componentDidMount();
       })
       .catch((err) => {
         console.log("delete error");
+        this.setState({submitting: false})
+
       });
   };
 
@@ -112,7 +119,7 @@ class Reviews extends React.Component {
           </ol>
         </section>
         <section className="content">
-          
+          <Loading show={this.state.submitting} />
           <div className="box box-primary">
             <div className="box-body index-table" id="attributes-table">
               <div className="table-delete-button">

@@ -5,10 +5,12 @@ import api from '../../../apis/api'
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import FileManager from "../../Media/FileManager";
+import Loading from '../../Loading'
 
 class CreateBrand extends React.Component {
   state = {
     imageType: "",
+    submitting: false,
     logoImage: "",
     bannerImage: "",
     showModal: false,
@@ -71,17 +73,24 @@ class CreateBrand extends React.Component {
     }
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({submitting: true})
       if(this.props.edit == "true"){
         api.put('/brand', {data: data, _id: this.props.match.params.id, logo: this.state.logo, banner: this.state.banner, requiredPermission: "Edit Brand"}).then(res=>{
           console.log(res)
+          this.setState({submitting: false})
         }).catch(err=>{
           console.log("error updating brand")
+          this.setState({submitting: false})
+
         })
       }else{
         api.post('/brand', {data: data, logo: this.state.logo, banner: this.state.banner, requiredPermission: "Create Brand"}).then(res=>{
           console.log(res)
+          this.setState({submitting: false})
         }).catch(err=>{
           console.log("error posting brand")
+          this.setState({submitting: false})
+
         })
       }
      
@@ -354,7 +363,7 @@ class CreateBrand extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-offset-2 col-md-10">
+                      <div className="col-md-offset-2 col-md-10 " style={{display: "flex"}}>
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -365,6 +374,7 @@ class CreateBrand extends React.Component {
                         >
                           Save
                         </button>
+                        <Loading show={this.state.submitting}/>
                       </div>
                     </div>
                   </div>

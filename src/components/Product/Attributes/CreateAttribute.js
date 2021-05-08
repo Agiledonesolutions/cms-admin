@@ -5,10 +5,12 @@ import "./attribute.css";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import Validate from '../../../utils/validation'
+import Loading from "../../Loading";
 
 class CreateAttribute extends React.Component {
   state = {
     activePanel: "general",
+    submitting: false,
     categoryOptions: [],
     attributesSets: [],
     data: {
@@ -150,17 +152,26 @@ class CreateAttribute extends React.Component {
       this.setState({ errors });
     }
     if(!Validate.validateNotEmpty(this.state.errors)){
+      this.setState({submitting: true})
     if(this.props.edit == "true"){
       api.put('/attribute', {data: this.state.data, _id: this.props.match.params.id, categoryIds: this.state.CategoryIds, requiredPermission: "Edit Attributes"}).then(res=>{
         console.log(res)
+        this.setState({submitting: false})
+
       }).catch(err=>{
         console.log("error updating attri")
+        this.setState({submitting: false})
+
       })
     }else{
       api.post('/attribute', {data: this.state.data, categoryIds: this.state.CategoryIds, requiredPermission: "Create Attributes"}).then(res=>{
         console.log(res)
+        this.setState({submitting: false})
+
       }).catch(err=>{
         console.log("error creating attribute")
+        this.setState({submitting: false})
+
       })
     }
   }else{
@@ -399,7 +410,7 @@ class CreateAttribute extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-2 col-md-10">
+                      <div className="col-md-2 col-md-10" style={{display: "flex"}}>
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -410,6 +421,7 @@ class CreateAttribute extends React.Component {
                         >
                           Save
                         </button>
+                        <Loading show={this.state.submitting}/>
                       </div>
                     </div>
                   </div>

@@ -5,9 +5,11 @@ import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import { countries, locales, timezone, currencies } from "../../utils/data";
 import Validate from "../../utils/validation";
+import Loading from "../Loading";
 
 class Settings extends React.Component {
   state = {
+    submitting: false,
     customerRoles: [],
     activePanel: "general",
     activeTab: "generalsettings",
@@ -450,10 +452,15 @@ class Settings extends React.Component {
     });
     
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({submitting: true})
       api.put('/settings', {data: this.state.data, _id: this.state.id, requiredPermission: "Edit Settings"}).then(res=>{
         console.log(res)
+        this.setState({submitting: false})
+
       }).catch(err=>{
         console.log(err.response.data.message)
+        this.setState({submitting: false})
+
       })
     } else {
       console.log(errors);
@@ -3597,7 +3604,7 @@ class Settings extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-offset-2 col-md-10">
+                      <div className="col-md-offset-2 col-md-10" style={{display: "flex"}}>
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -3608,6 +3615,7 @@ class Settings extends React.Component {
                         >
                           Save
                         </button>
+                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

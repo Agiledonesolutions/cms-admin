@@ -17,6 +17,7 @@ import Related from "./Related";
 import UpSells from "./UpSells";
 import CrossSells from "./CrossSells";
 import Validate from '../../../utils/validation'
+import Loading from '../../Loading'
 
 const options = {
   defaultColumns: 3,
@@ -30,6 +31,7 @@ BraftEditor.use(table(options));
 
 class CreateProduct extends React.Component {
   state = {
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -445,6 +447,7 @@ class CreateProduct extends React.Component {
       }
     })
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({submitting: true})
       data.options = this.state.options
       const downloadsIdsNew = this.state.downloadsIds.filter(val=>{
         return val!="";
@@ -457,14 +460,20 @@ class CreateProduct extends React.Component {
       if(this.props.edit == "true"){
         api.put('/product',{data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Edit Products", _id: this.props.match.params.id}).then(res=>{
           console.log(res)
+          this.setState({submitting: false})
         }).catch(err=>{
           console.log("error updating product")
+          this.setState({submitting: false})
+
         })
       }else{
         api.post('/product', {data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Create Products"}).then(res=>{
           console.log(res)
+          this.setState({submitting: false})
         }).catch(err=>{
           console.log(err.response.data.message)
+          this.setState({submitting: false})
+
         })
       }   
     }else{
@@ -1993,6 +2002,7 @@ class CreateProduct extends React.Component {
                           >
                             Save
                           </button>
+                          <Loading show={this.state.submitting}/>
                         </div>
                       </div>
                     </div>
