@@ -44,7 +44,7 @@ class CreateProduct extends React.Component {
           sortable: true,
           cell: (row) => (
             <img
-              src={"https://big-cms.herokuapp.com/" + row.thumbnail}
+              src={row.thumbnail? "https://big-cms.herokuapp.com/" + row.thumbnail: "https://via.placeholder.com/60"}
               height={60}
               width={60}
             />
@@ -99,7 +99,7 @@ class CreateProduct extends React.Component {
       status: false,
       description: "",
       price: "",
-      speacialPrice: "",
+      specialPrice: "",
       specialPriceType: "Fixed",
       speacialPriceStart: "",
       specialPriceEnd: "",
@@ -160,10 +160,10 @@ class CreateProduct extends React.Component {
           status: res.data.data.status,
           description: res.data.data.description,
           price: res.data.data.price,
-          speacialPrice: res.data.data.speacialPrice,
+          specialPrice: res.data.data.specialPrice,
           specialPriceType: res.data.data.specialPriceType,
-          speacialPriceStart: res.data.data.speacialPriceStart == null? "": res.data.data.speacialPriceStart,
-          specialPriceEnd: res.data.data.specialPriceEnd == null? "": res.data.data.specialPriceEnd,
+          specialPriceStart: res.data.data.specialPriceStart == null? "": res.data.data.specialPriceStart.substr(0,10),
+          specialPriceEnd: res.data.data.specialPriceEnd == null? "": res.data.data.specialPriceEnd.substr(0,10),
           inventoryManagement: res.data.data.inventoryManagement,
           Qty: res.data.data.Qty,
           SKU: res.data.data.SKU,
@@ -171,19 +171,49 @@ class CreateProduct extends React.Component {
           metaTitle: res.data.data.metaTitle? res.data.data.metaTitle: "",
           metaDescription: res.data.data.metaDescription? res.data.data.metaDescription : "",
           shortDescription: res.data.data.shortDescription? res.data.data.shortDescription: "",
-          productNewFrom: res.data.data.productNewFrom == null? "":res.data.data.productNewFrom,
-          productNewTo: res.data.data.productNewTo == null? "":res.data.data.productNewTo,
+          productNewFrom: res.data.data.productNewFrom == null? "":res.data.data.productNewFrom.substr(0,10),
+          productNewTo: res.data.data.productNewTo == null? "":res.data.data.productNewTo.substr(0,10),
           options: res.data.data.options
         }
-        const {tagIds, categoryIds} = this.state
+        const {tagIds, categoryIds,additionalImageIds, additionalImages, downloadFilenames, downloadsIds, relatedProductIds, upSellsIds, crossSellsIds} = this.state
         res.data.data.tags.forEach(tag=>{
           tagIds.push(tag._id)
         })
         res.data.data.categories.forEach(category=>{
           categoryIds.push(category._id)
         })
-        this.setState({data: tmp, editorState: BraftEditor.createEditorState(res.data.data.description), options: res.data.data.options, tagIds, categoryIds})
+        downloadFilenames.splice(0,1)
+        downloadsIds.splice(0,1)
+        if(res.data.data.additionalImages.length>0){
+          res.data.data.additionalImages.forEach(image=>{
+            additionalImageIds.push(image._id)
+            additionalImages.push(image.image)
+          })
+        }
+        if(res.data.data.downloads.length>0){
+          res.data.data.downloads.forEach(down=>{
+            downloadFilenames.push(down.fileName)
+            downloadsIds.push(down._id)
+          })
+        }
+        if(res.data.data.relatedProducts.length>0){
+          res.data.data.relatedProducts.forEach(prod=>{
+            relatedProductIds.push(prod._id)
+          })
+        }
+        if(res.data.data.upSells.length>0){
+          res.data.data.upSells.forEach(prod=>{
+            upSellsIds.push(prod._id)
+          })
+        } 
+        if(res.data.data.crossSells.length>0){
+          res.data.data.crossSells.forEach(prod=>{
+            crossSellsIds.push(prod._id)
+          })
+        }    
+        this.setState({data: tmp,relatedProductIds, upSellsIds, crossSellsIds, downloadFilenames, downloadsIds, brandId: res.data.data.brand?res.data.data.brand._id: "", baseImage: res.data.data.baseImage?res.data.data.baseImage.image: "", baseImageId:  res.data.data.baseImage?res.data.data.baseImage._id: "" ,additionalImageIds, additionalImages ,editorState: BraftEditor.createEditorState(res.data.data.description), options: res.data.data.options, tagIds, categoryIds})
       }).catch(err=>{
+        console.log(err)
         console.log("error fetching product details")
       })
 
@@ -280,7 +310,7 @@ class CreateProduct extends React.Component {
           i++;
           var tmp = {
             id: i,
-            thumbnail: "uploads/images/1620124610162-blob",
+            thumbnail: val.baseImage? val.baseImage.image: false,
             name: val["name"],
             price: val["price"],
             status: val.status,
