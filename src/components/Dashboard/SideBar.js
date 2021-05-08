@@ -2,8 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const SideBar = () => {
-    
 
+  const closeNav = () =>{
+    if(window.innerWidth <= 991){
+      document.body.classList.remove('sidebar-open')
+    }
+  }
     const NavToggle = () =>{
       if(window.innerWidth <= 991){
         document.body.classList.toggle('sidebar-open')
@@ -53,7 +57,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/products' >
+                    <Link to='/products' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Catalog</span>
                     </Link>
@@ -61,7 +65,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/categories'>
+                    <Link to='/categories' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Categories</span>
                     </Link>
@@ -70,7 +74,7 @@ const SideBar = () => {
                     className=""
                   >
                     <Link to='/brands'
-                      
+                      onClick={closeNav}
                     >
                       <i className="fa fa-angle-double-right" />
                       <span>Brands</span>
@@ -79,7 +83,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/attributes'>
+                    <Link to='/attributes'onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Attributes</span>
                     </Link>
@@ -87,7 +91,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/attribute-sets'>
+                    <Link to='/attribute-sets' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Attribute Sets</span>
                     </Link>
@@ -95,7 +99,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/options'>
+                    <Link to='/options' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Options</span>
                     </Link>
@@ -103,7 +107,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/tags'>
+                    <Link to='/tags' onClick={closeNav}>
                       <i className="fa fa-tag" />
                       <span>Tags</span>
                     </Link>
@@ -111,7 +115,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to ='/reviews'>
+                    <Link to ='/reviews' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Reviews</span>
                     </Link>
@@ -132,7 +136,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/orders'>
+                    <Link to='/orders' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Orders</span>
                     </Link>
@@ -140,7 +144,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/transactions'>
+                    <Link to='/transactions' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Transactions</span>
                     </Link>
@@ -150,7 +154,7 @@ const SideBar = () => {
               <li
                 className=""
               >
-                <Link to='/flashsales'>
+                <Link to='/flashsales' onClick={closeNav}>
                   <i className="fa fa-bolt" />
                   <span>Flash Sales</span>
                 </Link>
@@ -158,7 +162,7 @@ const SideBar = () => {
               <li
                 className=""
               >
-                <Link to='/coupons'>
+                <Link to='/coupons' onClick={closeNav}>
                   <i className="fa fa-tags" />
                   <span>Coupons</span>
                 </Link>
@@ -166,7 +170,7 @@ const SideBar = () => {
               <li
                 className=""
               >
-                <Link to='/pages'>
+                <Link to='/pages' onClick={closeNav}>
                   <i className="fa fa-file" />
                   <span>Pages</span>
                 </Link>
@@ -174,7 +178,7 @@ const SideBar = () => {
               <li
                 className=""
               >
-                <Link to='/media'>
+                <Link to='/media' onClick={closeNav}>
                   <i className="fa fa-camera" />
                   <span>Media</span>
                 </Link>
@@ -182,7 +186,7 @@ const SideBar = () => {
               <li
                 className=""
               >
-                <Link to='/menus'>
+                <Link to='/menus' onClick={closeNav}>
                   <i className="fa fa-bars" />
                   <span>Menus</span>
                 </Link>
@@ -203,7 +207,7 @@ const SideBar = () => {
                     className=""
                   >
                     <Link to='/users'
-                      
+                      onClick={closeNav}
                     >
                       <i className="fa fa-angle-double-right" />
                       <span>Users</span>
@@ -213,7 +217,7 @@ const SideBar = () => {
                     className=""
                   >
                     <Link to="/roles"
-                      
+                      onClick={closeNav}
                     >
                       <i className="fa fa-angle-double-right" />
                       <span>Roles</span>
@@ -235,7 +239,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/translations' >
+                    <Link to='/translations' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Translations</span>
                     </Link>
@@ -243,7 +247,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/currency-rates'>
+                    <Link to='/currency-rates' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Currency Rates</span>
                     </Link>
@@ -251,7 +255,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/taxes'>
+                    <Link to='/taxes' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Taxes</span>
                     </Link>
@@ -272,7 +276,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/sliders'>
+                    <Link to='/sliders' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Sliders</span>
                     </Link>
@@ -280,7 +284,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/storefront'>
+                    <Link to='/storefront' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Storefront</span>
                     </Link>
@@ -301,7 +305,7 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    <Link to='/importer'>
+                    <Link to='/importer' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Importer</span>
                     </Link>
@@ -311,13 +315,13 @@ const SideBar = () => {
               <li
                 className=""
               >
-                <Link to='/reports'>
+                <Link to='/reports' onClick={closeNav}>
                   <i className="fa fa-bar-chart" />
                   <span>Reports</span>
                 </Link>
               </li>
               <li className="">
-                <Link to='/settings'>
+                <Link to='/settings' onClick={closeNav}>
                   <i className="fa fa-cogs" />
                   <span>Settings</span>
                 </Link>

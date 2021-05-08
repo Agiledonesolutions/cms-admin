@@ -65,7 +65,7 @@ class Reviews extends React.Component {
           console.log(res.data.data)
           var tmp = {
             id: i,
-            // product: val["product"]["name"],
+            product: val["product"]["name"],
             reviewername: val["reviewerName"],
             rating: val.rating,
             approved: val.status,
