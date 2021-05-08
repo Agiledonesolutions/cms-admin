@@ -106,6 +106,7 @@ const routes = (
 
         <PrivateRoute exact path='/sliders' component={()=><Dashboard abc={ <Sliders />} />} />
         <PrivateRoute exact path='/sliders/create' component={()=><Dashboard abc={ <CreateSlider />} />} />
+        <PrivateRoute exact path='/sliders/:id/edit' component={()=><Dashboard abc={ <CreateSlider edit="true"/>} />} />
 
         <PrivateRoute exact path='/settings' component={()=><Dashboard abc={ <Settings />} />} />
 

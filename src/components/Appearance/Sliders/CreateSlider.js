@@ -11,6 +11,7 @@ class CreateSlide extends React.Component {
   state = {
     showModal: false,
     multiple: false,
+    idx: "",
     imageTab: "general",
     activePanel: "slides",
     data: {
@@ -27,21 +28,33 @@ class CreateSlide extends React.Component {
     slides: [
       {
         imageId: "",
+        image: "",
         General: {
           Caption1: "",
           Caption2: "",
-          Direction: "",
+          Direction: "left",
           CallToActionText: "",
           CallToActionUrl: "",
           NewWindow: false,
         },
         Options: [
           {
-            target: "",
+            target: "Caption 1",
             Delay: "",
             Effect: "",
           },
+          {
+            target: "Caption 2",
+            Delay: "",
+            Effect: "",
+          },
+          {
+            target: "Caption To Action",
+            Delay: "",
+            Effect: "",
+          }
         ],
+        target: "Caption 1",
         slideTab: "general",
       },
     ],
@@ -58,21 +71,49 @@ class CreateSlide extends React.Component {
   };
   componentDidMount() {
     if (this.props.edit == "true") {
+      const {data, slides} = this.state
       const url = "/slides/get/" + this.props.match.params.id;
+      api.get(url).then(res=>{
+        
+        slides.splice(0,1)
+        res.data.data.Slides.forEach(slide=>{
+          let tmp = {
+            imageId: slide.Image._id,
+            image: slide.Image.image,
+            General: slide.General,
+            Options: [],
+            slideTab: "general",
+          }
+          slide.Options.forEach(val=>{
+            let tmp2 = {
+              Delay: val.Delay,
+              Effect: val.Effect,
+              target: val.target
+            }
+            tmp.Options.push(tmp2)
+          })
+          slides.push(tmp)
+        })
+        data.Name = res.data.data.Name
+        data.Settings = res.data.data.Settings
+        this.setState({data, slides})
+      }).catch(err=>{
+        console.log("error fetching sslider")
+      })
     }
   }
-
+  setSlide = (val, key, key2, idx) =>{
+    const { slides} = this.state 
+    slides[idx][key][key2] =val
+    this.setState({slides})
+  }
   setImageId = (id, multiple, image) => {
-    if (multiple) {
-    } else {
-    }
+    const {slides, idx} = this.state
+    slides[idx].imageId = id
+    slides[idx].image = image
+    this.setState(slides)
   };
 
-  setVal = (key, val) => {
-    const { data } = this.state;
-    data[key] = val;
-    this.setState({ data });
-  };
   handleAddRow = () => {
     const { slides } = this.state;
     slides.push({
@@ -82,15 +123,25 @@ class CreateSlide extends React.Component {
         Caption2: "",
         Direction: "",
         CallToActionText: "",
-        CallToActionUrl: "",
+        CallToActionURL: "",
         NewWindow: false,
       },
       Options: [
         {
-          target: "",
+          target: "Caption 1",
           Delay: "",
           Effect: "",
         },
+        {
+          target: "Caption 2",
+          Delay: "",
+          Effect: "",
+        },
+        {
+          target: "Caption To Action",
+          Delay: "",
+          Effect: "",
+        }
       ],
       slideTab: "general"
     })
@@ -102,15 +153,16 @@ class CreateSlide extends React.Component {
     this.setState({ slides });
   };
   handleSubmit = () => {
+    console.log(this.state)
     const { errors } = this.state;
     const { data } = this.state;
 
-    if (!errors.includes("name") && !Validate.validateNotEmpty(data["name"])) {
+    if (!errors.includes("name") && !Validate.validateNotEmpty(data["Name"])) {
       errors.push("name");
       this.setState({ errors });
     } else if (
       errors.includes("name") &&
-      Validate.validateNotEmpty(data["name"])
+      Validate.validateNotEmpty(data["Name"])
     ) {
       errors.splice(errors.indexOf("name"), 1);
       this.setState({ errors });
@@ -118,7 +170,17 @@ class CreateSlide extends React.Component {
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
       if (this.props.edit == "true") {
+        api.put('/slides', {data: this.state.data, slides: this.state.slides, requiredPermission: "Edit Slider", _id: this.props.match.params.id}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("error editing slide")
+        })
       } else {
+        api.post('/slides', {data: this.state.data, slides: this.state.slides, requiredPermission: "Create Slider"}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("error adding slide")
+        })
       }
     } else {
       console.log(errors);
@@ -144,9 +206,14 @@ class CreateSlide extends React.Component {
                 </button>
               </div>
               <div className="slide-body">
-                <div className="slide-image" >
-                  <i className="fa fa-picture-o" />
-                </div>
+                
+                {this.state.slides[idx].image? <div className="slide-image" onClick={()=>{
+                  this.setState({showModal: true, multiple: false, idx: idx})
+                }} ><img src={"https://big-cms.herokuapp.com/"+this.state.slides[idx].image} height={120} width={120}/></div>: <div className="slide-image" onClick={()=>{
+                  this.setState({showModal: true, multiple: false, idx: idx})
+                }} >
+                <i className="fa fa-picture-o" />
+              </div>}
                 <div className="slide-tabs tab-wrapper">
                   <ul className="nav nav-tabs">
                     <li className={this.state.slides[idx].slideTab == "general"? "active": ""} onClick={()=>{
@@ -183,8 +250,12 @@ class CreateSlide extends React.Component {
                             </label>
                             <input
                               type="text"
-                              name="slides[0][caption_1]"
+                              name="Caption1"
                               className="form-control"
+                              value={this.state.slides[idx].General.Caption1}
+                              onChange={(e)=>{
+                                this.setSlide(e.target.value, "General", e.target.name, idx)
+                              }}
                             />
                           </div>
                         </div>
@@ -195,8 +266,12 @@ class CreateSlide extends React.Component {
                             </label>
                             <input
                               type="text"
-                              name="slides[0][caption_2]"
+                              name="Caption2"
                               className="form-control"
+                              value={this.state.slides[idx].General.Caption2}
+                              onChange={(e)=>{
+                                this.setSlide(e.target.value, "General", e.target.name, idx)
+                              }}
                             />
                           </div>
                         </div>
@@ -206,8 +281,12 @@ class CreateSlide extends React.Component {
                               Direction
                             </label>
                             <select
-                              name="slides[0][direction]"
+                              name="Direction"
                               className="form-control"
+                              value={this.state.slides[idx].General.Direction}
+                              onChange={(e)=>{
+                                this.setSlide(e.target.value, "General", e.target.name, idx)
+                              }}
                             >
                               <option value="left">Left</option>
                               <option value="right">Right</option>
@@ -223,8 +302,12 @@ class CreateSlide extends React.Component {
                             </label>
                             <input
                               type="text"
-                              name="slides[0][call_to_action_text]"
+                              name="CallToActionText"
                               className="form-control"
+                              value={this.state.slides[idx].General.CallToActionText}
+                              onChange={(e)=>{
+                                this.setSlide(e.target.value, "General", e.target.name, idx)
+                              }}
                             />
                           </div>
                         </div>
@@ -235,18 +318,25 @@ class CreateSlide extends React.Component {
                             </label>
                             <input
                               type="text"
-                              name="slides[0][call_to_action_url]"
+                              name="CallToActionURL"
                               className="form-control"
+                              value={this.state.slides[idx].General.CallToActionURL}
+                              onChange={(e)=>{
+                                this.setSlide(e.target.value, "General", e.target.name, idx)
+                              }}
                             />
                           </div>
                         </div>
                         <div className="col-lg-4 col-md-12">
                           <div className="checkbox">
-                            
                             <input
                               type="checkbox"
-                              name="slides[0][open_in_new_window]"
+                              name="NewWindow"
                               id="slides-0-open-in-new-window"
+                              checked={this.state.slides[idx].General.NewWindow}
+                              onChange={(e)=>{
+                                this.setSlide(!this.state.slides[idx].General.NewWindow, "General", e.target.name, idx)
+                              }}
                             />
                             <label htmlFor="slides-0-open-in-new-window">
                               Open in new window
@@ -258,18 +348,23 @@ class CreateSlide extends React.Component {
                     <div
                       className="tab-pane fade in clearfix active"
                     >
-                      <select className="change-option-block custom-select-black pull-right">
-                        <option value="caption-1" selected>
+                      <select className="change-option-block custom-select-black pull-right" value={this.state.slides[idx].target} onChange={(e)=>{
+                        const {slides} = this.state
+                        slides[idx].target = e.target.value
+                        this.setState({slides})
+                      }}>
+                        <option value={"Caption 1"}>
                           Caption 1
                         </option>
-                        <option value="caption-2">Caption 2</option>
-                        <option value="call-to-action">Call to Action</option>
+                        <option value={"Caption 2"}>Caption 2</option>
+                        <option value={"Call To Action"}>Call to Action</option>
                       </select>
+                     
                       <div
                         className="slide-options caption-1"
                         style={{ display: "block" }}
                       >
-                        <h4>Caption 1</h4>
+                        <h4>{this.state.slides[idx].target}</h4>
                         <div className="form-group">
                           <div className="col-md-12 p-l-0">
                             <label
@@ -280,9 +375,15 @@ class CreateSlide extends React.Component {
                             <div className="col-lg-4 col-md-7 col-sm-6 col-xs-7 p-l-0">
                               <input
                                 type="number"
-                                name="slides[0][options][caption_1][delay]"
+                                name="Delay"
                                 className="form-control"
                                 placeholder="0s"
+                                value={this.state.slides[idx].target == "Caption 1"? this.state.slides[idx].Options[0].Delay: (this.state.slides[idx].target == "Caption 2"? this.state.slides[idx].Options[1].Delay: this.state.slides[idx].Options[2].Delay)}
+                                onChange={(e)=>{
+                                  const {slides} = this.state
+                                  this.state.slides[idx].target == "Caption 1"? slides[idx].Options[0].Delay = e.target.value : (this.state.slides[idx].target == "Caption 2"? slides[idx].Options[1].Delay = e.target.value: slides[idx].Options[2].Delay = e.target.value) 
+                                  this.setState({slides})
+                                }}
                                 step="0.01"
                               />
                             </div>
@@ -297,9 +398,15 @@ class CreateSlide extends React.Component {
                             </label>
                             <div className="col-lg-4 col-md-7 col-sm-6 col-xs-7 p-l-0">
                               <select
-                                name="slides[0][options][caption_1][effect]"
+                                name="Effect"
                                 className="form-control custom-select-black"
-                              >
+                                value={this.state.slides[idx].target == "Caption 1"? this.state.slides[idx].Options[0].Effect: (this.state.slides[idx].target == "Caption 2"? this.state.slides[idx].Options[1].Effect: this.state.slides[idx].Options[2].Effect)}
+                                onChange={(e)=>{
+                                  const {slides} = this.state
+                                  this.state.slides[idx].target == "Caption 1"? slides[idx].Options[0].Effect = e.target.value : (this.state.slides[idx].target == "Caption 2"? slides[idx].Options[1].Effect = e.target.value: slides[idx].Options[2].Effect = e.target.value) 
+                                  this.setState({slides})
+                                }}
+                              ><option value="">Please Select</option>
                                 <option value="fadeInUp">fadeInUp</option>
                                 <option value="fadeInDown">fadeInDown</option>
                                 <option value="fadeInLeft">fadeInLeft</option>
@@ -319,7 +426,6 @@ class CreateSlide extends React.Component {
                           </div>
                         </div>
                       </div>
-                     
                  
                     </div>
                     }

@@ -40,13 +40,13 @@ class Sliders extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/page/get")
+      .get("/slides/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
-            name: val["name"],
+            name: val["Name"],
             created: format(val["createdAt"]),
             _id: val["_id"],
           };
