@@ -37,6 +37,7 @@ import Pages from '../components/Pages/Pages';
 import CreatePage from '../components/Pages/CreatePage';
 import Sliders from '../components/Appearance/Sliders/Sliders';
 import CreateSlider from '../components/Appearance/Sliders/CreateSlider';
+import StoreFront from '../components/Appearance/StoreFront/StoreFront';
 
 
 const routes = (
@@ -107,6 +108,8 @@ const routes = (
         <PrivateRoute exact path='/sliders' component={()=><Dashboard abc={ <Sliders />} />} />
         <PrivateRoute exact path='/sliders/create' component={()=><Dashboard abc={ <CreateSlider />} />} />
         <PrivateRoute exact path='/sliders/:id/edit' component={()=><Dashboard abc={ <CreateSlider edit="true"/>} />} />
+
+        <PrivateRoute exact path='/storefront' component={()=><Dashboard abc={ <StoreFront />} />} />
 
         <PrivateRoute exact path='/settings' component={()=><Dashboard abc={ <Settings />} />} />
 
