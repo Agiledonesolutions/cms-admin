@@ -14,6 +14,7 @@ class StoreFront extends React.Component {
     imageFor: "",
     activePanel: "general",
     activeTab: "generalsettings",
+    pagesOptions: [],
     data: {
       SocialLinks: {
         Facebook: "",
@@ -49,11 +50,53 @@ class StoreFront extends React.Component {
       Newsletter: {
         BackgroundImageId: "",
         image: "",
+      },
+      Logo: {
+        FaviconId: "",
+        HeaderLogoId: "",
+        MailLogoId: "",
+        image: {
+          FaviconId: "",
+          MailLogoId: "",
+          MailLogoId: "",
+        }
+      },
+      ProductPage: {
+        CalltoActionURL: "",
+        OpenInNewWindow: false,
+        ImageId: "",
+        image: ""
+      },
+      General: {
+        WelcomeText: "",
+        ThemeColor: "",
+        CustomThemeColor: "",
+        MailThemeColor: "",
+        CustomMailThemeColor: "",
+        Address: "",
+        TermsConditionsPageId: "",
+        PrivacyPolicyPageId: ""
       }
     },
     errors: [],
   };
-
+  componentDidMount() {
+  
+    api.get('page/get').then(res=>{
+      console.log(res.data.data)
+      const {pagesOptions} = this.state
+      res.data.data.forEach(val=>{
+        let tmp = {
+          label: val.name,
+          value: val._id
+        }
+        pagesOptions.push(tmp)
+      })
+      this.setState({pagesOptions})
+    }).catch(err=>{
+      console.log("error fetching pages")
+    })
+  }
   setVal = (val, key, key2) => {
     const { data } = this.state;   
     data[key][key2] = val;
@@ -64,18 +107,19 @@ class StoreFront extends React.Component {
     data[key][key2][idx][key3] = val;
     this.setState({ data });
   }
-  componentDidMount() {
-    if (this.props.edit == "true") {
-      const { data, slides } = this.state;
-      const url = "/slides/get/" + this.props.match.params.id;
-    }
-  }
-
   setImageId = (id, multiple, image) => {
     const {data, imageFor} = this.state
     if(this.state.activePanel == "newsletter"){
       data.Newsletter[imageFor] = id
       data.Newsletter.image = image
+    }
+    else if(this.state.activePanel == "logo"){
+      data.Logo[imageFor] = id
+      data.Logo.image[imageFor] = image
+    }
+    else if(this.state.activePanel == "productpage"){
+      data.ProductPage[imageFor] = id
+      data.ProductPage.image = image
     }
     this.setState({data})
   };
@@ -108,24 +152,25 @@ class StoreFront extends React.Component {
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
       return (
-        <div className="tab-pane fade active in" id="general">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">General</h3>
           <div className="row">
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="translatable[storefront_welcome_text]"
                   className="col-md-3 control-label text-left"
                 >
                   Welcome Text
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[storefront_welcome_text]"
+                    name="WelcomeText"
                     className="form-control "
-                    id="translatable[storefront_welcome_text]"
-                    defaultValue="Welcome to FleetCart store"
                     type="text"
+                    value={this.state.data.General.WelcomeText}
+                    onChange={(e)=>{
+                      this.setVal(e.target.value, "General", e.target.name)
+                    }}
                   />
                 </div>
               </div>
@@ -316,33 +361,36 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "logo") {
       return (
-        <div className="tab-pane fade active in" id="logo">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">Logo</h3>
           <div className="single-image-wrapper">
             <h4>Favicon</h4>
             <button
               type="button"
               className="image-picker btn btn-default"
-              data-input-name="storefront_favicon"
+              onClick={()=>{
+                this.setState({showModal: true, multiple: false, imageFor: "FaviconId"})
+              }}
             >
               <i className="fa fa-folder-open m-r-5" />
               Browse
             </button>
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
-              <div className="image-holder">
-                <img src="https://fleetcart.envaysoft.com/storage/media/oAtEJJgk1FWZv9MNjcmR1I9pNCrbGI2C7W0LXKDP.png" />
+            {this.state.data.Logo.image.FaviconId? <div className="image-holder">
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data.Logo.image.FaviconId} height={120} width={120}/>
                 <button
                   type="button"
                   className="btn remove-image"
-                  data-input-name="storefront_favicon"
+                  onClick={()=>{
+                    this.setState({imageFor: "FaviconId"}, ()=>{
+                      this.setImageId("", false, "")
+                    })
+                  }}
                 />
-                <input
-                  type="hidden"
-                  name="storefront_favicon"
-                  defaultValue={1344}
-                />
-              </div>
+                </div>: <div className="image-holder placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
             </div>
           </div>
           <div className="media-picker-divider" />
@@ -351,26 +399,28 @@ class StoreFront extends React.Component {
             <button
               type="button"
               className="image-picker btn btn-default"
-              data-input-name="translatable[storefront_header_logo]"
-            >
+              onClick={()=>{
+                this.setState({showModal: true, multiple: false, imageFor: "HeaderLogoId"})
+              }}            >
               <i className="fa fa-folder-open m-r-5" />
               Browse
             </button>
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
-              <div className="image-holder">
-                <img src="https://fleetcart.envaysoft.com/storage/media/o7Z3fzwifjBga5shBOeoFJoLl9p3v9Nl12YIhMlE.png" />
+            {this.state.data.Logo.image.HeaderLogoId? <div className="image-holder">
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data.Logo.image.HeaderLogoId} height={120} width={120}/>
                 <button
                   type="button"
                   className="btn remove-image"
-                  data-input-name="translatable[storefront_header_logo]"
+                  onClick={()=>{
+                    this.setState({imageFor: "HeaderLogoId"}, ()=>{
+                      this.setImageId("", false, "")
+                    })
+                  }}
                 />
-                <input
-                  type="hidden"
-                  name="translatable[storefront_header_logo]"
-                  defaultValue={1342}
-                />
-              </div>
+                </div>: <div className="image-holder placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
             </div>
           </div>
           <div className="media-picker-divider" />
@@ -379,26 +429,29 @@ class StoreFront extends React.Component {
             <button
               type="button"
               className="image-picker btn btn-default"
-              data-input-name="translatable[storefront_mail_logo]"
+              onClick={()=>{
+                this.setState({showModal: true, multiple: false, imageFor: "MailLogoId"})
+              }}
             >
               <i className="fa fa-folder-open m-r-5" />
               Browse
             </button>
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
-              <div className="image-holder">
-                <img src="https://fleetcart.envaysoft.com/storage/media/o7Z3fzwifjBga5shBOeoFJoLl9p3v9Nl12YIhMlE.png" />
+            {this.state.data.Logo.image.MailLogoId? <div className="image-holder">
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data.Logo.image.MailLogoId} height={120} width={120}/>
                 <button
                   type="button"
                   className="btn remove-image"
-                  data-input-name="translatable[storefront_mail_logo]"
+                  onClick={()=>{
+                    this.setState({imageFor: "MailLogoId"}, ()=>{
+                      this.setImageId("", false, "")
+                    })
+                  }}
                 />
-                <input
-                  type="hidden"
-                  name="translatable[storefront_mail_logo]"
-                  defaultValue={1342}
-                />
-              </div>
+                </div>: <div className="image-holder placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
             </div>
           </div>
         </div>
@@ -779,7 +832,9 @@ class StoreFront extends React.Component {
                   type="button"
                   className="btn remove-image"
                   onClick={()=>{
-                    this.setImageId("", false, "")
+                    this.setState({imageFor: "BackgroundImageId"}, ()=>{
+                      this.setImageId("", false, "")
+                    })
                   }}
                 />
                 </div>: <div className="image-holder placeholder">
@@ -885,7 +940,7 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "productpage") {
       return (
-        <div className="tab-pane fade active in" id="product_page">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">Product Page</h3>
           <div className="accordion-box-content">
             <div className="tab-content clearfix">
@@ -895,31 +950,32 @@ class StoreFront extends React.Component {
                     <h5>Product Page Banner</h5>
                   </div>
                   <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/GdxlRSTcxPNGi4gqv86yVx4N2FcpnBSrIa8i7xVe.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_product_page_banner_file_id]"
-                        defaultValue={788}
-                        className="banner-file-id"
-                      />
+                    <div className="panel-image" onClick={()=>{
+                      this.setState({showModal: true, multiple: false, imageFor: "ImageId"})
+                    }}>
+                    {this.state.data.ProductPage.image?  
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data.ProductPage.image} />
+                
+                
+                : <div className="placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
                     </div>
                     <div className="panel-content clearfix">
                       <div className="row">
                         <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
                           <div className="form-group">
-                            <label htmlFor="storefront_product_page_banner-call-to-action-url">
+                            <label >
                               Call to Action URL
                             </label>
                             <input
                               type="text"
-                              name="storefront_product_page_banner_call_to_action_url"
-                              defaultValue="/categories/headphones/products"
+                              name="CalltoActionURL"
                               className="form-control"
-                              id="storefront_product_page_banner-call-to-action-url"
+                              value={this.state.data.ProductPage.CalltoActionURL}
+                              onChange={(e)=>{
+                                this.setVal(e.target.value, "ProductPage", e.target.name)
+                              }}
                             />
                           </div>
                         </div>
@@ -928,15 +984,13 @@ class StoreFront extends React.Component {
                         <div className="col-lg-6 col-md-12 col-sm-6">
                           <div className="checkbox">
                             <input
-                              type="hidden"
-                              name="storefront_product_page_banner_open_in_new_window"
-                              defaultValue={0}
-                            />
-                            <input
                               type="checkbox"
-                              name="storefront_product_page_banner_open_in_new_window"
-                              defaultValue={1}
+                              name="OpenInNewWindow"
                               id="storefront_product_page_banner-open-in-new-window"
+                              checked={this.state.data.ProductPage.OpenInNewWindow}
+                              onChange={(e)=>{
+                                this.setVal(!this.state.data.ProductPage.OpenInNewWindow, "ProductPage", e.target.name)
+                              }}
                             />
                             <label htmlFor="storefront_product_page_banner-open-in-new-window">
                               Open in new window
