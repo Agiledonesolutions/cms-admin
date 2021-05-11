@@ -38,6 +38,9 @@ import CreatePage from '../components/Pages/CreatePage';
 import Sliders from '../components/Appearance/Sliders/Sliders';
 import CreateSlider from '../components/Appearance/Sliders/CreateSlider';
 import StoreFront from '../components/Appearance/StoreFront/StoreFront';
+import Orders from '../components/Sales/Orders/Orders';
+import EditOrder from '../components/Sales/Orders/EditOrder';
+import Transactions from '../components/Sales/Transactions/Transactions';
 
 
 const routes = (
@@ -85,7 +88,10 @@ const routes = (
         <PrivateRoute exact path='/reviews' component={()=><Dashboard abc={ <Reviews />} />} />
         <PrivateRoute exact path='/reviews/:id/edit' component={()=><Dashboard abc={ <CreateReview edit="true"/>} />} />
 
-        {/* Sales */}
+        <PrivateRoute exact path='/orders' component={()=><Dashboard abc={ <Orders />} />} />
+        <PrivateRoute exact path='/orders/:id' component={()=><Dashboard abc={ <EditOrder />} />} />
+
+        <PrivateRoute exact path='/transactions' component={()=><Dashboard abc={ <Transactions />} />} />
 
         <PrivateRoute exact path='/flashsales' component={()=><Dashboard abc={ <FlashSales />} />} />
         <PrivateRoute exact path='/flashsales/create' component={()=><Dashboard abc={ <CreateFlashSale />} />} />

@@ -15,6 +15,7 @@ class StoreFront extends React.Component {
     activePanel: "general",
     activeTab: "generalsettings",
     pagesOptions: [],
+    sliderOptions: [],
     data: {
       SocialLinks: {
         Facebook: "",
@@ -73,6 +74,7 @@ class StoreFront extends React.Component {
         CustomThemeColor: "",
         MailThemeColor: "",
         CustomMailThemeColor: "",
+        sliderId: "",
         Address: "",
         TermsConditionsPageId: "",
         PrivacyPolicyPageId: ""
@@ -83,7 +85,6 @@ class StoreFront extends React.Component {
   componentDidMount() {
   
     api.get('page/get').then(res=>{
-      console.log(res.data.data)
       const {pagesOptions} = this.state
       res.data.data.forEach(val=>{
         let tmp = {
@@ -95,6 +96,19 @@ class StoreFront extends React.Component {
       this.setState({pagesOptions})
     }).catch(err=>{
       console.log("error fetching pages")
+    })
+    api.get('/slides/get').then(res=>{
+      const {sliderOptions} = this.state
+      res.data.data.forEach(val=>{
+        let tmp = {
+          label: val.Name,
+          value: val._id
+        }
+        sliderOptions.push(tmp)
+      })
+      this.setState({sliderOptions})
+    }).catch(err=>{
+      console.log("error fetching sliders")
     })
   }
   setVal = (val, key, key2) => {
@@ -176,16 +190,18 @@ class StoreFront extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="storefront_theme_color"
                   className="col-md-3 control-label text-left"
                 >
                   Theme Color
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="storefront_theme_color"
+                    name="ThemeColor"
                     className="form-control custom-select-black "
-                    id="storefront_theme_color"
+                    value={this.state.data.General.ThemeColor}
+                    onChange={(e)=>{
+                      this.setVal(e.target.value, "General", e.target.name)
+                    }}
                   >
                     <option value="blue">Blue</option>
                     <option value="bondi-blue">Bondi Blue</option>
@@ -199,41 +215,44 @@ class StoreFront extends React.Component {
                     <option value="black">Black</option>
                     <option value="indigo">Indigo</option>
                     <option value="magenta">Magenta</option>
-                    <option value="custom_color">Custom Color</option>
+                    <option value={"custom color"}>Custom Color</option>
                   </select>
                 </div>
               </div>
-              <div className="hide" id="custom-theme-color">
+              <div className={this.state.data.General.ThemeColor == "custom color"?"": "hide"} >
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_custom_theme_color"
                     className="col-md-3 control-label text-left"
                   >
                     Custom Theme Color
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="storefront_custom_theme_color"
+                      name="CustomThemeColor"
                       className="form-control "
-                      id="storefront_custom_theme_color"
-                      defaultValue
                       type="color"
+                      value={this.state.data.General.CustomThemeColor}
+                      onChange={(e)=>{
+                        this.setVal(e.target.value, "General", e.target.name)
+                      }}
                     />
                   </div>
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="storefront_mail_theme_color"
                   className="col-md-3 control-label text-left"
                 >
                   Mail Theme Color
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="storefront_mail_theme_color"
+                    name="MailThemeColor"
                     className="form-control custom-select-black "
-                    id="storefront_mail_theme_color"
+                    value={this.state.data.General.MailThemeColor}
+                    onChange={(e)=>{
+                      this.setVal(e.target.value, "General", e.target.name)
+                    }}
                   >
                     <option value="blue">Blue</option>
                     <option value="bondi-blue">Bondi Blue</option>
@@ -247,111 +266,113 @@ class StoreFront extends React.Component {
                     <option value="black">Black</option>
                     <option value="indigo">Indigo</option>
                     <option value="magenta">Magenta</option>
-                    <option value="custom_color">Custom Color</option>
+                    <option value={"custom color"}>Custom Color</option>
                   </select>
                 </div>
               </div>
-              <div className="hide" id="custom-mail-theme-color">
+              <div className={this.state.data.General.MailThemeColor == "custom color"? "": "hide"}>
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_custom_mail_theme_color"
                     className="col-md-3 control-label text-left"
                   >
                     Custom Mail Theme Color
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="storefront_custom_mail_theme_color"
+                      name="CustomMailThemeColor"
                       className="form-control "
-                      id="storefront_custom_mail_theme_color"
-                      defaultValue
                       type="color"
+                      value={this.state.data.General.CustomMailThemeColor}
+                      value={this.state.data.General.ThemeColor}
+                      onChange={(e)=>{
+                        this.setVal(e.target.value, "General", e.target.name)
+                      }}
                     />
                   </div>
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="storefront_slider"
                   className="col-md-3 control-label text-left"
                 >
                   Slider
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="storefront_slider"
+                    name="sliderId"
                     className="form-control custom-select-black "
-                    id="storefront_slider"
+                    value={this.state.data.General.sliderId}
+                      onChange={(e)=>{
+                        this.setVal(e.target.value, "General", e.target.name)
+                      }}
                   >
-                    <option value>Please Select</option>
-                    <option value={1} selected>
-                      Main Slider
-                    </option>
+                    <option value="">Please Select</option>
+                      {this.state.sliderOptions.map((val,idx)=>(
+                        <option key={idx} value={val.value}>{val.label}</option>
+                      ))}
+                    
                   </select>
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="storefront_terms_page"
                   className="col-md-3 control-label text-left"
                 >
                   Terms &amp; Conditions Page
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="storefront_terms_page"
+                    name="TermsConditionsPageId"
                     className="form-control custom-select-black "
-                    id="storefront_terms_page"
+                    value={this.state.data.General.TermsConditionsPageId}
+                      onChange={(e)=>{
+                        this.setVal(e.target.value, "General", e.target.name)
+                      }}
                   >
-                    <option value>Please Select</option>
-                    <option value={1}>Privacy &amp; Policy</option>
-                    <option value={2} selected>
-                      Terms &amp; Conditions
-                    </option>
-                    <option value={3}>Return Policy</option>
-                    <option value={4}>FAQ</option>
-                    <option value={5}>About Us</option>
+                    <option value="">Please Select</option>
+                    {this.state.pagesOptions.map((val,idx)=>(
+                      <option key={idx} value={val.value}>{val.label}</option>
+                    ))}
                   </select>
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="storefront_privacy_page"
                   className="col-md-3 control-label text-left"
                 >
                   Privacy Policy Page
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="storefront_privacy_page"
+                    name="PrivacyPolicyPageId"
                     className="form-control custom-select-black "
-                    id="storefront_privacy_page"
+                    value={this.state.data.General.PrivacyPolicyPageId}
+                      onChange={(e)=>{
+                        this.setVal(e.target.value, "General", e.target.name)
+                      }}
                   >
                     <option value>Please Select</option>
-                    <option value={1} selected>
-                      Privacy &amp; Policy
-                    </option>
-                    <option value={2}>Terms &amp; Conditions</option>
-                    <option value={3}>Return Policy</option>
-                    <option value={4}>FAQ</option>
-                    <option value={5}>About Us</option>
+                    {this.state.pagesOptions.map((val,idx)=>(
+                      <option key={idx} value={val.value}>{val.label}</option>
+                    ))}
                   </select>
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[storefront_address]"
                   className="col-md-3 control-label text-left"
                 >
                   Address
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[storefront_address]"
+                    name="Address"
                     className="form-control "
-                    id="translatable[storefront_address]"
-                    defaultValue="Dhaka, Mohammadpur"
                     type="text"
+                    value={this.state.data.General.Address}
+                      onChange={(e)=>{
+                        this.setVal(e.target.value, "General", e.target.name)
+                      }}
                   />
                 </div>
               </div>
