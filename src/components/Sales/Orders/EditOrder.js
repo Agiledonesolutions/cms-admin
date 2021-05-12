@@ -2,8 +2,81 @@ import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import "./order.css";
+import Loading from '../../Loading'
 
 class EditOrder extends React.Component {
+  state={
+    submitting: false,
+    orderDate: "--",
+    orderStatus: "Processing",
+    shippingMethod: "--",
+    paymentMethod: "--",
+    currency: "--",
+    currencyRate: "--",
+    customerName: "--",
+    customerEmail: "--",
+    customerPhone: "--",
+    customerGroup: "--",
+    billingAddress: {
+      Name: "--",
+      Line1: "--",
+      Line2: "--",
+      Country: "--"
+    },
+    shippingAddress: {
+      Name: "--",
+      Line1: "--",
+      Line2: "--",
+      Country: "--"
+    },
+    items: [
+      {
+        LineTotal: "--",
+        Qty: "--",
+        Product: {
+          Name: "--",
+          _id: "--",
+          price: "--"
+        }
+      }
+    ],
+    subTotal: "--",
+    discount: "--",
+    Total: "--"
+  }
+  componentDidMount(){
+    const url = "order/get/" + this.props.match.params.id
+    this.setState({submitting: true})
+    api.post(url,  {requiredPermission: "Show Order"}).then(res=>{
+      const val = res.data.data
+      var arr = []
+      val.ItemsOrdered.forEach(item=>{
+        let tmp= {
+          LineTotal: item.LineTotal,
+          Qty: item.Quantity,
+          Product: {
+            Name: item.Product.name,
+            _id: item.Product._id,
+            price: item.Product.price
+          }
+        }
+        arr.push(tmp)
+      })
+      this.setState({shippingAddress: val.Address.ShippingAddress, billingAddress: val.Address.BillingAddress, orderDate: val.createdAt.substr(0,10).split("-").reverse().join("-"), shippingMethod: val.ShippingMethod, paymentMethod: val.PaymentMethod,orderStatus: val.Status, customerName: val.User["First Name"]+" "+val.User["Last Name"], customerEmail: val.User.Email, items: arr, subTotal: val.SubTotal, discount: val.Discount, Total: val.Total, submitting: false})
+    }).catch(err=>{
+      console.log("error fetching order details")
+    })
+  }
+  handleStatusUpdate = ()=>{
+    this.setState({submitting: true})
+    api.put('/order', {data: {Status: this.state.orderStatus}, _id: this.props.match.params.id, requiredPermission: "Edit Order"}).then(res=>{
+      console.log(res)
+      this.setState({submitting: false})
+    }).catch(err=>{
+      console.log("error updating status")
+      this.setState({submitting: false})
+    })
+  }
   render() {
     return (
       <React.Fragment>
@@ -21,6 +94,7 @@ class EditOrder extends React.Component {
             <li className="active">Show Order</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="order-wrapper">
             <div className="order-information-wrapper">
@@ -36,19 +110,13 @@ class EditOrder extends React.Component {
                 </a>
                 <form
                   method="POST"
-                  action="https://fleetcart.envaysoft.com/en/admin/orders/1/email"
                 >
-                  <input
-                    type="hidden"
-                    name="_token"
-                    defaultValue="QXl1DHJFGI25NJWzajsJcex5CuPRkdyA1ayQx3ts"
-                  />
+                  
                   <button
                     type="submit"
                     className="btn btn-default"
                     data-toggle="tooltip"
                     title="Send Email"
-                    data-loading
                   >
                     <i className="fa fa-envelope-o" aria-hidden="true" />
                   </button>
@@ -64,7 +132,7 @@ class EditOrder extends React.Component {
                         <tbody>
                           <tr>
                             <td>Order Date</td>
-                            <td>May 2, 2020</td>
+                            <td>{this.state.orderDate}</td>
                           </tr>
                           <tr>
                             <td>Order Status</td>
@@ -72,23 +140,26 @@ class EditOrder extends React.Component {
                               <div className="row">
                                 <div className="col-lg-9 col-md-10 col-sm-10">
                                   <select
-                                    id="order-status"
                                     className="form-control custom-select-black"
-                                    data-id={1}
+                                    value={this.state.orderStatus}
+                                    onChange={(e)=>{
+                                      this.setState({orderStatus: e.target.value},()=> this.handleStatusUpdate())
+                                    }}
+
                                   >
-                                    <option value="canceled">Canceled</option>
-                                    <option value="completed" selected>
+                                    <option value="Canceled">Canceled</option>
+                                    <option value="Completed" >
                                       Completed
                                     </option>
-                                    <option value="on_hold">On Hold</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="pending_payment">
+                                    <option value={"On Hold"}>On Hold</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value={"Pending Payment"}>
                                       Pending Payment
                                     </option>
-                                    <option value="processing">
+                                    <option value="Processing">
                                       Processing
                                     </option>
-                                    <option value="refunded">Refunded</option>
+                                    <option value="Refunded">Refunded</option>
                                   </select>
                                 </div>
                               </div>
@@ -96,19 +167,19 @@ class EditOrder extends React.Component {
                           </tr>
                           <tr>
                             <td>Shipping Method</td>
-                            <td>Flat Rate</td>
+                            <td>{this.state.shippingMethod}</td>
                           </tr>
                           <tr>
                             <td>Payment Method</td>
-                            <td>Cash On Delivery</td>
+                            <td>{this.state.paymentMethod}</td>
                           </tr>
                           <tr>
                             <td>Currency</td>
-                            <td>USD</td>
+                            <td>{this.state.currency}</td>
                           </tr>
                           <tr>
                             <td>Currency Rate</td>
-                            <td>1.0000</td>
+                            <td>{this.state.currencyRate}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -123,19 +194,19 @@ class EditOrder extends React.Component {
                         <tbody>
                           <tr>
                             <td>Customer Name</td>
-                            <td>Mehedi Hasan</td>
+                            <td>{this.state.customerName}</td>
                           </tr>
                           <tr>
                             <td>Customer Email</td>
-                            <td>admin@email.com</td>
+                            <td>{this.state.customerEmail}</td>
                           </tr>
                           <tr>
                             <td>Customer Phone</td>
-                            <td>0123456789</td>
+                            <td>{this.state.customerPhone}</td>
                           </tr>
                           <tr>
                             <td>Customer Group</td>
-                            <td>Registered</td>
+                            <td>{this.state.customerGroup}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -151,13 +222,13 @@ class EditOrder extends React.Component {
                   <div className="billing-address">
                     <h4 className="pull-left">Billing Address</h4>
                     <span>
-                      Mehedi Hasan
+                      {this.state.billingAddress.Name}
                       <br />
-                      Palli Bidyut, Savar
+                      {this.state.billingAddress.Line1}
                       <br />
-                      Dhaka, Dhaka 1344
+                      {this.state.billingAddress.Line2}
                       <br />
-                      Bangladesh
+                      {this.state.billingAddress.Country}
                     </span>
                   </div>
                 </div>
@@ -165,13 +236,13 @@ class EditOrder extends React.Component {
                   <div className="shipping-address">
                     <h4 className="pull-left">Shipping Address</h4>
                     <span>
-                      Mehedi Hasan
+                      {this.state.shippingAddress.Name}
                       <br />
-                      Palli Bidyut, Savar
+                      {this.state.shippingAddress.Line1}
                       <br />
-                      Dhaka, Dhaka 1344
+                      {this.state.shippingAddress.Line2}
                       <br />
-                      Bangladesh
+                      {this.state.shippingAddress.Country}
                     </span>
                   </div>
                 </div>
@@ -193,38 +264,18 @@ class EditOrder extends React.Component {
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
+                          {this.state.items.map((item, idx)=>(
+                          <tr key={idx}>
                             <td>
-                              <a href="https://fleetcart.envaysoft.com/en/admin/products/63/edit">
-                                SAMSUNG QN32Q50RAFXZA Flat 32" QLED
-                              </a>
+                              <Link to={"/products/"+ item.Product._id+"/edit"}>
+                                {item.Product.Name}
+                              </Link>
                             </td>
-                            <td>$999.00</td>
-                            <td>2</td>
-                            <td>$1,998.00</td>
+                            <td>{item.Product.price}</td>
+                            <td>{item.Qty}</td>
+                            <td>{item.LineTotal}</td>
                           </tr>
-                          <tr>
-                            <td>
-                              <a href="https://fleetcart.envaysoft.com/en/admin/products/56/edit">
-                                Michael Kors Access Gen 3 Sofie Touchscreen
-                                Smartwatch
-                              </a>
-                            </td>
-                            <td>$299.00</td>
-                            <td>2</td>
-                            <td>$598.00</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <a href="https://fleetcart.envaysoft.com/en/admin/products/1/edit">
-                                Apple MacBook Pro 2019 Model (13-Inch, Intel
-                                Core i5, 1.4Ghz, 8GB, 128GB)
-                              </a>
-                            </td>
-                            <td>$999.00</td>
-                            <td>10</td>
-                            <td>$9,990.00</td>
-                          </tr>
+                          ))}
                         </tbody>
                       </table>
                     </div>
@@ -240,15 +291,15 @@ class EditOrder extends React.Component {
                       <tbody>
                         <tr>
                           <td>Subtotal</td>
-                          <td className="text-right">$12,586.00</td>
+                          <td className="text-right">{this.state.subTotal}</td>
                         </tr>
                         <tr>
                           <td>Flat Rate</td>
-                          <td className="text-right">$25.00</td>
+                          <td className="text-right">{this.state.discount}</td>
                         </tr>
                         <tr>
                           <td>Total</td>
-                          <td className="text-right">$12,611.00</td>
+                          <td className="text-right">{this.state.Total}</td>
                         </tr>
                       </tbody>
                     </table>

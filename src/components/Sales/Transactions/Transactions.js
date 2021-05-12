@@ -2,7 +2,6 @@ import React from "react";
 import { Link, Redirect } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import SortIcon from "@material-ui/icons/SortRounded";
-import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
@@ -18,7 +17,7 @@ class Transactions extends React.Component {
           selector: "orderid",
           sortable: true,
           width: "120px",
-          cell: row=><Link to={'/orders/'+row.orderid}>{row.orderid}</Link>
+          cell: row=><Link to={'/orders/'+row.order_id}>{row.orderid}</Link>
         },
         {
           name: "Transaction Id",
@@ -45,14 +44,14 @@ class Transactions extends React.Component {
     api
       .get("/transaction/get")
       .then((res) => {
-        console.log(res.data.data)
         res.data.data.map((val) => {
           i++;
           var tmp = {
             orderid: i,
-            transactionid: "",
-            paymentMethod: val.PaymentMethod,
+            transactionid: "placeholder",
+            paymentmethod: val.PaymentMethod,
             created: format(val["createdAt"]),
+            order_id: val.OrderId,
             _id: val["_id"],
           };
           datalist.push(tmp);
@@ -84,27 +83,12 @@ class Transactions extends React.Component {
               <DataTableExtensions {...this.state.tableData}>
                 <DataTable
                   noHeader
-                  defaultSortField="created"
+                  defaultSortField="orderid"
                   defaultSortAsc={true}
                   sortIcon={<SortIcon />}
-                  selectableRowsComponent={Checkbox}
                   filterPlaceholder="Search"
-                  export={false}
-                  print={false}
-                  onSelectedRowsChange={(selected) => {
-                    const arr = [];
-                    selected["selectedRows"].forEach((row) => {
-                      arr.push(row._id);
-                    });
-                    this.setState({ selectedRows: arr });
-                  }}
                   responsive
-                  pagination
-                  selectableRows
-                  onRowClicked={(index) => {
-                    this.setState({ edit: index._id });
-                  }}
-                  pointerOnHover
+                  pagination             
                   highlightOnHover
                 />
               </DataTableExtensions>
