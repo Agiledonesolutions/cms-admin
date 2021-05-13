@@ -4,9 +4,11 @@ import api from "../../apis/api";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import Validate from "../../utils/validation";
+import Loading from '../Loading'
 
 class CreateFlashSale extends React.Component {
   state = {
+    submitting: false,
     activePanel: "products",
     productOptions: [],
     data: {
@@ -25,28 +27,6 @@ class CreateFlashSale extends React.Component {
   
 
   componentDidMount() {
-    
-    if (this.props.edit == "true") {
-      const url = "/flashsale/get/" + this.props.match.params.id;
-      api.get(url).then(res=>{
-        const {data} = this.state
-        data.products = []
-        data.campaignName = res.data.data.campaignName
-        res.data.data.products.map(val=>{
-          let tmp = {}
-          tmp.productId = val._id
-          tmp.price = val.price
-          tmp.endDate = val.endDate.substr(0,10)
-          tmp.quantity = val.quantity
-          
-          data.products.push(tmp);
-        })
-        this.setState({data})
-      }).catch(err=>{
-        console.log("error fetching flash sale")
-      })
-    }
-
     api.get('/product/get').then(res=>{
       const {productOptions} = this.state
       res.data.data.map(val => {
@@ -59,6 +39,32 @@ class CreateFlashSale extends React.Component {
     }).catch(err=>{
       console.log("error fetching products")
     })
+    if (this.props.edit == "true") {
+      this.setState({submitting: true})
+      const url = "/flashsale/get/" + this.props.match.params.id;
+      api.get(url).then(res=>{
+        const {data} = this.state
+        data.products = []
+        data.campaignName = res.data.data.campaignName
+        res.data.data.products.map(val=>{
+          console.log(val)
+          let tmp = {}
+          tmp.productId = val.product._id
+          tmp.price = val.price
+          tmp.endDate = val.endDate.substr(0,10)
+          tmp.quantity = val.quantity
+          
+          data.products.push(tmp);
+        })
+        this.setState({data})
+        this.setState({submitting: false})
+
+      }).catch(err=>{
+        console.log("error fetching flash sale")
+      })
+    }
+
+
 
   }
 
@@ -118,14 +124,27 @@ class CreateFlashSale extends React.Component {
     })
     console.log(this.state)
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({submitting: true})
+
       if (this.props.edit == "true") {
-        
+
+        api.put('/flashsale', {data: data, requiredPermission: "Edit Flash Sales", _id: this.props.match.params.id}).then(res=>{
+          console.log(res)
+          this.setState({submitting: false})
+        }).catch(err=>{
+          console.log("error updating flashsale")
+          this.setState({submitting: false})
+        })
       } else {
         
         api.post('/flashsale', {data: data, requiredPermission: "Create Flash Sales"}).then(res=>{
           console.log(res)
+          this.setState({submitting: false})
+
         }).catch(err=>{
           console.log("error adding flash sale")
+          this.setState({submitting: false})
+
         })
       }
     } else {
@@ -351,7 +370,7 @@ class CreateFlashSale extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-2 col-md-10">
+                      <div className="col-md-2 col-md-10" style={{display: "flex"}}>
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -362,6 +381,7 @@ class CreateFlashSale extends React.Component {
                         >
                           Save
                         </button>
+                        <Loading show={this.state.submitting}/>
                       </div>
                     </div>
                   </div>
