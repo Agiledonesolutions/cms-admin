@@ -4,6 +4,8 @@ import api from "../../../apis/api";
 import Validate from "../../../utils/validation";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
+import MultiSelect from "react-multiple-select-dropdown-lite";
+import "react-multiple-select-dropdown-lite/dist/index.css";
 import FileManager from "../../Media/FileManager";
 import Loading from "../../Loading";
 
@@ -16,6 +18,7 @@ class StoreFront extends React.Component {
     activeTab: "generalsettings",
     pagesOptions: [],
     sliderOptions: [],
+    tagOptions: [],
     data: {
       SocialLinks: {
         Facebook: "",
@@ -71,13 +74,116 @@ class StoreFront extends React.Component {
       General: {
         WelcomeText: "",
         ThemeColor: "",
-        CustomThemeColor: "",
+        CustomThemeColor: "#000000",
         MailThemeColor: "",
-        CustomMailThemeColor: "",
+        CustomMailThemeColor: "#000000",
         sliderId: "",
         Address: "",
         TermsConditionsPageId: "",
         PrivacyPolicyPageId: ""
+      },
+      Footer: {
+        FooterTagsIds: [],
+        FooterCopyrightText: "",
+        AcceptedPaymentMethodsImageId: "",
+        image: ""
+      },
+      "Slider Banners": {
+        Name: "Slider Banners",
+        Banners: [
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          }
+        ]
+      },
+      "Three Column Full Width Banners": {
+        Name: "Three Column Full Width Banners",
+        SectionStatus: false,
+        BackgroundId: "",
+        BackgroundIdImage: "",
+        Banners: [
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          }
+        ]
+      },
+      "Two column banners": {
+        Name: "Two column banners",
+        SectionStatus: false,
+        Banners: [
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          }
+        ]
+      },
+      "Three Column Banners": {
+        Name: "Three Column Banners",
+        SectionStatus: false,
+        Banners: [
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          }
+        ]
+      },
+      "One Column Banner": {
+        Name: "One Column Banner",
+        SectionStatus: false,
+        Banners: [
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: ""
+          }
+        ]
       }
     },
     errors: [],
@@ -110,6 +216,19 @@ class StoreFront extends React.Component {
     }).catch(err=>{
       console.log("error fetching sliders")
     })
+    api.get('/tag/get').then(res=>{
+      const {tagOptions} = this.state
+      res.data.data.forEach(val=>{
+        let tmp = {
+          label: val.name,
+          value: val._id
+        }
+        tagOptions.push(tmp)
+      })
+      this.setState({tagOptions})
+    }).catch(err=>{
+      console.log("error fetching tags")
+    })
   }
   setVal = (val, key, key2) => {
     const { data } = this.state;   
@@ -135,6 +254,35 @@ class StoreFront extends React.Component {
       data.ProductPage[imageFor] = id
       data.ProductPage.image = image
     }
+    else if(this.state.activePanel == "footer"){
+      data.Footer[imageFor] = id
+      data.Footer.image = image
+    }
+    else if(this.state.activePanel == "sliderbanners"){
+      data["Slider Banners"].Banners[imageFor].imageId = id
+      data["Slider Banners"].Banners[imageFor].image = image
+    }
+    else if(this.state.activePanel == "threecolfullwidth"){
+      if(imageFor == "BackgroundId"){
+        data["Three Column Full Width Banners"].BackgroundId = id
+        data["Three Column Full Width Banners"].BackgroundIdImage = image
+      }else{
+        data["Three Column Full Width Banners"].Banners[imageFor].imageId = id
+        data["Three Column Full Width Banners"].Banners[imageFor].image = image
+      }
+    }
+    else if(this.state.activePanel == "twocolbanners"){
+      data["Two column banners"].Banners[imageFor].imageId = id
+      data["Two column banners"].Banners[imageFor].image = image
+    }
+    else if(this.state.activePanel == "threecolbanners"){
+      data["Three Column Banners"].Banners[imageFor].imageId = id
+      data["Three Column Banners"].Banners[imageFor].image = image
+    }
+    else if(this.state.activePanel == "onecolbanner"){
+      data["One Column Banner"].Banners[imageFor].imageId = id
+      data["One Column Banner"].Banners[imageFor].image = image
+    }
     this.setState({data})
   };
 
@@ -142,6 +290,9 @@ class StoreFront extends React.Component {
     console.log(this.state.data);
     const { errors } = this.state;
     const { data } = this.state;
+
+    //add custom colours
+    //add banners to arr
 
     // if (!errors.includes("name") && !Validate.validateNotEmpty(data["Name"])) {
     //   errors.push("name");
@@ -632,165 +783,46 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "footer") {
       return (
-        <div className="tab-pane fade active in" id="footer">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">Footer</h3>
           <div className="row">
             <div className="col-md-8">
               <div className="box-content clearfix">
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_footer_tags[]-selectized"
                     className="col-md-3 control-label text-left"
                   >
                     Footer Tags
                   </label>
                   <div className="col-md-9">
-                    <select
-                      name="storefront_footer_tags[]"
-                      className="selectize prevent-creation selectized"
-                      id="storefront_footer_tags[]"
-                      multiple="multiple"
-                      tabIndex={-1}
-                      style={{ display: "none" }}
-                    >
-                      <option value={33} selected="selected">
-                        Accessories
-                      </option>
-                      <option value={4} selected="selected">
-                        Electronics
-                      </option>
-                      <option value={9} selected="selected">
-                        Entertainment
-                      </option>
-                      <option value={3} selected="selected">
-                        Fashion
-                      </option>
-                      <option value={6} selected="selected">
-                        Gadgets
-                      </option>
-                      <option value={8} selected="selected">
-                        Hot deals
-                      </option>
-                      <option value={31} selected="selected">
-                        Lifestyle
-                      </option>
-                      <option value={7} selected="selected">
-                        Smartphone
-                      </option>
-                    </select>
-                    <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                      <div className="selectize-input items not-full has-options has-items">
-                        <div className="item" data-value={33}>
-                          Accessories
-                          <a
-                            href="javascript:void(0)"
-                            className="remove"
-                            tabIndex={-1}
-                          >
-                            ×
-                          </a>
-                        </div>
-                        <div className="item" data-value={4}>
-                          Electronics
-                          <a
-                            href="javascript:void(0)"
-                            className="remove"
-                            tabIndex={-1}
-                          >
-                            ×
-                          </a>
-                        </div>
-                        <div className="item" data-value={9}>
-                          Entertainment
-                          <a
-                            href="javascript:void(0)"
-                            className="remove"
-                            tabIndex={-1}
-                          >
-                            ×
-                          </a>
-                        </div>
-                        <div className="item" data-value={3}>
-                          Fashion
-                          <a
-                            href="javascript:void(0)"
-                            className="remove"
-                            tabIndex={-1}
-                          >
-                            ×
-                          </a>
-                        </div>
-                        <div className="item" data-value={6}>
-                          Gadgets
-                          <a
-                            href="javascript:void(0)"
-                            className="remove"
-                            tabIndex={-1}
-                          >
-                            ×
-                          </a>
-                        </div>
-                        <div className="item" data-value={8}>
-                          Hot deals
-                          <a
-                            href="javascript:void(0)"
-                            className="remove"
-                            tabIndex={-1}
-                          >
-                            ×
-                          </a>
-                        </div>
-                        <div className="item" data-value={31}>
-                          Lifestyle
-                          <a
-                            href="javascript:void(0)"
-                            className="remove"
-                            tabIndex={-1}
-                          >
-                            ×
-                          </a>
-                        </div>
-                        <div className="item" data-value={7}>
-                          Smartphone
-                          <a
-                            href="javascript:void(0)"
-                            className="remove"
-                            tabIndex={-1}
-                          >
-                            ×
-                          </a>
-                        </div>
-                        <input
-                          type="select-multiple"
-                          autoComplete="off"
-                          tabIndex
-                          id="storefront_footer_tags[]-selectized"
-                          style={{ width: 4 }}
-                        />
-                      </div>
-                      <div
-                        className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                        style={{ display: "none" }}
-                      >
-                        <div className="selectize-dropdown-content" />
-                      </div>
+                  <MultiSelect
+                    onChange={(val)=>{
+                      const {data} = this.state
+                      data.Footer.FooterTagsIds = val.split(",")
+                      this.setState({data})
+                    }}
+                    options={this.state.tagOptions}
+                    defaultValue={
+                      this.state.data.Footer.FooterTagsIds.toString()
+                    }
+                  />
                     </div>
-                  </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="translatable[storefront_copyright_text]"
                     className="col-md-3 control-label text-left"
                   >
                     Footer Copyright Text
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="translatable[storefront_copyright_text]"
+                      name="FooterCopyrightText"
                       className="form-control "
-                      id="translatable[storefront_copyright_text]"
-                      defaultValue='Copyright © <a href="{{ store_url }}">{{ store_name }}</a> {{ year }}. All rights reserved.'
                       type="text"
+                      value={this.state.data.Footer.FooterCopyrightText}
+                      onChange={(e)=>{
+                        this.setVal(e.target.value, "Footer", e.target.name)
+                      }}
                     />
                   </div>
                 </div>
@@ -801,26 +833,29 @@ class StoreFront extends React.Component {
                   <button
                     type="button"
                     className="image-picker btn btn-default"
-                    data-input-name="storefront_accepted_payment_methods_image"
+                    onClick={()=>{
+                      this.setState({showModal: true, multiple: false, imageFor: "AcceptedPaymentMethodsImageId"})
+                    }}
                   >
                     <i className="fa fa-folder-open m-r-5" />
                     Browse
                   </button>
                   <div className="clearfix" />
                   <div className="single-image image-holder-wrapper clearfix">
-                    <div className="image-holder">
-                      <img src="https://fleetcart.envaysoft.com/storage/media/r28gsyypi1oT531dU1MY1EjSskTWQbRIm7OHyTCl.png" />
-                      <button
-                        type="button"
-                        className="btn remove-image"
-                        data-input-name="storefront_accepted_payment_methods_image"
-                      />
-                      <input
-                        type="hidden"
-                        name="storefront_accepted_payment_methods_image"
-                        defaultValue={983}
-                      />
-                    </div>
+                  {this.state.data.Footer.image? <div className="image-holder">
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data.Footer.image} height={120} width={120}/>
+                <button
+                  type="button"
+                  className="btn remove-image"
+                  onClick={()=>{
+                    this.setState({imageFor: "AcceptedPaymentMethodsImageId"}, ()=>{
+                      this.setImageId("", false, "")
+                    })
+                  }}
+                />
+                </div>: <div className="image-holder placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
                   </div>
                 </div>
               </div>
@@ -897,7 +932,7 @@ class StoreFront extends React.Component {
               </div>
               <div className="clearfix" />
               {this.state.data.Features.Features.map((val, idx)=>(
-              <div className="box-content">
+              <div className="box-content" key={idx}>
                 <h4 className="section-title">Feature {idx+1}</h4>
                 <div className="form-group">
                   <label
@@ -1111,27 +1146,28 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "sliderbanners") {
       return (
-        <div className="tab-pane fade active in" id="slider_banners">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">Slider Banners</h3>
           <div className="accordion-box-content">
             <div className="tab-content clearfix">
               <div className="panel-wrap">
-                <div className="panel">
+                {this.state.data["Slider Banners"].Banners.map((val,idx)=>(
+                <div className="panel" key={idx}>
                   <div className="panel-header">
-                    <h5>Banner 1</h5>
+                    <h5>Banner {idx+1}</h5>
                   </div>
                   <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/5siKhRlEDQFmbiJRwCNBW3rDsbG7m1r2PibvtNeF.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_slider_banner_1_file_id]"
-                        defaultValue={978}
-                        className="banner-file-id"
-                      />
+                    <div className="panel-image" onClick={()=>{
+                      this.setState({showModal: true, multiple: false, imageFor: idx})
+                    }}>
+                       {this.state.data["Slider Banners"].Banners[idx].image?  
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data["Slider Banners"].Banners[idx].image} />
+                
+                
+                : <div className="placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
+                      
                     </div>
                     <div className="panel-content clearfix">
                       <div className="row">
@@ -1142,10 +1178,12 @@ class StoreFront extends React.Component {
                             </label>
                             <input
                               type="text"
-                              name="storefront_slider_banner_1_call_to_action_url"
-                              defaultValue="/categories/backpacks/products"
+                              name="CalltoActionURL"
                               className="form-control"
-                              id="storefront_slider_banner_1-call-to-action-url"
+                              value={this.state.data["Slider Banners"].Banners[idx].CalltoActionURL}
+                              onChange={(e)=>{
+                                this.setArr(e.target.value, "Slider Banners", "Banners", idx, e.target.name)
+                              }}
                             />
                           </div>
                         </div>
@@ -1153,18 +1191,17 @@ class StoreFront extends React.Component {
                       <div className="row">
                         <div className="col-lg-6 col-md-12 col-sm-6">
                           <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_slider_banner_1_open_in_new_window"
-                              defaultValue={0}
-                            />
+                            
                             <input
                               type="checkbox"
-                              name="storefront_slider_banner_1_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_slider_banner_1-open-in-new-window"
+                              name="OpenInNewWindow"
+                              id={"storefront_slider_banner-open-in-new-window"+idx}
+                              checked={this.state.data["Slider Banners"].Banners[idx].OpenInNewWindow}
+                              onChange={(e)=>{
+                                this.setArr(!this.state.data["Slider Banners"].Banners[idx].OpenInNewWindow, "Slider Banners", "Banners", idx, e.target.name)
+                              }}
                             />
-                            <label htmlFor="storefront_slider_banner_1-open-in-new-window">
+                            <label htmlFor={"storefront_slider_banner-open-in-new-window"+idx}>
                               Open in new window
                             </label>
                           </div>
@@ -1173,64 +1210,7 @@ class StoreFront extends React.Component {
                     </div>
                   </div>
                 </div>
-                <div className="panel">
-                  <div className="panel-header">
-                    <h5>Banner 2</h5>
-                  </div>
-                  <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/yl6rNkswnKQzh7mouQ0HpagRLwBpnq3Mt9LZMRak.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_slider_banner_2_file_id]"
-                        defaultValue={979}
-                        className="banner-file-id"
-                      />
-                    </div>
-                    <div className="panel-content clearfix">
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
-                          <div className="form-group">
-                            <label htmlFor="storefront_slider_banner_2-call-to-action-url">
-                              Call to Action URL
-                            </label>
-                            <input
-                              type="text"
-                              name="storefront_slider_banner_2_call_to_action_url"
-                              defaultValue="/categories/iphone/products"
-                              className="form-control"
-                              id="storefront_slider_banner_2-call-to-action-url"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6">
-                          <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_slider_banner_2_open_in_new_window"
-                              defaultValue={0}
-                            />
-                            <input
-                              type="checkbox"
-                              name="storefront_slider_banner_2_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_slider_banner_2-open-in-new-window"
-                              defaultChecked
-                            />
-                            <label htmlFor="storefront_slider_banner_2-open-in-new-window">
-                              Open in new window
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -1240,7 +1220,6 @@ class StoreFront extends React.Component {
       return (
         <div
           className="tab-pane fade active in"
-          id="three_column_full_width_banners"
         >
           <h3 className="tab-content-title">Three Column Full Width Banners</h3>
           <div className="accordion-box-content">
@@ -1248,7 +1227,6 @@ class StoreFront extends React.Component {
               <div className="col-md-8">
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_three_column_full_width_banners_enabled"
                     className="col-md-3 control-label text-left"
                   >
                     Section Status
@@ -1256,17 +1234,13 @@ class StoreFront extends React.Component {
                   <div className="col-md-9">
                     <div className="checkbox">
                       <input
-                        type="hidden"
-                        defaultValue={0}
-                        name="storefront_three_column_full_width_banners_enabled"
-                      />
-                      <input
                         type="checkbox"
-                        name="storefront_three_column_full_width_banners_enabled"
-                        className
+                        name="SectionStatus"
                         id="storefront_three_column_full_width_banners_enabled"
-                        defaultValue={1}
-                        defaultChecked
+                        checked={this.state.data["Three Column Full Width Banners"].SectionStatus}
+                        onChange={(e)=>{
+                          this.setVal(!this.state.data["Three Column Full Width Banners"].SectionStatus, "Three Column Full Width Banners", e.target.name)
+                        }}
                       />
                       <label htmlFor="storefront_three_column_full_width_banners_enabled">
                         Enable three column full width banners section
@@ -1283,58 +1257,64 @@ class StoreFront extends React.Component {
                   <button
                     type="button"
                     className="image-picker btn btn-default"
-                    data-input-name="storefront_three_column_full_width_banners_background_file_id"
+                    onClick={()=>{
+                      this.setState({showModal: true, multiple: false, imageFor: "BackgroundId"})
+                    }}
                   >
                     <i className="fa fa-folder-open m-r-5" />
                     Browse
                   </button>
                   <div className="clearfix" />
                   <div className="single-image image-holder-wrapper clearfix">
-                    <div className="image-holder">
-                      <img src="https://fleetcart.envaysoft.com/storage/media/vm21euwszrldK6E9iEtqsm2WtiJ4OyaA7VIGHPe3.png" />
-                      <button
-                        type="button"
-                        className="btn remove-image"
-                        data-input-name="storefront_three_column_full_width_banners_background_file_id"
-                      />
-                      <input
-                        type="hidden"
-                        name="storefront_three_column_full_width_banners_background_file_id"
-                        defaultValue={982}
-                      />
-                    </div>
+                  {this.state.data["Three Column Full Width Banners"].BackgroundIdImage? <div className="image-holder">
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data["Three Column Full Width Banners"].BackgroundIdImage} height={120} width={120}/>
+                <button
+                  type="button"
+                  className="btn remove-image"
+                  onClick={()=>{
+                    this.setState({imageFor: "BackgroundId"}, ()=>{
+                      this.setImageId("", false, "")
+                    })
+                  }}
+                />
+                </div>: <div className="image-holder placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
                   </div>
                 </div>
-                <div className="panel">
+                {this.state.data["Three Column Full Width Banners"].Banners.map((val,idx)=>(
+                <div className="panel" key={idx}>
                   <div className="panel-header">
-                    <h5>Banner 1</h5>
+                    <h5>Banner {idx+1}</h5>
                   </div>
                   <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/SnNz5B0YIEGCw1OdLhFJbqF7hfCNc80adaLCdqOE.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_three_column_full_width_banners_1_file_id]"
-                        defaultValue={974}
-                        className="banner-file-id"
-                      />
+                    <div className="panel-image" onClick={()=>{
+                      this.setState({showModal: true, multiple: false, imageFor: idx})
+                    }}>
+                       {this.state.data["Three Column Full Width Banners"].Banners[idx].image?  
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data["Three Column Full Width Banners"].Banners[idx].image} />
+                
+                
+                : <div className="placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
+                      
                     </div>
                     <div className="panel-content clearfix">
                       <div className="row">
                         <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
                           <div className="form-group">
-                            <label htmlFor="storefront_three_column_full_width_banners_1-call-to-action-url">
+                            <label htmlFor="storefront_slider_banner_1-call-to-action-url">
                               Call to Action URL
                             </label>
                             <input
                               type="text"
-                              name="storefront_three_column_full_width_banners_1_call_to_action_url"
-                              defaultValue="/categories/home-appliances/products"
+                              name="CalltoActionURL"
                               className="form-control"
-                              id="storefront_three_column_full_width_banners_1-call-to-action-url"
+                              value={this.state.data["Three Column Full Width Banners"].Banners[idx].CalltoActionURL}
+                              onChange={(e)=>{
+                                this.setArr(e.target.value, "Three Column Full Width Banners", "Banners", idx, e.target.name)
+                              }}
                             />
                           </div>
                         </div>
@@ -1342,18 +1322,17 @@ class StoreFront extends React.Component {
                       <div className="row">
                         <div className="col-lg-6 col-md-12 col-sm-6">
                           <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_three_column_full_width_banners_1_open_in_new_window"
-                              defaultValue={0}
-                            />
+                            
                             <input
                               type="checkbox"
-                              name="storefront_three_column_full_width_banners_1_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_three_column_full_width_banners_1-open-in-new-window"
+                              name="OpenInNewWindow"
+                              id={"three_slider_banner-open-in-new-window"+idx}
+                              checked={this.state.data["Three Column Full Width Banners"].Banners[idx].OpenInNewWindow}
+                              onChange={(e)=>{
+                                this.setArr(!this.state.data["Three Column Full Width Banners"].Banners[idx].OpenInNewWindow, "Three Column Full Width Banners", "Banners", idx, e.target.name)
+                              }}
                             />
-                            <label htmlFor="storefront_three_column_full_width_banners_1-open-in-new-window">
+                            <label htmlFor={"three_slider_banner-open-in-new-window"+idx}>
                               Open in new window
                             </label>
                           </div>
@@ -1362,120 +1341,7 @@ class StoreFront extends React.Component {
                     </div>
                   </div>
                 </div>
-                <div className="panel">
-                  <div className="panel-header">
-                    <h5>Banner 2</h5>
-                  </div>
-                  <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/3YFgcINuEaLyLvy6QjxKwKVDMALI9qzmXEN7Vqx3.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_three_column_full_width_banners_2_file_id]"
-                        defaultValue={977}
-                        className="banner-file-id"
-                      />
-                    </div>
-                    <div className="panel-content clearfix">
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
-                          <div className="form-group">
-                            <label htmlFor="storefront_three_column_full_width_banners_2-call-to-action-url">
-                              Call to Action URL
-                            </label>
-                            <input
-                              type="text"
-                              name="storefront_three_column_full_width_banners_2_call_to_action_url"
-                              defaultValue="/categories/home-appliances/products"
-                              className="form-control"
-                              id="storefront_three_column_full_width_banners_2-call-to-action-url"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6">
-                          <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_three_column_full_width_banners_2_open_in_new_window"
-                              defaultValue={0}
-                            />
-                            <input
-                              type="checkbox"
-                              name="storefront_three_column_full_width_banners_2_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_three_column_full_width_banners_2-open-in-new-window"
-                            />
-                            <label htmlFor="storefront_three_column_full_width_banners_2-open-in-new-window">
-                              Open in new window
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="panel">
-                  <div className="panel-header">
-                    <h5>Banner 3</h5>
-                  </div>
-                  <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/pmQxhyWNznFCMZvc4KTv4HNk4RfG3eBlNqR0xsCt.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_three_column_full_width_banners_3_file_id]"
-                        defaultValue={976}
-                        className="banner-file-id"
-                      />
-                    </div>
-                    <div className="panel-content clearfix">
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
-                          <div className="form-group">
-                            <label htmlFor="storefront_three_column_full_width_banners_3-call-to-action-url">
-                              Call to Action URL
-                            </label>
-                            <input
-                              type="text"
-                              name="storefront_three_column_full_width_banners_3_call_to_action_url"
-                              defaultValue="/categories/samsung/products"
-                              className="form-control"
-                              id="storefront_three_column_full_width_banners_3-call-to-action-url"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6">
-                          <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_three_column_full_width_banners_3_open_in_new_window"
-                              defaultValue={0}
-                            />
-                            <input
-                              type="checkbox"
-                              name="storefront_three_column_full_width_banners_3_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_three_column_full_width_banners_3-open-in-new-window"
-                            />
-                            <label htmlFor="storefront_three_column_full_width_banners_3-open-in-new-window">
-                              Open in new window
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -5553,32 +5419,27 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "twocolbanners") {
       return (
-        <div className="tab-pane fade active in" id="two_column_banners">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">Two column banners</h3>
           <div className="accordion-box-content">
             <div className="row">
               <div className="col-md-8">
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_two_column_banners_enabled"
                     className="col-md-3 control-label text-left"
                   >
                     Section Status
                   </label>
                   <div className="col-md-9">
-                    <div className="checkbox">
-                      <input
-                        type="hidden"
-                        defaultValue={0}
-                        name="storefront_two_column_banners_enabled"
-                      />
+                    <div className="checkbox">  
                       <input
                         type="checkbox"
-                        name="storefront_two_column_banners_enabled"
-                        className
+                        name="SectionStatus"
                         id="storefront_two_column_banners_enabled"
-                        defaultValue={1}
-                        defaultChecked
+                        checked={this.state.data["Two column banners"].SectionStatus}
+                        onChange={(e)=>{
+                          this.setVal(!this.state.data["Two column banners"].SectionStatus, "Two column banners", e.target.name)
+                        }}
                       />
                       <label htmlFor="storefront_two_column_banners_enabled">
                         Enable two column banners section
@@ -5590,36 +5451,39 @@ class StoreFront extends React.Component {
             </div>
             <div className="tab-content clearfix">
               <div className="panel-wrap">
-                <div className="panel">
+              {this.state.data["Two column banners"].Banners.map((val,idx)=>(
+                <div className="panel" key={idx}>
                   <div className="panel-header">
-                    <h5>Banner 1</h5>
+                    <h5>Banner {idx+1}</h5>
                   </div>
                   <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/kSSkGodUfAKYy1UVZ8CicO8oay5PKO4L3DdEE9Tw.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_two_column_banners_1_file_id]"
-                        defaultValue={1339}
-                        className="banner-file-id"
-                      />
+                    <div className="panel-image" onClick={()=>{
+                      this.setState({showModal: true, multiple: false, imageFor: idx})
+                    }}>
+                       {this.state.data["Two column banners"].Banners[idx].image?  
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data["Two column banners"].Banners[idx].image} />
+                
+                
+                : <div className="placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
+                      
                     </div>
                     <div className="panel-content clearfix">
                       <div className="row">
                         <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
                           <div className="form-group">
-                            <label htmlFor="storefront_two_column_banners_1-call-to-action-url">
+                            <label htmlFor="storefront_slider_banner_1-call-to-action-url">
                               Call to Action URL
                             </label>
                             <input
                               type="text"
-                              name="storefront_two_column_banners_1_call_to_action_url"
-                              defaultValue="/categories/ultraslim/products"
+                              name="CalltoActionURL"
                               className="form-control"
-                              id="storefront_two_column_banners_1-call-to-action-url"
+                              value={this.state.data["Two column banners"].Banners[idx].CalltoActionURL}
+                              onChange={(e)=>{
+                                this.setArr(e.target.value, "Two column banners", "Banners", idx, e.target.name)
+                              }}
                             />
                           </div>
                         </div>
@@ -5627,18 +5491,17 @@ class StoreFront extends React.Component {
                       <div className="row">
                         <div className="col-lg-6 col-md-12 col-sm-6">
                           <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_two_column_banners_1_open_in_new_window"
-                              defaultValue={0}
-                            />
+                            
                             <input
                               type="checkbox"
-                              name="storefront_two_column_banners_1_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_two_column_banners_1-open-in-new-window"
+                              name="OpenInNewWindow"
+                              id={"Twocolumnbanners-open-in-new-window"+idx}
+                              checked={this.state.data["Two column banners"].Banners[idx].OpenInNewWindow}
+                              onChange={(e)=>{
+                                this.setArr(!this.state.data["Two column banners"].Banners[idx].OpenInNewWindow, "Two column banners", "Banners", idx, e.target.name)
+                              }}
                             />
-                            <label htmlFor="storefront_two_column_banners_1-open-in-new-window">
+                            <label htmlFor={"Twocolumnbanners-open-in-new-window"+idx}>
                               Open in new window
                             </label>
                           </div>
@@ -5647,63 +5510,7 @@ class StoreFront extends React.Component {
                     </div>
                   </div>
                 </div>
-                <div className="panel">
-                  <div className="panel-header">
-                    <h5>Banner 2</h5>
-                  </div>
-                  <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/VVyvSfw4dAZI57qelPofORurzNNc7rDlsxVbTO5m.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_two_column_banners_2_file_id]"
-                        defaultValue={1338}
-                        className="banner-file-id"
-                      />
-                    </div>
-                    <div className="panel-content clearfix">
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
-                          <div className="form-group">
-                            <label htmlFor="storefront_two_column_banners_2-call-to-action-url">
-                              Call to Action URL
-                            </label>
-                            <input
-                              type="text"
-                              name="storefront_two_column_banners_2_call_to_action_url"
-                              defaultValue="/categories/watches/products"
-                              className="form-control"
-                              id="storefront_two_column_banners_2-call-to-action-url"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6">
-                          <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_two_column_banners_2_open_in_new_window"
-                              defaultValue={0}
-                            />
-                            <input
-                              type="checkbox"
-                              name="storefront_two_column_banners_2_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_two_column_banners_2-open-in-new-window"
-                            />
-                            <label htmlFor="storefront_two_column_banners_2-open-in-new-window">
-                              Open in new window
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -6870,32 +6677,28 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "threecolbanners") {
       return (
-        <div className="tab-pane fade active in" id="three_column_banners">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">Three Column Banners</h3>
           <div className="accordion-box-content">
             <div className="row">
               <div className="col-md-8">
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_three_column_banners_enabled"
                     className="col-md-3 control-label text-left"
                   >
                     Section Status
                   </label>
                   <div className="col-md-9">
                     <div className="checkbox">
-                      <input
-                        type="hidden"
-                        defaultValue={0}
-                        name="storefront_three_column_banners_enabled"
-                      />
+                     
                       <input
                         type="checkbox"
-                        name="storefront_three_column_banners_enabled"
-                        className
+                        name="SectionStatus"
+                        checked={this.state.data["Three Column Banners"].SectionStatus}
+                        onChange={(e)=>{
+                          this.setVal(!this.state.data["Three Column Banners"].SectionStatus, "Three Column Banners", e.target.name)
+                        }}
                         id="storefront_three_column_banners_enabled"
-                        defaultValue={1}
-                        defaultChecked
                       />
                       <label htmlFor="storefront_three_column_banners_enabled">
                         Enable three column banners section
@@ -6907,36 +6710,39 @@ class StoreFront extends React.Component {
             </div>
             <div className="tab-content clearfix">
               <div className="panel-wrap">
-                <div className="panel">
+              {this.state.data["Three Column Banners"].Banners.map((val,idx)=>(
+                <div className="panel" key={idx}>
                   <div className="panel-header">
-                    <h5>Banner 1</h5>
+                    <h5>Banner {idx+1}</h5>
                   </div>
                   <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/QXeAdEOGLNAIj5Ntx7prAuuHRJmqNebRckNhV5WS.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_three_column_banners_1_file_id]"
-                        defaultValue={787}
-                        className="banner-file-id"
-                      />
+                    <div className="panel-image" onClick={()=>{
+                      this.setState({showModal: true, multiple: false, imageFor: idx})
+                    }}>
+                       {this.state.data["Three Column Banners"].Banners[idx].image?  
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data["Three Column Banners"].Banners[idx].image} />
+                
+                
+                : <div className="placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
+                      
                     </div>
                     <div className="panel-content clearfix">
                       <div className="row">
                         <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
                           <div className="form-group">
-                            <label htmlFor="storefront_three_column_banners_1-call-to-action-url">
+                            <label htmlFor="storefront_slider_banner_1-call-to-action-url">
                               Call to Action URL
                             </label>
                             <input
                               type="text"
-                              name="storefront_three_column_banners_1_call_to_action_url"
-                              defaultValue="/categories/home-appliances/products"
+                              name="CalltoActionURL"
                               className="form-control"
-                              id="storefront_three_column_banners_1-call-to-action-url"
+                              value={this.state.data["Three Column Banners"].Banners[idx].CalltoActionURL}
+                              onChange={(e)=>{
+                                this.setArr(e.target.value, "Three Column Banners", "Banners", idx, e.target.name)
+                              }}
                             />
                           </div>
                         </div>
@@ -6944,18 +6750,17 @@ class StoreFront extends React.Component {
                       <div className="row">
                         <div className="col-lg-6 col-md-12 col-sm-6">
                           <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_three_column_banners_1_open_in_new_window"
-                              defaultValue={0}
-                            />
+                            
                             <input
                               type="checkbox"
-                              name="storefront_three_column_banners_1_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_three_column_banners_1-open-in-new-window"
+                              name="OpenInNewWindow"
+                              id={"three_col_banner-open-in-new-window"+idx}
+                              checked={this.state.data["Three Column Banners"].Banners[idx].OpenInNewWindow}
+                              onChange={(e)=>{
+                                this.setArr(!this.state.data["Three Column Banners"].Banners[idx].OpenInNewWindow, "Three Column Banners", "Banners", idx, e.target.name)
+                              }}
                             />
-                            <label htmlFor="storefront_three_column_banners_1-open-in-new-window">
+                            <label htmlFor={"three_col_banner-open-in-new-window"+idx}>
                               Open in new window
                             </label>
                           </div>
@@ -6964,120 +6769,7 @@ class StoreFront extends React.Component {
                     </div>
                   </div>
                 </div>
-                <div className="panel">
-                  <div className="panel-header">
-                    <h5>Banner 2</h5>
-                  </div>
-                  <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/tUZc6W65OryxcoIDT1umT0irIynod8t904Q7bRbG.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_three_column_banners_2_file_id]"
-                        defaultValue={785}
-                        className="banner-file-id"
-                      />
-                    </div>
-                    <div className="panel-content clearfix">
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
-                          <div className="form-group">
-                            <label htmlFor="storefront_three_column_banners_2-call-to-action-url">
-                              Call to Action URL
-                            </label>
-                            <input
-                              type="text"
-                              name="storefront_three_column_banners_2_call_to_action_url"
-                              defaultValue="/categories/mobile-accessories/products"
-                              className="form-control"
-                              id="storefront_three_column_banners_2-call-to-action-url"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6">
-                          <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_three_column_banners_2_open_in_new_window"
-                              defaultValue={0}
-                            />
-                            <input
-                              type="checkbox"
-                              name="storefront_three_column_banners_2_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_three_column_banners_2-open-in-new-window"
-                            />
-                            <label htmlFor="storefront_three_column_banners_2-open-in-new-window">
-                              Open in new window
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="panel">
-                  <div className="panel-header">
-                    <h5>Banner 3</h5>
-                  </div>
-                  <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/32Z48wigiMEXJZLDUN20Ea0f7NTMKZHf93qHFtLg.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_three_column_banners_3_file_id]"
-                        defaultValue={786}
-                        className="banner-file-id"
-                      />
-                    </div>
-                    <div className="panel-content clearfix">
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
-                          <div className="form-group">
-                            <label htmlFor="storefront_three_column_banners_3-call-to-action-url">
-                              Call to Action URL
-                            </label>
-                            <input
-                              type="text"
-                              name="storefront_three_column_banners_3_call_to_action_url"
-                              defaultValue="/categories/gadgets/products"
-                              className="form-control"
-                              id="storefront_three_column_banners_3-call-to-action-url"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-6">
-                          <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_three_column_banners_3_open_in_new_window"
-                              defaultValue={0}
-                            />
-                            <input
-                              type="checkbox"
-                              name="storefront_three_column_banners_3_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_three_column_banners_3-open-in-new-window"
-                            />
-                            <label htmlFor="storefront_three_column_banners_3-open-in-new-window">
-                              Open in new window
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -8263,14 +7955,13 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "onecolbanner") {
       return (
-        <div className="tab-pane fade active in" id="one_column_banner">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">One Column Banner</h3>
           <div className="accordion-box-content">
             <div className="row">
               <div className="col-md-8">
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_one_column_banner_enabled"
                     className="col-md-3 control-label text-left"
                   >
                     Section Status
@@ -8278,17 +7969,13 @@ class StoreFront extends React.Component {
                   <div className="col-md-9">
                     <div className="checkbox">
                       <input
-                        type="hidden"
-                        defaultValue={0}
-                        name="storefront_one_column_banner_enabled"
-                      />
-                      <input
                         type="checkbox"
-                        name="storefront_one_column_banner_enabled"
-                        className
+                        name="SectionStatus"
+                        checked={this.state.data["One Column Banner"].SectionStatus}
+                        onChange={(e)=>{
+                          this.setVal(!this.state.data["One Column Banner"].SectionStatus, "One Column Banner", e.target.name)
+                        }}
                         id="storefront_one_column_banner_enabled"
-                        defaultValue={1}
-                        defaultChecked
                       />
                       <label htmlFor="storefront_one_column_banner_enabled">
                         Enable One column banner section
@@ -8300,36 +7987,39 @@ class StoreFront extends React.Component {
             </div>
             <div className="tab-content clearfix">
               <div className="panel-wrap">
-                <div className="panel">
+              {this.state.data["One Column Banner"].Banners.map((val,idx)=>(
+                <div className="panel" key={idx}>
                   <div className="panel-header">
-                    <h5>Banner</h5>
+                    <h5>Banner {idx+1}</h5>
                   </div>
                   <div className="panel-body">
-                    <div className="panel-image">
-                      <img
-                        src="https://fleetcart.envaysoft.com/storage/media/kRb5N2mGVnso21KKTsxenE4GuH3fjej5r2m8vY8V.png"
-                        alt="Banner"
-                      />
-                      <input
-                        type="hidden"
-                        name="translatable[storefront_one_column_banner_file_id]"
-                        defaultValue={1102}
-                        className="banner-file-id"
-                      />
+                    <div className="panel-image" onClick={()=>{
+                      this.setState({showModal: true, multiple: false, imageFor: idx})
+                    }}>
+                       {this.state.data["One Column Banner"].Banners[idx].image?  
+                <img src={"https://big-cms.herokuapp.com/"+this.state.data["One Column Banner"].Banners[idx].image} />
+                
+                
+                : <div className="placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
+                      
                     </div>
                     <div className="panel-content clearfix">
                       <div className="row">
                         <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
                           <div className="form-group">
-                            <label htmlFor="storefront_one_column_banner-call-to-action-url">
+                            <label htmlFor="storefront_slider_banner_1-call-to-action-url">
                               Call to Action URL
                             </label>
                             <input
                               type="text"
-                              name="storefront_one_column_banner_call_to_action_url"
-                              defaultValue="/categories/home-appliances/products"
+                              name="CalltoActionURL"
                               className="form-control"
-                              id="storefront_one_column_banner-call-to-action-url"
+                              value={this.state.data["One Column Banner"].Banners[idx].CalltoActionURL}
+                              onChange={(e)=>{
+                                this.setArr(e.target.value, "One Column Banner", "Banners", idx, e.target.name)
+                              }}
                             />
                           </div>
                         </div>
@@ -8337,19 +8027,17 @@ class StoreFront extends React.Component {
                       <div className="row">
                         <div className="col-lg-6 col-md-12 col-sm-6">
                           <div className="checkbox">
-                            <input
-                              type="hidden"
-                              name="storefront_one_column_banner_open_in_new_window"
-                              defaultValue={0}
-                            />
+                            
                             <input
                               type="checkbox"
-                              name="storefront_one_column_banner_open_in_new_window"
-                              defaultValue={1}
-                              id="storefront_one_column_banner-open-in-new-window"
-                              defaultChecked
+                              name="OpenInNewWindow"
+                              id={"one_slider_banner-open-in-new-window"+idx}
+                              checked={this.state.data["One Column Banner"].Banners[idx].OpenInNewWindow}
+                              onChange={(e)=>{
+                                this.setArr(!this.state.data["One Column Banner"].Banners[idx].OpenInNewWindow, "One Column Banner", "Banners", idx, e.target.name)
+                              }}
                             />
-                            <label htmlFor="storefront_one_column_banner-open-in-new-window">
+                            <label htmlFor={"one_slider_banner-open-in-new-window"+idx}>
                               Open in new window
                             </label>
                           </div>
@@ -8358,6 +8046,7 @@ class StoreFront extends React.Component {
                     </div>
                   </div>
                 </div>
+                ))}
               </div>
             </div>
           </div>
