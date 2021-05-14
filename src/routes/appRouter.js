@@ -43,6 +43,9 @@ import EditOrder from '../components/Sales/Orders/EditOrder';
 import Transactions from '../components/Sales/Transactions/Transactions';
 import Importer from '../components/Importer/Importer';
 import Profile from '../components/Profile/Profile';
+import Menu from '../components/Menu/Menu'
+import CreateMenu from '../components/Menu/CreateMenu';
+import CreateMenuItem from '../components/Menu/CreateMenuItem';
 
 
 const routes = (
@@ -108,6 +111,12 @@ const routes = (
         <PrivateRoute exact path='/pages/:id/edit' component={()=><Dashboard abc={ <CreatePage edit="true"/>} />} />
 
         <PrivateRoute exact path='/media' component={()=><Dashboard abc={ <Media />} />} />
+
+        <PrivateRoute exact path='/menus' component={()=><Dashboard abc={ <Menu />} />} />
+        <PrivateRoute exact path='/menus/create' component={()=><Dashboard abc={ <CreateMenu />} />} />
+        <PrivateRoute exact path='/menus/:id/edit' component={()=><Dashboard abc={ <CreateMenu edit="true"/>} />} />
+        <PrivateRoute exact path='/menus/:id/items/create' component={()=><Dashboard abc={ <CreateMenuItem />} />} />
+        <PrivateRoute exact path='/menus/:id/items/:id2/edit' component={()=><Dashboard abc={ <CreateMenuItem edit="true"/>} />} />
 
         <PrivateRoute exact path='/taxes' component={()=><Dashboard abc={ <Taxes />} />} />
         <PrivateRoute exact path='/taxes/create' component={()=><Dashboard abc={ <CreateTax />} />} />
