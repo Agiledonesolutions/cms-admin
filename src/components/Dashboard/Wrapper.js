@@ -1,6 +1,8 @@
 import React, { useRef } from "react";
 import { removeAuthToken } from "../../utils/local";
 import {removeUserSession} from '../../utils/session'
+import { Link } from "react-router-dom";
+
 
 const Wrapper = (props) => {
   const dropdownref = useRef(null);
@@ -37,9 +39,9 @@ const Wrapper = (props) => {
                 </a>
                 <ul className="dropdown-menu" ref={dropdownref}>
                   <li>
-                    <a href="#">
+                    <Link to='/profile'>
                       Profile
-                    </a>
+                    </Link>
                   </li>
                   <li>
                     <a onClick={handleLogout}>

@@ -41,6 +41,8 @@ import StoreFront from '../components/Appearance/StoreFront/StoreFront';
 import Orders from '../components/Sales/Orders/Orders';
 import EditOrder from '../components/Sales/Orders/EditOrder';
 import Transactions from '../components/Sales/Transactions/Transactions';
+import Importer from '../components/Importer/Importer';
+import Profile from '../components/Profile/Profile';
 
 
 const routes = (
@@ -117,8 +119,11 @@ const routes = (
 
         <PrivateRoute exact path='/storefront' component={()=><Dashboard abc={ <StoreFront />} />} />
 
+        <PrivateRoute exact path='/importer' component={()=><Dashboard abc={ <Importer />} />} />
+
         <PrivateRoute exact path='/settings' component={()=><Dashboard abc={ <Settings />} />} />
 
+        <PrivateRoute exact path='/profile' component={()=><Dashboard abc={ <Profile />} />} />
 
       </Switch>
     </React.Fragment>

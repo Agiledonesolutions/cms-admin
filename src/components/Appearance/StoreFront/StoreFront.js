@@ -19,6 +19,8 @@ class StoreFront extends React.Component {
     pagesOptions: [],
     sliderOptions: [],
     tagOptions: [],
+    categoryOptions: [],
+    brandsOptions: [],
     data: {
       SocialLinks: {
         Facebook: "",
@@ -184,7 +186,23 @@ class StoreFront extends React.Component {
             image: ""
           }
         ]
-      }
+      },
+      FeaturedCategories: {
+        SectionStatus: true,
+        SectionTitle: "Top Categories in Sales and Trending",
+        SectionSubtitle: "Last Month upto 1500+ Products Sales From this catagory. You can choose a product from here and save money.",
+        Categories: [
+          {
+            Type: "Category Products",
+            CategoryId: "607d18dff60cc83cccb7b363"
+          },
+          
+        ]
+      },
+      TopBrands: {
+        TopBrandsIds: [],
+        SectionStatus: false
+      },
     },
     errors: [],
   };
@@ -228,6 +246,48 @@ class StoreFront extends React.Component {
       this.setState({tagOptions})
     }).catch(err=>{
       console.log("error fetching tags")
+    })
+    const {categoryOptions} = this.state
+    const addToCategories = (x, sub) =>{
+      let tmp = {}
+      let name = ""
+      for(var i = 0; i < sub.length; i++){
+        name+="|-- "
+      }
+      tmp['label'] = name+ x.name
+      tmp['value'] = x._id
+      categoryOptions.push(tmp)
+      if(x.childrenCategory.length > 0){
+        sub.push("sub")
+        x.childrenCategory.forEach(y=>{
+          addToCategories(y, sub)
+        })      
+      }else{
+        return
+      }
+      
+    }
+     api.get('/category/get').then(res=>{
+      res.data.data.forEach(val=>{
+        addToCategories(val, []) 
+      })
+    }).catch((err)=>{
+      console.log(err)
+    })
+    this.setState({categoryOptions})
+
+    api.get('brand/get').then(res=>{
+      const {brandsOptions} = this.state
+      res.data.data.forEach(val=>{
+        let tmp = {
+          label: val.name,
+          value: val._id
+        }
+        brandsOptions.push(tmp)
+      })
+      this.setState({brandsOptions})
+    }).catch(err=>{
+      console.log("error fetching pages")
     })
   }
   setVal = (val, key, key2) => {
@@ -1425,169 +1485,21 @@ class StoreFront extends React.Component {
                     Category
                   </label>
                   <div className="col-md-9">
-                    <select
+                  <select
                       name="storefront_featured_categories_section_category_1_category_id"
                       className="form-control custom-select-black "
-                      id="storefront_featured_categories_section_category_1_category_id"
                     >
-                      <option value>Please Select</option>
-                      <option value={181}>Electronics</option>
-                      <option value={183}>¦–– Mobiles</option>
-                      <option value={192}>¦–– ¦–– Smartphones</option>
-                      <option value={193}>¦–– ¦–– Android</option>
-                      <option value={194}>¦–– ¦–– iPhone</option>
-                      <option value={195}>¦–– ¦–– Featured</option>
-                      <option value={196}>¦–– ¦–– Refurbished</option>
-                      <option value={197}>¦–– ¦–– Brands</option>
-                      <option value={185}>¦–– Mobile Accessories</option>
-                      <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                      <option value={199}>¦–– ¦–– Cables</option>
-                      <option value={200}>¦–– ¦–– Chargers</option>
-                      <option value={201}>¦–– ¦–– Power Bank</option>
-                      <option value={202}>¦–– ¦–– Headphones</option>
-                      <option value={203}>¦–– ¦–– Screen Protectors</option>
-                      <option value={184}>¦–– Hot Brands</option>
-                      <option value={187}>¦–– ¦–– OnePlus</option>
-                      <option value={188}>¦–– ¦–– Apple</option>
-                      <option value={189}>¦–– ¦–– Samsung</option>
-                      <option value={190}>¦–– ¦–– Huawei</option>
-                      <option value={191}>¦–– ¦–– Sony</option>
-                      <option value={182} selected>
-                        ¦–– Laptops
-                      </option>
-                      <option value={204}>¦–– ¦–– Mackbook</option>
-                      <option value={205}>¦–– ¦–– Gaming</option>
-                      <option value={206}>¦–– ¦–– Ultraslim</option>
-                      <option value={207}>¦–– ¦–– Tablets</option>
-                      <option value={212}>¦–– ¦–– All Laptops</option>
-                      <option value={186}>¦–– Computer Accessories</option>
-                      <option value={208}>¦–– ¦–– Monitors</option>
-                      <option value={209}>¦–– ¦–– Keyboard &amp; Mouse</option>
-                      <option value={210}>¦–– ¦–– Pendrive</option>
-                      <option value={211}>¦–– ¦–– Speaker</option>
-                      <option value={12}>Men's Fashion</option>
-                      <option value={13}>¦–– Clothing</option>
-                      <option value={15}>¦–– ¦–– Shirts</option>
-                      <option value={14}>¦–– ¦–– All Clothing</option>
-                      <option value={16}>¦–– ¦–– Sportswear</option>
-                      <option value={17}>¦–– ¦–– Belts</option>
-                      <option value={18}>¦–– ¦–– Pants</option>
-                      <option value={26}>¦–– ¦–– Formal Shoes</option>
-                      <option value={19}>¦–– Shoes</option>
-                      <option value={20}>¦–– ¦–– All Shoes</option>
-                      <option value={21}>¦–– ¦–– Sneakers</option>
-                      <option value={22}>¦–– ¦–– Boots</option>
-                      <option value={23}>¦–– ¦–– Sandals</option>
-                      <option value={24}>
-                        ¦–– ¦–– Slippers &amp; Flip-flops
-                      </option>
-                      <option value={25}>¦–– ¦–– Sports Shoes</option>
-                      <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                      <option value={28}>¦–– ¦–– Trench</option>
-                      <option value={30}>¦–– ¦–– Genuine Leather</option>
-                      <option value={32}>¦–– ¦–– Down Jackets</option>
-                      <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                      <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                      <option value={35}>¦–– Hot Sale</option>
-                      <option value={36}>¦–– ¦–– Glasses</option>
-                      <option value={37}>¦–– ¦–– Jackets</option>
-                      <option value={38}>¦–– ¦–– T-Shirts</option>
-                      <option value={39}>¦–– ¦–– Shirts</option>
-                      <option value={40}>¦–– ¦–– Belts</option>
-                      <option value={52}>¦–– Bottoms</option>
-                      <option value={53}>¦–– ¦–– Casual Pants</option>
-                      <option value={54}>¦–– ¦–– Sweatpants</option>
-                      <option value={55}>¦–– ¦–– Cargo Pants</option>
-                      <option value={56}>¦–– ¦–– Jeans</option>
-                      <option value={57}>¦–– ¦–– Harem Pants</option>
-                      <option value={59}>Consumer Electronics</option>
-                      <option value={120}>¦–– Televisions</option>
-                      <option value={7}>¦–– Gadgets</option>
-                      <option value={142}>¦–– Drones</option>
-                      <option value={108}>¦–– Supplies</option>
-                      <option value={109}>¦–– Camera &amp; Photo</option>
-                      <option value={110}>¦–– Car &amp; Vehicle</option>
-                      <option value={111}>¦–– Cell Phones</option>
-                      <option value={112}>¦–– Computer</option>
-                      <option value={113}>¦–– GPS &amp; Navigation</option>
-                      <option value={114}>¦–– Headphones</option>
-                      <option value={115}>¦–– Home Audio</option>
-                      <option value={116}>¦–– Office Electronics</option>
-                      <option value={117}>¦–– Audio &amp; Video</option>
-                      <option value={118}>¦–– Security</option>
-                      <option value={119}>¦–– Service Plans</option>
-                      <option value={121}>¦–– Video Game</option>
-                      <option value={122}>¦–– Video Projectors</option>
-                      <option value={123}>¦–– Wearable Technology</option>
-                      <option value={124}>¦–– eBook Readers</option>
-                      <option value={60}>¦–– Office Supplies</option>
-                      <option value={61}>¦–– All Computers</option>
-                      <option value={63}>¦–– Desktops &amp; Monitors</option>
-                      <option value={64}>¦–– Drives &amp; Storage</option>
-                      <option value={65}>¦–– Networking</option>
-                      <option value={66}>¦–– Keyboards &amp; Mice</option>
-                      <option value={67}>¦–– PC Gaming</option>
-                      <option value={68}>¦–– Computer Accessories</option>
-                      <option value={69}>¦–– Printers &amp; Ink</option>
-                      <option value={70}>¦–– Office Supplies</option>
-                      <option value={82}>Watches</option>
-                      <option value={83}>¦–– Men's Watches</option>
-                      <option value={84}>¦–– ¦–– Analog Watches</option>
-                      <option value={85}>¦–– ¦–– Sports Watches</option>
-                      <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                      <option value={87}>¦–– ¦–– Digital Watches</option>
-                      <option value={88}>¦–– Women's Watches</option>
-                      <option value={89}>¦–– Children's Watches</option>
-                      <option value={90}>¦–– Pocket Watches</option>
-                      <option value={91}>¦–– Watch Accessories</option>
-                      <option value={92}>¦–– Women's Bracelets</option>
-                      <option value={156}>Home Appliances</option>
-                      <option value={157}>¦–– Bedding</option>
-                      <option value={158}>¦–– Furniture</option>
-                      <option value={159}>¦–– Decor</option>
-                      <option value={160}>¦–– Curtains</option>
-                      <option value={161}>¦–– Kitchen Utensils</option>
-                      <option value={162}>¦–– Cooking &amp; Baking</option>
-                      <option value={163}>¦–– Gas &amp; Stove</option>
-                      <option value={164}>¦–– Plastics &amp; Melamine</option>
-                      <option value={165}>¦–– Ceramics &amp; Dinnerware</option>
-                      <option value={166}>
-                        ¦–– Storage &amp; Organisation
-                      </option>
-                      <option value={167}>¦–– Home Care</option>
-                      <option value={168}>¦–– Cleaning Tools</option>
-                      <option value={169}>¦–– Laundry</option>
-                      <option value={170}>¦–– Towel</option>
-                      <option value={171}>¦–– Travel Accessories</option>
-                      <option value={172}>¦–– Pest Control</option>
-                      <option value={98}>Backpacks</option>
-                      <option value={99}>¦–– Men's Bags</option>
-                      <option value={100}>¦–– Women's Bags</option>
-                      <option value={102}>¦–– Wallets</option>
-                      <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                      <option value={104}>¦–– Travel Bags</option>
-                      <option value={105}>¦–– Functional Bags</option>
-                      <option value={106}>¦–– Coin Purses</option>
-                      <option value={107}>¦–– Bag Parts</option>
-                      <option value={126}>Women's Fashion</option>
-                      <option value={127}>¦–– All Beauty</option>
-                      <option value={128}>¦–– Make-up</option>
-                      <option value={129}>¦–– Luxury Beauty</option>
-                      <option value={130}>¦–– Watches</option>
-                      <option value={213}>¦–– Necklace</option>
-                      <option value={133}>¦–– Rings</option>
-                      <option value={131}>¦–– Glasses</option>
-                      <option value={132}>¦–– All Perfumes</option>
-                      <option value={134}>¦–– Women Perfumes</option>
-                      <option value={135}>¦–– Gift Sets</option>
-                      <option value={136}>¦–– All Health</option>
-                      <option value={137}>¦–– Personal Care</option>
-                      <option value={138}>¦–– Hair Care &amp; Styling</option>
-                      <option value={139}>¦–– Bath &amp; Body</option>
-                      <option value={140}>¦–– Dental Care</option>
-                      <option value={141}>¦–– Diet &amp; Nutrition</option>
+                      <MultiSelect
+                    onChange={(val) => {
+                      console.log(val)
+                    }}
+                    singleSelect={true}
+                    largeData={true}
+                    options={this.state.categoryOptions}
+                    defaultValue={this.state.data.General.DefaultCountry}
+                  />
                     </select>
-                  </div>
+                 </div>
                 </div>
                 <div className="form-group">
                   <label
@@ -4265,13 +4177,12 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "topbrands") {
       return (
-        <div className="tab-pane fade active in" id="top_brands">
+        <div className="tab-pane fade active in">
           <h3 className="tab-content-title">Top Brands</h3>
           <div className="row">
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="storefront_top_brands_section_enabled"
                   className="col-md-3 control-label text-left"
                 >
                   Section Status
@@ -4279,17 +4190,13 @@ class StoreFront extends React.Component {
                 <div className="col-md-9">
                   <div className="checkbox">
                     <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="storefront_top_brands_section_enabled"
-                    />
-                    <input
                       type="checkbox"
-                      name="storefront_top_brands_section_enabled"
-                      className
+                      name="SectionStatus"
                       id="storefront_top_brands_section_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.TopBrands.SectionStatus}
+                      onChange={(e)=>{
+                        this.setVal(!this.state.data.TopBrands.SectionStatus, "TopBrands", e.target.name)
+                      }}
                     />
                     <label htmlFor="storefront_top_brands_section_enabled">
                       Enable brands section
@@ -4299,194 +4206,21 @@ class StoreFront extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="storefront_top_brands[]-selectized"
                   className="col-md-3 control-label text-left"
                 >
                   Top Brands
                 </label>
                 <div className="col-md-9">
-                  <select
-                    name="storefront_top_brands[]"
-                    className="selectize prevent-creation selectized"
-                    id="storefront_top_brands[]"
-                    multiple="multiple"
-                    tabIndex={-1}
-                    style={{ display: "none" }}
-                  >
-                    <option value={8} selected="selected">
-                      ASUS
-                    </option>
-                    <option value={7} selected="selected">
-                      Acer
-                    </option>
-                    <option value={16} selected="selected">
-                      Adidas
-                    </option>
-                    <option value={1} selected="selected">
-                      Apple
-                    </option>
-                    <option value={15} selected="selected">
-                      Beats
-                    </option>
-                    <option value={6} selected="selected">
-                      Dell
-                    </option>
-                    <option value={5} selected="selected">
-                      HP
-                    </option>
-                    <option value={3} selected="selected">
-                      Huawei
-                    </option>
-                    <option value={14} selected="selected">
-                      LG
-                    </option>
-                    <option value={12} selected="selected">
-                      MSI
-                    </option>
-                    <option value={18} selected="selected">
-                      SONY
-                    </option>
-                    <option value={2} selected="selected">
-                      Samsung
-                    </option>
-                  </select>
-                  <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                    <div className="selectize-input items not-full has-options has-items">
-                      <div className="item" data-value={8}>
-                        ASUS
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={7}>
-                        Acer
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={16}>
-                        Adidas
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={1}>
-                        Apple
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={15}>
-                        Beats
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={6}>
-                        Dell
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={5}>
-                        HP
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={3}>
-                        Huawei
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={14}>
-                        LG
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={12}>
-                        MSI
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={18}>
-                        SONY
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <div className="item" data-value={2}>
-                        Samsung
-                        <a
-                          href="javascript:void(0)"
-                          className="remove"
-                          tabIndex={-1}
-                        >
-                          ×
-                        </a>
-                      </div>
-                      <input
-                        type="select-multiple"
-                        autoComplete="off"
-                        tabIndex
-                        id="storefront_top_brands[]-selectized"
-                        style={{ width: 4 }}
-                      />
-                    </div>
-                    <div
-                      className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                      style={{ display: "none" }}
-                    >
-                      <div className="selectize-dropdown-content" />
-                    </div>
-                  </div>
+                <MultiSelect
+                    onChange={(val)=>{
+                      const {data} = this.state
+                      data.TopBrands.TopBrandsIds = val.split(",")
+                      this.setState({data})
+                    }}
+                    options={this.state.brandsOptions}
+                    defaultValue={
+                      this.state.data.TopBrands.TopBrandsIds.toString()
+                    } />
                 </div>
               </div>
             </div>
