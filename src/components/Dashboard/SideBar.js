@@ -40,7 +40,7 @@ const SideBar = () => {
           <section className="sidebar">
             <ul className="sidebar-menu">
               <li className="">
-                <Link to='/dashboard'  >
+                <Link to='/dashboard'   onClick={closeNav}>
                   <i className="fa fa-dashboard" />
                   <span>Dashboard</span>
                 </Link>
