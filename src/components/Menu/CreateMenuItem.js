@@ -4,53 +4,190 @@ import api from "../../apis/api";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import Validate from "../../utils/validation";
-import Loading from '../Loading'
+import Loading from "../Loading";
+import "react-responsive-modal/styles.css";
+import { Modal } from "react-responsive-modal";
+import FileManager from '../Media/FileManager'
 
 class CreateMenuItem extends React.Component {
   state = {
     submitting: false,
+    showModal: false,
+    multiple: false,
+    categoryOptions: [],
+    pageOptions: [],
+    menuItemsOptions: [],
     activePanel: "general",
-   
+    data: {
+      name: "",
+      type: "category",
+      parentMenu: null,
+      icon: "",
+      target: "",
+      fluidMenu: false,
+      status: false,
+    },
+    CategoryId: "",
+    PageId: "",
+    parentMenuId: "",
+    ImageId: "",
+    image: "",
+    menuId: "",
+    url: "",
     errors: [],
   };
-  
 
   componentDidMount() {
+    const {categoryOptions} = this.state
+    const addToCategories = (x, sub) =>{
+      let tmp = {}
+      let name = ""
+      for(var i = 0; i < sub.length; i++){
+        name+="|-- "
+      }
+      tmp['label'] = name+ x.name
+      tmp['value'] = x._id
+      categoryOptions.push(tmp)
+      if(x.childrenCategory.length > 0){
+        sub.push("sub")
+        x.childrenCategory.forEach(y=>{
+          addToCategories(y, sub)
+        })      
+      }else{
+        return
+      }
+      
+    }
+     api.get('/category/get').then(res=>{
+      res.data.data.forEach(val=>{
+        addToCategories(val, []) 
+      })
+    }).catch((err)=>{
+      console.log(err)
+    })
+    this.setState({categoryOptions})
+
+    api.get('page/get').then(res=>{
+      const {pageOptions} = this.state
+      res.data.data.forEach(val=>{
+        let tmp = {
+          label: val.name,
+          value: val._id
+        }
+        pageOptions.push(tmp)
+      })
+      this.setState({pageOptions})
+    }).catch(err=>{
+      console.log("error fetching pages")
+    })
+
+    const url = "menu/get/"+this.props.match.params.id
+    api.get(url).then(res=>{
+      const {menuItemsOptions} = this.state
+      res.data.data.menuItems.forEach(val=>{
+        let tmp = {
+          label: val.name,
+          value: val._id
+        }
+        if(this.props.edit == "true" && val._id == this.props.match.params.id2){
+          
+        } else{
+          menuItemsOptions.push(tmp)
+        }
+      })
+      this.setState({menuItemsOptions})
+      
+    }).catch(err=>{
+      console.log("error fetching menu items")
+    })
+
+    if (this.props.edit == "true") {
+      const url2 = "menu/menuitem/get/"+this.props.match.params.id2
+      api.get(url2).then(res=>{
+        console.log(res.data.data)
+      }).catch(err=>{
+        console.log("error fetching menu item details")
+      })
+    }
 
   }
 
-
+  setImageId = (id, multiple, image) => {
+    this.setState({ImageId: id, image: image})
+  }
   setVal = (key, val) => {
     const { data } = this.state;
     data[key] = val;
     this.setState({ data });
   };
 
-
   handleSubmit = () => {
     const { errors } = this.state;
-    const { data } = this.state;
-    // if (!errors.includes("campaignName") && !Validate.validateNotEmpty(data["campaignName"])) {
-    //   errors.push("campaignName");
-    //   this.setState({ errors });
-    // } else if (
-    //   errors.includes("campaignName") &&
-    //   Validate.validateNotEmpty(data["campaignName"])
-    // ) {
-    //   errors.splice(errors.indexOf("campaignName"), 1);
-    //   this.setState({ errors });
-    // }
+    const { data, CategoryId, PageId, url } = this.state;
+    if (!errors.includes("name") && !Validate.validateNotEmpty(data["name"])) {
+      errors.push("name");
+      this.setState({ errors });
+    } else if (
+      errors.includes("name") &&
+      Validate.validateNotEmpty(data["name"])
+    ) {
+      errors.splice(errors.indexOf("name"), 1);
+      this.setState({ errors });
+    }
 
-    console.log(this.state)
+    if (!errors.includes("type") && !Validate.validateNotEmpty(data["type"])) {
+      errors.push("type");
+      this.setState({ errors });
+    } else if (
+      errors.includes("type") &&
+      Validate.validateNotEmpty(data["type"])
+    ) {
+      errors.splice(errors.indexOf("type"), 1);
+      this.setState({ errors });
+    }
+    
+    if (data.type == "category" && !errors.includes("category") && !Validate.validateNotEmpty(CategoryId)) {
+      errors.push("category");
+      this.setState({ errors });
+    } else if (
+      errors.includes("category") &&
+      Validate.validateNotEmpty(CategoryId)
+    ) {
+      errors.splice(errors.indexOf("category"), 1);
+      this.setState({ errors });
+    }
+    if (data.type == "page" && !errors.includes("page") && !Validate.validateNotEmpty(PageId)) {
+      errors.push("page");
+      this.setState({ errors });
+    } else if (
+      errors.includes("page") &&
+      Validate.validateNotEmpty(PageId)
+    ) {
+      errors.splice(errors.indexOf("page"), 1);
+      this.setState({ errors });
+    }
+    if (data.type == "url" && !errors.includes("url") && !Validate.validateNotEmpty(url)) {
+      errors.push("url");
+      this.setState({ errors });
+    } else if (
+      errors.includes("url") &&
+      Validate.validateNotEmpty(url)
+    ) {
+      errors.splice(errors.indexOf("url"), 1);
+      this.setState({ errors });
+    }
+
     if (!Validate.validateNotEmpty(this.state.errors)) {
-      this.setState({submitting: true})
+      console.log(this.state);
+      // this.setState({ submitting: true });
 
       if (this.props.edit == "true") {
-
-       
       } else {
-        
-     
+        api.post('/menu/menuitem', {data: this.state.data, CategoryId: this.state.CategoryId, PageId: this.state.PageId, parentMenuId: this.state.parentMenuId, ImageId: this.state.ImageId, url: this.state.url, menuId: this.props.match.params.id, requiredPermission: "Create Menu Items"}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("error adding item")
+        })
       }
     } else {
       console.log(errors);
@@ -59,51 +196,280 @@ class CreateMenuItem extends React.Component {
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
       return (
-        <div className="tab-pane fade active in" id="general"><h3 className="tab-content-title">General</h3><div className="row">
-        <div className="col-md-8">
-          <div className="form-group"><label htmlFor="name" className="col-md-3 control-label text-left">Name<span className="m-l-5 text-red">*</span></label><div className="col-md-9"><input name="name" className="form-control " id="name" defaultValue type="text" /></div></div>
-          <div className="form-group"><label htmlFor="type" className="col-md-3 control-label text-left">Type<span className="m-l-5 text-red">*</span></label><div className="col-md-9"><select name="type" className="form-control custom-select-black " id="type"><option value="category">Category</option><option value="page">Page</option><option value="url">URL</option></select></div></div>
-          <div className="link-field category-field ">
-            <div className="form-group"><label htmlFor="category_id" className="col-md-3 control-label text-left">Category<span className="m-l-5 text-red">*</span></label><div className="col-md-9"><select name="category_id" className="form-control custom-select-black " id="category_id"><option value>Select Category</option><option value={98}>Backpacks</option><option value={59}>Consumer Electronics</option><option value={181}>Electronics</option><option value={156}>Home Appliances</option><option value={12}>Men's Fashion</option><option value={82}>Watches</option><option value={126}>Women's Fashion</option></select></div></div>
+        <div className="tab-pane fade active in">
+          <h3 className="tab-content-title">General</h3>
+          <div className="row">
+            <div className="col-md-8">
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Name<span className="m-l-5 text-red">*</span>
+                </label>
+                <div className="col-md-9">
+                  <input
+                    name="name"
+                    className="form-control "
+                    type="text"
+                    value={this.state.data.name}
+                    onChange={(e)=>{
+                      this.setVal(e.target.name, e.target.value)
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Type<span className="m-l-5 text-red">*</span>
+                </label>
+                <div className="col-md-9">
+                  <select
+                    name="type"
+                    className="form-control custom-select-black "
+                    value={this.state.data.type}
+                    onChange={(e)=>{
+                      this.setState({PageId : "", CategoryId: "", url: ""})
+                      this.setVal(e.target.name, e.target.value)
+                    }}
+                  >
+                    <option value="category">Category</option>
+                    <option value="page">Page</option>
+                    <option value="url">URL</option>
+                  </select>
+                </div>
+              </div>
+              {this.state.data.type == "category"? 
+              <div className="link-field category-field ">
+                <div className="form-group">
+                  <label
+                    className="col-md-3 control-label text-left"
+                  >
+                    Category<span className="m-l-5 text-red">*</span>
+                  </label>
+                  <div className="col-md-9">
+                  <MultiSelect
+                    onChange={(val) => {
+                      this.setState({CategoryId: val})
+                    }}
+                    singleSelect={true}
+                    largeData={true}
+                    options={this.state.categoryOptions}
+                    defaultValue={this.state.CategoryId}
+                  />
+                  </div>
+                </div>
+              </div>
+              : this.state.data.type == "page"? 
+              <div className="link-field page-field ">
+                <div className="form-group">
+                  <label
+                    htmlFor="page_id"
+                    className="col-md-3 control-label text-left"
+                  >
+                    Page<span className="m-l-5 text-red">*</span>
+                  </label>
+                  <div className="col-md-9">
+                  <MultiSelect
+                    onChange={(val) => {
+                      this.setState({PageId: val})
+                    }}
+                    singleSelect={true}
+                    options={this.state.pageOptions}
+                    defaultValue={this.state.PageId}
+                  />
+                  </div>
+                </div>
+              </div>
+              :
+              <div className="link-field url-field ">
+                <div className="form-group">
+                  <label
+                    className="col-md-3 control-label text-left"
+                  >
+                    URL<span className="m-l-5 text-red">*</span>
+                  </label>
+                  <div className="col-md-9">
+                    <input
+                      name="url"
+                      className="form-control "
+                      type="text"
+                      value={this.state.url}
+                      onChange={(e)=>{
+                        this.setState({url: e.target.value})
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+    }
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Icon
+                </label>
+                <div className="col-md-9">
+                  <input
+                    name="icon"
+                    className="form-control "
+                    type="text"
+                    value={this.state.data.icon}
+                    onChange={(e)=>{
+                      this.setVal(e.target.name, e.target.value)
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Fluid Menu
+                </label>
+                <div className="col-md-9">
+                  <div className="checkbox">
+                    <input
+                      type="checkbox"
+                      name="fluidMenu"
+                      id="is_fluid"
+                      checked={this.state.data.fluidMenu}
+                      onChange={(e)=>{
+                        this.setVal(e.target.name, !this.state.data.fluidMenu)
+                      }}
+                    />
+                    <label htmlFor="is_fluid">This is a full width menu</label>
+                  </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Target
+                </label>
+                <div className="col-md-9">
+                  <select
+                    name="target"
+                    className="form-control custom-select-black "
+                    value={this.state.data.target}
+                    onChange={(e)=>{
+                      this.setVal(e.target.name, e.target.value)
+                    }}
+                  >
+                    <option value="_self">Same Tab</option>
+                    <option value="_blank">New Tab</option>
+                  </select>
+                </div>
+              </div>
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Parent Menu Item
+                </label>
+                <div className="col-md-9">
+                <MultiSelect
+                    onChange={(val) => {
+                      this.setState({parentMenuId: val})
+                    }}
+                    singleSelect={true}
+                    options={this.state.menuItemsOptions}
+                    defaultValue={this.state.parentMenuId}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Status
+                </label>
+                <div className="col-md-9">
+                  <div className="checkbox">
+                    <input
+                      type="checkbox"
+                      name="status"
+                      id="is_active"
+                      checked={this.state.data.status}
+                      onChange={(e)=>{
+                        this.setVal(e.target.name, !this.state.data.status)
+                      }}
+                    />
+                    <label htmlFor="is_active">Enable the menu item</label>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="link-field page-field hide">
-            <div className="form-group"><label htmlFor="page_id" className="col-md-3 control-label text-left">Page<span className="m-l-5 text-red">*</span></label><div className="col-md-9"><select name="page_id" className="form-control custom-select-black " id="page_id"><option value>Select Page</option><option value={5}>About Us</option><option value={4}>FAQ</option><option value={1}>Privacy &amp; Policy</option><option value={3}>Return Policy</option><option value={2}>Terms &amp; Conditions</option></select></div></div>
-          </div>
-          <div className="link-field url-field hide">
-            <div className="form-group"><label htmlFor="url" className="col-md-3 control-label text-left">URL<span className="m-l-5 text-red">*</span></label><div className="col-md-9"><input name="url" className="form-control " id="url" defaultValue type="text" /></div></div>
-          </div>
-          <div className="form-group"><label htmlFor="icon" className="col-md-3 control-label text-left">Icon</label><div className="col-md-9"><input name="icon" className="form-control " id="icon" defaultValue type="text" /></div></div>
-          <div className="form-group"><label htmlFor="is_fluid" className="col-md-3 control-label text-left">Fluid Menu</label><div className="col-md-9"><div className="checkbox"><input type="hidden" defaultValue={0} name="is_fluid" /><input type="checkbox" name="is_fluid" className id="is_fluid" defaultValue={1} /><label htmlFor="is_fluid">This is a full width menu</label></div></div></div>
-          <div className="form-group"><label htmlFor="target" className="col-md-3 control-label text-left">Target</label><div className="col-md-9"><select name="target" className="form-control custom-select-black " id="target"><option value="_self">Same Tab</option><option value="_blank">New Tab</option></select></div></div>
-          <div className="form-group"><label htmlFor="parent_id" className="col-md-3 control-label text-left">Parent Menu Item</label><div className="col-md-9"><select name="parent_id" className="form-control custom-select-black " id="parent_id"><option value>Select Parent</option><option value={36}>Specials</option><option value={37}>Hot Deals</option><option value={38}>New Arrivals</option><option value={39}>Backpacks</option><option value={40}>Men's Fashion</option></select></div></div>
-          <div className="form-group"><label htmlFor="is_active" className="col-md-3 control-label text-left">Status</label><div className="col-md-9"><div className="checkbox"><input type="hidden" defaultValue={0} name="is_active" /><input type="checkbox" name="is_active" className id="is_active" defaultValue={1} /><label htmlFor="is_active">Enable the menu item</label></div></div></div>
         </div>
-      </div>
-    </div>
-    
-       );
+      );
     } else if (this.state.activePanel == "image") {
       return (
-        <div className="tab-pane fade active in" id="image"><h3 className="tab-content-title">Image</h3><div className="single-image-wrapper">
-        <h4>Background Image</h4>
-        <button type="button" className="image-picker btn btn-default" data-input-name="files[background_image]">
-          <i className="fa fa-folder-open m-r-5" />Browse
-        </button>
-        <div className="clearfix" />
-        <div className="single-image image-holder-wrapper clearfix">
-          <div className="image-holder placeholder">
-            <i className="fa fa-picture-o" />
+        <div className="tab-pane fade active in" >
+          <h3 className="tab-content-title">Image</h3>
+          <div className="single-image-wrapper">
+            <h4>Background Image</h4>
+            <button
+              type="button"
+              className="image-picker btn btn-default"
+              onClick={()=>{
+                this.setState({showModal: true, multiple: false})
+              }}
+            >
+              <i className="fa fa-folder-open m-r-5" />
+              Browse
+            </button>
+            <div className="clearfix" />
+            <div className="single-image image-holder-wrapper clearfix">
+               {this.state.image? <div className="image-holder">
+                <img src={"https://big-cms.herokuapp.com/"+this.state.image} height={120} width={120}/>
+                <button
+                  type="button"
+                  className="btn remove-image"
+                  onClick={()=>{
+                      this.setImageId("", false, "")
+                    
+                  }}
+                />
+                </div>: <div className="image-holder placeholder">
+                <i className="fa fa-picture-o" />
+              </div>}
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    
-       );
+      );
     }
   };
   render() {
     return (
-      <div>
+      <React.Fragment>
+          <Modal
+          open={this.state.showModal}
+          onClose={() => {
+            document.querySelector("html").style.overflowY = "auto";
+
+            this.setState({ showModal: false });
+          }}
+        >
+          <div className="modal-header">
+            <h4 className="modal-title">File Manager</h4>
+          </div>
+          <FileManager
+            multiple={this.state.multiple}
+            setMediaId={
+              this.state.activePanel == "downloads"
+                ? this.setDownloadId
+                : this.setImageId
+            }
+            close={() => {
+              document.querySelector("html").style.overflowY = "auto";
+
+              this.setState({ showModal: false });
+            }}
+          />
+        </Modal>
         <section className="content-header clearfix">
           {this.props.edit == "true" ? (
             <h3>Edit Menu Item Sale</h3>
@@ -120,12 +486,12 @@ class CreateMenuItem extends React.Component {
             <li>
               <Link to="/menus/:id/edit">Edit Menu</Link>
             </li>
-           
-             {this.props.edit == "true" ? (
-            <li className="active">Edit Menu Item</li>
-          ) : (
-            <li className="active">Create Menu Item</li>
-          )}
+
+            {this.props.edit == "true" ? (
+              <li className="active">Edit Menu Item</li>
+            ) : (
+              <li className="active">Create Menu Item</li>
+            )}
           </ol>
         </section>
         <section className="content">
@@ -182,7 +548,10 @@ class CreateMenuItem extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-2 col-md-10" style={{display: "flex"}}>
+                      <div
+                        className="col-md-2 col-md-10"
+                        style={{ display: "flex" }}
+                      >
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -193,7 +562,7 @@ class CreateMenuItem extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting}/>
+                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>
@@ -202,7 +571,7 @@ class CreateMenuItem extends React.Component {
             </div>
           </form>
         </section>
-      </div>
+      </React.Fragment>
     );
   }
 }

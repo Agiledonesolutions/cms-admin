@@ -131,7 +131,7 @@ class CreateMenu extends React.Component {
                   <React.Fragment>
                     <div className="btn-group pull-right m-b-15">
                       <Link
-                        to="/menus/1/items/create"
+                        to={"/menus/"+this.props.match.params.id +"/items/create"}
                         className="btn btn-primary"
                       >
                         Create Menu Item
@@ -142,6 +142,7 @@ class CreateMenu extends React.Component {
                       <div className="box-body">
                         <div className="dd">
                           <ol className="dd-list">
+                            ignore this now
                             <SortableTree
                               treeData={this.state.treeData}
                               onChange={this.handleTreeOnChange}
