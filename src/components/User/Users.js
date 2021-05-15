@@ -18,7 +18,7 @@ class Users extends React.Component {
       columns,
       data: [],
     },
-    requiredPermission: "Delete User"
+    requiredPermission: "Delete Users"
   }
 
   componentDidMount() {

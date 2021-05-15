@@ -1,6 +1,8 @@
 import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import api from "../../apis/api";
+import { getUSerDetails } from "../../utils/local";
+import { getUser } from "../../utils/session";
 import Validate from "../../utils/validation";
 import Loading from "../Loading";
 
@@ -8,11 +10,34 @@ class Profile extends React.Component {
   state = {
     submitting: false,
     activePanel: "account",
-
+    data: {
+      "First Name": "",
+      "Last Name": "",
+      Email: "",
+    },
+    newPassword: "",
+    confirmPassword: "",
+    _id: "",
     errors: [],
   };
 
-  componentDidMount() {}
+  async componentDidMount() {
+    if(getUser()){
+      await this.setState({_id: getUser()})
+    }else if(getUSerDetails()){
+     await this.setState({_id: getUSerDetails()})
+    }
+    const url = "users/get/"+ this.state._id;
+    const {data} = this.state
+    api.get(url).then(res=>{
+      data["First Name"]=res.data.data["First Name"]
+      data["Last Name"]=res.data.data["Last Name"]
+      data.Email = res.data.data.Email
+      this.setState({data})
+    }).catch(err=>{
+      console.log(err)
+    })
+  }
 
   setVal = (key, val) => {
     const { data } = this.state;
@@ -22,21 +47,58 @@ class Profile extends React.Component {
 
   handleSubmit = () => {
     const { errors } = this.state;
-    const { data } = this.state;
-    // if (!errors.includes("campaignName") && !Validate.validateNotEmpty(data["campaignName"])) {
-    //   errors.push("campaignName");
-    //   this.setState({ errors });
-    // } else if (
-    //   errors.includes("campaignName") &&
-    //   Validate.validateNotEmpty(data["campaignName"])
-    // ) {
-    //   errors.splice(errors.indexOf("campaignName"), 1);
-    //   this.setState({ errors });
-    // }
+    const { data, newPassword, confirmPassword } = this.state;
+    if (!errors.includes("First Name") && !Validate.validateNotEmpty(data["First Name"])) {
+      errors.push("First Name");
+      this.setState({ errors });
+    } else if (
+      errors.includes("First Name") &&
+      Validate.validateNotEmpty(data["First Name"])
+    ) {
+      errors.splice(errors.indexOf("First Name"), 1);
+      this.setState({ errors });
+    }
+    if (!errors.includes("Last Name") && !Validate.validateNotEmpty(data["Last Name"])) {
+      errors.push("Last Name");
+      this.setState({ errors });
+    } else if (
+      errors.includes("Last Name") &&
+      Validate.validateNotEmpty(data["Last Name"])
+    ) {
+      errors.splice(errors.indexOf("Last Name"), 1);
+      this.setState({ errors });
+    }
+    if (!errors.includes("Email") && !Validate.validateNotEmpty(data["Email"])) {
+      errors.push("Email");
+      this.setState({ errors });
+    } else if (
+      errors.includes("Email") &&
+      Validate.validateNotEmpty(data["Email"])
+    ) {
+      errors.splice(errors.indexOf("Email"), 1);
+      this.setState({ errors });
+    }
 
-    console.log(this.state);
+    if(Validate.validateNotEmpty(newPassword) || Validate.validateNotEmpty(confirmPassword)){
+      if(newPassword != confirmPassword && !errors.includes("password")){
+        errors.push("password");
+        this.setState({ errors });
+      }else if(newPassword == confirmPassword && errors.includes("password")){
+        errors.splice(errors.indexOf("password"), 1);
+      this.setState({ errors });
+      }
+    }
+
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      console.log(this.state)
       this.setState({ submitting: true });
+      api.put('/users', {data: data, _id: this.state._id, requiredPermission: "Edit User", newPassword: this.state.newPassword}).then(res=>{
+        console.log(res)
+        this.setState({submitting: false})
+      }).catch(err=>{
+        console.log(err.response.message)
+        this.setState({submitting: false})
+      })
     } else {
       console.log(errors);
     }
@@ -50,52 +112,55 @@ class Profile extends React.Component {
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="first_name"
                   className="col-md-3 control-label text-left"
                 >
                   First Name<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="first_name"
+                    name="First Name"
                     className="form-control "
-                    id="first_name"
-                    defaultValue="Demo"
                     type="text"
+                    value={this.state.data["First Name"]}
+                    onChange={(e)=>{
+                      this.setVal(e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="last_name"
                   className="col-md-3 control-label text-left"
                 >
                   Last Name<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="last_name"
+                    name="Last Name"
                     className="form-control "
-                    id="last_name"
-                    defaultValue="Admin"
                     type="text"
+                    value={this.state.data["Last Name"]}
+                    onChange={(e)=>{
+                      this.setVal(e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="email"
                   className="col-md-3 control-label text-left"
                 >
                   Email<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="email"
+                    name="Email"
                     className="form-control "
-                    id="email"
-                    defaultValue="admin@email.com"
                     type="email"
+                    value={this.state.data.Email}
+                    onChange={(e)=>{
+                      this.setVal(e.target.name, e.target.value)
+                    }}
                   />
                 </div>
               </div>
@@ -111,7 +176,6 @@ class Profile extends React.Component {
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="password"
                   className="col-md-3 control-label text-left"
                 >
                   New Password
@@ -120,15 +184,16 @@ class Profile extends React.Component {
                   <input
                     name="password"
                     className="form-control "
-                    id="password"
-                    defaultValue
                     type="password"
+                    value={this.state.newPassword}
+                    onChange={(e)=>{
+                      this.setState({newPassword: e.target.value})
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="password_confirmation"
                   className="col-md-3 control-label text-left"
                 >
                   Confirm New Password
@@ -137,9 +202,11 @@ class Profile extends React.Component {
                   <input
                     name="password_confirmation"
                     className="form-control "
-                    id="password_confirmation"
-                    defaultValue
                     type="password"
+                    value={this.state.confirmPassword}
+                    onChange={(e)=>{
+                      this.setState({confirmPassword: e.target.value})
+                    }}
                   />
                 </div>
               </div>

@@ -23,8 +23,8 @@ class CreateUser extends React.Component {
       "Password": "",
       "Confirm": "",
       Permissions: [],
-      Roles: []
     },
+    RoleIds: [],
     requiredPermission: "Create User",
     errors: []
   };
@@ -95,7 +95,7 @@ class CreateUser extends React.Component {
       this.setState({ errors });
     }
     if(!Validate.validateNotEmpty(this.state.errors)){
-      api.post('/users', {data: data}).then(res=>{
+      api.post('/users', {data: data, RoleIds: this.state.RoleIds}).then(res=>{
         console.log(res)
       }).catch(err=>{
         console.log("create user error")
@@ -112,7 +112,7 @@ class CreateUser extends React.Component {
       res.data.data.forEach(x=>{
         let tmp = {}
         tmp['label'] = x.Name
-        tmp['value'] = x.Name
+        tmp['value'] = x._id
         tmp['_id'] = x._id
         options.push(tmp)
 
@@ -187,8 +187,11 @@ class CreateUser extends React.Component {
                
 
       <MultiSelect
-      onChange={this.setRole}
+      onChange={(val)=>{
+        this.setState({RoleIds: val.split(",")})
+      }}
         options={this.state.options}
+        defaultValue={this.state.RoleIds.toString()}
       />
                     </div>
                   </div>

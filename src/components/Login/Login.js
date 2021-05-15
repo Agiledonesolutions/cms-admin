@@ -1,11 +1,11 @@
 import React from "react";
 import "./login.css";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import api from '../../apis/api';
 import Validate from '../../utils/validation'
-import {setUserSession} from '../../utils/session'
+import {setUser, setUserSession} from '../../utils/session'
 import Loading from "../Loading";
-import { setAuthToken } from "../../utils/local";
+import { setAuthToken, setUserDetails } from "../../utils/local";
 
 
 class Login extends React.Component {
@@ -16,6 +16,7 @@ class Login extends React.Component {
     },
     submitting: false,
     rememberMe: false,
+    redirect: false,
     errors: []
   }
   setVal = (key, val) =>{
@@ -64,12 +65,14 @@ class Login extends React.Component {
     if(!Validate.validateNotEmpty(this.state.errors)){
       const {data} = this.state
       api.post('/users/login', {data: data}).then(async(res)=>{
-        // console.log(res.data.data.token)
+        console.log(res.data.data)
         await setUserSession(res.data.data.token)
+        await setUser(res.data.data._id)
         if(this.state.rememberMe){
           await setAuthToken(res.data.data.token)
+          await setUserDetails(res.data.data._id)
         }
-        window.location.href='/dashboard'
+        window.location.href="/dashboard"
 
       }).catch(error=>{
         if(error.response.status === 422){
@@ -81,6 +84,9 @@ class Login extends React.Component {
     } 
   }
   render(){
+    if (this.state.redirect) {
+      return <Redirect to="/dashboard"/>;
+    }
   return (
     <div className="login-page">
       <div className="login-wrapper">

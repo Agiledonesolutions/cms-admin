@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
-import { removeAuthToken } from "../../utils/local";
-import {removeUserSession} from '../../utils/session'
+import { removeAuthToken, removeUserDetails } from "../../utils/local";
+import {removeUSer, removeUserSession} from '../../utils/session'
 import { Link } from "react-router-dom";
 
 
@@ -13,6 +13,8 @@ const Wrapper = (props) => {
   const handleLogout = () =>{
     removeUserSession()
     removeAuthToken()
+    removeUserDetails()
+    removeUSer()
     window.location.href ='/'
   }
   return (
