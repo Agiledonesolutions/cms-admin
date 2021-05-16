@@ -58,7 +58,7 @@ const routes = (
 
         <PrivateRoute exact path='/users' component={()=><Dashboard abc={<Users />} />} />
         <PrivateRoute exact path='/users/create' component={()=><Dashboard abc={<CreateUser />} />} />
-        {/* <PrivateRoute exact path='/users/:id/edit' component={()=><Dashboard abc={<CreateUser edit="true"/>} />} /> */}
+        <PrivateRoute exact path='/users/:id/edit' component={()=><Dashboard abc={<CreateUser edit="true"/>} />} />
 
         <PrivateRoute exact path='/roles' component={()=><Dashboard abc={<Roles />} />} />
         <PrivateRoute exact path='/roles/create' component={()=><Dashboard abc={<CreateRole />} />} />

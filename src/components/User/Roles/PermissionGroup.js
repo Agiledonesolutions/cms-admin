@@ -2,23 +2,21 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 class PermissionGroup extends React.Component{
-    // getPermission = (name) =>{
-    //   if(this.props.editPermissions){
-    //     const permissions = this.props.editPermissions
-    //     for(var i = 0; i < permissions.length; i++){
-    //       if(permissions[i]["name"] == name){
-    //         // console.log(permissions[i]["value"])
-    //         return permissions[i]["value"]
-    //       }
-          
-    //     }
-    //   }else{
-    //     return ""
-    //   }
-     
-    // }
+   
 
-
+  setDefault = (perm, value) =>{
+    if(this.props.editPermissions){
+      const found = this.props.editPermissions.find(elem=>{
+        return elem.name == perm
+      })
+      if(found && found.value == value){
+        return true
+      }
+      return false
+    }else{
+      return false
+    }
+  }
     getAttributes = (name, key)=>{
         return(
             <div className="permission-row" key={key}>
@@ -38,7 +36,7 @@ class PermissionGroup extends React.Component{
                                     name={name+ " " +this.props.suffix}
                                     className="permission-inherit"
                                     value="Inherit"
-                                    
+                                    defaultChecked={this.setDefault(name+ " " +this.props.suffix, "Inherit")}
                                     onChange={(e)=>this.props.setVal("Permissions", e.target.value, e.target.name)}
                                   />
                                   <label htmlFor={this.props.heading + "."+name+"-inherit"}>
@@ -51,6 +49,7 @@ class PermissionGroup extends React.Component{
                                     id={this.props.heading + "."+name+"-deny"}
                                     name={name+ " "+this.props.suffix}
                                     className="permission-deny"
+                                    defaultChecked={this.setDefault(name+ " " +this.props.suffix, "Deny")}
                                     value="Deny"
                                     onChange={(e)=>this.props.setVal("Permissions", e.target.value, e.target.name)}
 
@@ -66,6 +65,7 @@ class PermissionGroup extends React.Component{
                                     name={name+" "+this.props.suffix}
                                     className="permission-allow"
                                     value="Allow"
+                                    defaultChecked={this.setDefault(name+ " " +this.props.suffix, "Allow")}
                                     onChange={(e)=>this.props.setVal("Permissions", e.target.value, e.target.name)}
 
                                   />

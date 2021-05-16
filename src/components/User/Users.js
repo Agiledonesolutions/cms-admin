@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -18,17 +18,16 @@ class Users extends React.Component {
       columns,
       data: [],
     },
+    edit: "",
     requiredPermission: "Delete Users"
   }
 
   componentDidMount() {
-    const token = getToken();
     const datalist = [];
     var i = 0;
     api
       .get("/users/get")
       .then((res) => {
-        // console.log(res.data.data)
         res.data.data.map((val) => {
           i++;
           var tmp = {
@@ -63,6 +62,9 @@ class Users extends React.Component {
     })
   }
   render() {
+    if (this.state.edit != "") {
+      return <Redirect to={"/users/" + this.state.edit + "/edit"} />;
+    }
     return (
       <React.Fragment>
         <section className="content-header clearfix">
@@ -101,16 +103,21 @@ class Users extends React.Component {
                   filterPlaceholder="Search"
                   export={false}
                   print={false}
-                  onSelectedRowsChange={(selected)=> {
-                    const arr = []
-                    selected['selectedRows'].forEach(row=>{
-                      arr.push(row._id)
-                    })
-                    this.setState({selectedRows : arr})
+                  onSelectedRowsChange={(selected) => {
+                    const arr = [];
+                    selected["selectedRows"].forEach((row) => {
+                      arr.push(row._id);
+                    });
+                    this.setState({ selectedRows: arr });
                   }}
                   responsive
                   pagination
                   selectableRows
+                  onRowClicked={(index) => {
+                    this.setState({ edit: index._id });
+                  }}
+                  pointerOnHover
+                  highlightOnHover
                 />
               </DataTableExtensions>
             </div>

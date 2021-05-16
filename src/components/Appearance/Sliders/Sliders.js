@@ -32,7 +32,7 @@ class Sliders extends React.Component {
         },
       ],
     },
-    requiredPermission: "Delete Sliders",
+    requiredPermission: "Delete Slider",
     edit: "",
   };
 

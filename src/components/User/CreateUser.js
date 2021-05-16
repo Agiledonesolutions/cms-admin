@@ -1,7 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import "./user.css";
-import {getToken} from '../../utils/session'
 import api from '../../apis/api'
 import Validate from '../../utils/validation'
 import MultiSelect from  'react-multiple-select-dropdown-lite'
@@ -25,24 +24,14 @@ class CreateUser extends React.Component {
       Permissions: [],
     },
     RoleIds: [],
-    requiredPermission: "Create User",
     errors: []
   };
-  setRole = (val) => {
-    const {rolesArray} =this.state
-    const {data} = this.state
-    rolesArray.push(val)
-    var n = rolesArray.length
-    data.Roles = rolesArray[n-1].split(',')
-    this.setState({rolesArray})
-    this.setState({data})
-  }
+
   setVal =(key, val, permName) => {
     const {data} = this.state
     if(key == "Permissions"){
       var flag = true;
       const {Permissions} = this.state.data
-      console.log(Permissions)
       Permissions.map((perm, index)=>{
         if(perm['name'] == permName){
           // Permissions.splice(perm, index)
@@ -62,53 +51,83 @@ class CreateUser extends React.Component {
   handleSubmit = () =>{
     const {errors} = this.state
     const {data} = this.state
-    for(var key in data){
-      if( key !== "Permissions")
-      if (
-        !Validate.validateNotEmpty(data[key]) &&
-        !errors.includes(key)
-      ) {
-        errors.push(key);
+    if (!errors.includes("fname") && !Validate.validateNotEmpty(data["First Name"])) {
+      errors.push("fname");
+      this.setState({ errors });
+    } else if (
+      errors.includes("fname") &&
+      Validate.validateNotEmpty(data["First Name"])
+    ) {
+      errors.splice(errors.indexOf("fname"), 1);
+      this.setState({ errors });
+    }
+    if (!errors.includes("lname") && !Validate.validateNotEmpty(data["Last Name"])) {
+      errors.push("lname");
+      this.setState({ errors });
+    } else if (
+      errors.includes("lname") &&
+      Validate.validateNotEmpty(data["Last Name"])
+    ) {
+      errors.splice(errors.indexOf("lname"), 1);
+      this.setState({ errors });
+    }
+    if (!errors.includes("email") && !Validate.validateNotEmpty(data["Email"])) {
+      errors.push("email");
+      this.setState({ errors });
+    } else if (
+      errors.includes("email") &&
+      Validate.validateNotEmpty(data["Email"])
+    ) {
+      errors.splice(errors.indexOf("email"), 1);
+      this.setState({ errors });
+    }
+    if(this.props.edit != "true"){
+      if (!errors.includes("password") && !Validate.validateNotEmpty(data["Password"])) {
+        errors.push("password");
         this.setState({ errors });
       } else if (
-        Validate.validateNotEmpty(data[key]) &&
-        errors.includes(key)
+        errors.includes("password") &&
+        Validate.validateNotEmpty(data["Password"])
       ) {
-        errors.splice(errors.indexOf(key), 1);
+        errors.splice(errors.indexOf("password"), 1);
+        this.setState({ errors });
+      }
+      if (!errors.includes("confirm") && !Validate.validateNotEmpty(data["Confirm"])) {
+        errors.push("confirm");
+        this.setState({ errors });
+      } else if (
+        errors.includes("confirm") &&
+        Validate.validateNotEmpty(data["Confirm"])
+      ) {
+        errors.splice(errors.indexOf("confirm"), 1);
         this.setState({ errors });
       }
     }
+
     
-    if (
-      !errors.includes("Email") &&
-      !Validate.validateEmail(data["Email"]) &&
-      Validate.validateNotEmpty(data["Email"])
-    ) {
-      errors.push("Email");
-      this.setState({ errors });
-    } else if (
-      errors.includes("Email") &&
-      Validate.validateEmail(data["Email"]) &&
-      Validate.validateNotEmpty(data["Email"])
-    ) {
-      errors.splice(errors.indexOf("Email"), 1);
-      this.setState({ errors });
-    }
     if(!Validate.validateNotEmpty(this.state.errors)){
-      api.post('/users', {data: data, RoleIds: this.state.RoleIds}).then(res=>{
-        console.log(res)
-      }).catch(err=>{
-        console.log("create user error")
-      })
-      console.log(this.state.data)
+      if(this.props.edit == "true"){
+        api.put('/users',{data: data, RoleIds: this.state.RoleIds, _id: this.props.match.params.id, requiredPermission: "Edit Users"}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("error updating user")
+        })
+      }else{
+        api.post('/users', {data: data, RoleIds: this.state.RoleIds}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log("create user error")
+        })
+      }
+      
     }else{
-      console.log("Some error")
+      console.log(this.state.errors)
     }
   }
 
-   async UNSAFE_componentWillMount(){
+   componentDidMount(){
     const {options} = this.state
-     await api.get('/roles/get').then(res=>{
+      api.get('/roles/get').then(res=>{
       res.data.data.forEach(x=>{
         let tmp = {}
         tmp['label'] = x.Name
@@ -120,6 +139,18 @@ class CreateUser extends React.Component {
     }).catch((err)=>{
       console.log(err)
     })
+    if(this.props.edit == "true"){
+      const {data} = this.state
+      const url = "/users/get/"+this.props.match.params.id
+      api.get(url).then(res=>{
+        console.log(res.data.data)
+        data["First Name"] = res.data.data["First Name"]
+        data["Last Name"] = res.data.data["Last Name"]
+        data.Email = res.data.data.Email
+        data.Permissions = res.data.data.Permissions
+        this.setState({data, RoleIds: res.data.data.Roles})
+      }).catch((err)=>{console.log("error fetching user deets")})
+     }
   }
   tabContentToggle = () => {
     if (this.state.activePanel == "account") {
@@ -195,6 +226,8 @@ class CreateUser extends React.Component {
       />
                     </div>
                   </div>
+                  {this.props.edit == "true"?"" : 
+                  <React.Fragment>
               <div className="form-group">
                 <label
                   className="col-md-3 control-label text-left"
@@ -227,6 +260,8 @@ class CreateUser extends React.Component {
                   />
                 </div>
               </div>
+              </React.Fragment>
+              }
               </div>
               </div>
             </div>
@@ -282,12 +317,15 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Attributes"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
               />
               <PermissionGroup
                 heading="admin.attribute_sets"
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Attribute Set"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -306,6 +344,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Brand"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -324,6 +364,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Categories"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -342,6 +384,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Coupons"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -360,6 +404,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Edit"]}
                 suffix="Currency Rates"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -378,6 +424,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Flash Sales"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -396,6 +444,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create"]}
                 suffix="Import"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -414,6 +464,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Delete"]}
                 suffix="Media"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -432,12 +484,16 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Menus"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
               <PermissionGroup
                 heading="admin.menu_items"
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Menu Items"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -456,6 +512,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Options"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -474,6 +532,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Show", "Edit"]}
                 suffix="Order"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -492,6 +552,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Pages"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -510,6 +572,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Products"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -528,6 +592,8 @@ class CreateUser extends React.Component {
                 attributes={["Index"]}
                 suffix="Report"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -546,6 +612,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Edit", "Delete"]}
                 suffix="Review"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -564,6 +632,8 @@ class CreateUser extends React.Component {
                 attributes={["Edit"]}
                 suffix="Settings"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -582,6 +652,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Slider"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -600,6 +672,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Tag"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -618,6 +692,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Tax"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -636,6 +712,8 @@ class CreateUser extends React.Component {
                 attributes={["Index"]}
                 suffix="Transaction"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -654,6 +732,8 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Edit"]}
                 suffix="Translation"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -672,12 +752,16 @@ class CreateUser extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Users"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
               <PermissionGroup
                 heading="admin.roles"
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Roles"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
 
               />
             </div>
@@ -697,6 +781,8 @@ class CreateUser extends React.Component {
                 attributes={["Edit"]}
                 suffix="Storefront"
                 setVal = {this.setVal}
+                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+
               />
             </div>
           </div>
@@ -798,4 +884,4 @@ class CreateUser extends React.Component {
   }
 }
 
-export default CreateUser;
+export default withRouter(CreateUser);
