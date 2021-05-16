@@ -54,10 +54,11 @@ class Orders extends React.Component {
     api.post('/order/get', {requiredPermission: "Show Order"}).then(res=>{
       res.data.data.map((val) => {
         i++;
+        console.log(val)
               var tmp = {
                 id: i,
-                customername: val.User["First Name"]+" "+val.User["Last Name"],
-                customeremail: val.User.Email,
+                customername: val.User?val.User["First Name"]+" "+val.User["Last Name"]: "--",
+                customeremail:val.User? val.User.Email: "--",
                 status: val.Status,
                 total: val.Total,
                 created: format(val["createdAt"]),

@@ -62,9 +62,10 @@ class EditOrder extends React.Component {
         }
         arr.push(tmp)
       })
-      this.setState({shippingAddress: val.Address.ShippingAddress, billingAddress: val.Address.BillingAddress, orderDate: val.createdAt.substr(0,10).split("-").reverse().join("-"), shippingMethod: val.ShippingMethod, paymentMethod: val.PaymentMethod,orderStatus: val.Status, customerName: val.User["First Name"]+" "+val.User["Last Name"], customerEmail: val.User.Email, items: arr, subTotal: val.SubTotal, discount: val.Discount, Total: val.Total, submitting: false})
+      this.setState({shippingAddress: val.Address.ShippingAddress, billingAddress: val.Address.BillingAddress, orderDate: val.createdAt.substr(0,10).split("-").reverse().join("-"), shippingMethod: val.ShippingMethod, paymentMethod: val.PaymentMethod,orderStatus: val.Status, customerName: val.User?val.User["First Name"]+" "+val.User["Last Name"]: "--", customerEmail: val.User?val.User.Email: "--", items: arr, subTotal: val.SubTotal, discount: val.Discount, Total: val.Total, submitting: false})
     }).catch(err=>{
       console.log("error fetching order details")
+      this.setState({submitting: false})
     })
   }
   handleStatusUpdate = ()=>{

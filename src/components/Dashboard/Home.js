@@ -1,11 +1,14 @@
 import React from "react";
 import api from "../../apis/api";
+import {  Redirect } from "react-router-dom";
+
 class Home extends React.Component {
   state = {
     totalOrders: 0,
     totalProducts: 0,
     latestOrders: [],
     latestReviews: [],
+    url: ""
   };
   componentDidMount() {
     api
@@ -27,6 +30,7 @@ class Home extends React.Component {
     api
       .get("/dashboard/latest/reviews")
       .then((res) => {
+        console.log(res.data.data)
         this.setState({ latestReviews: res.data.data });
       })
       .catch((err) => {
@@ -35,6 +39,7 @@ class Home extends React.Component {
     api
       .get("/dashboard/latest/orders")
       .then((res) => {
+        // console.log(res.data.data)
         this.setState({ latestOrders: res.data.data });
       })
       .catch((err) => {
@@ -42,6 +47,9 @@ class Home extends React.Component {
       });
   }
   render() {
+    if (this.state.url != "") {
+      return <Redirect to={this.state.url} />;
+    }
     return (
       <div>
         <section className="content-header clearfix">
@@ -113,22 +121,25 @@ class Home extends React.Component {
                         <th>Status</th>
                         <th>Total</th>
                       </tr>
-                      
-                      <tr>
+                      {this.state.latestOrders.map((val,idx)=>(
+                      <tr className="dashboard-table-row" key={idx} onClick={()=>{
+                        this.setState({url: "/orders/"+val._id})
+                      }}>
                         <td>
-                            1094
+                            {val.ID}
                           
                         </td>
                         <td>
-                            Demo Admin
+                            Demo 
                         </td>
                         <td>
-                            Pending Payment
+                            {val.Status}
                         </td>
                         <td>
-                            $709.81
+                        ₹ {val.Total}
                         </td>
                       </tr>
+                      ))}
                     </thead>
                     
                   </table>
@@ -189,14 +200,24 @@ class Home extends React.Component {
                         <th>Customer</th>
                         <th>Rating</th>
                       </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="empty" colSpan={5}>
-                          No data available!
+                      {this.state.latestReviews.map((val,idx)=>(
+                      <tr className="dashboard-table-row" key={idx} onClick={()=>{
+                        this.setState({url: "/reviews/"+val._id +"/edit"})
+                      }}>
+                        <td>
+                            {val.product.name}
+                          
+                        </td>
+                        <td>
+                            {val.reviewerName} 
+                        </td>
+                        <td>
+                            {val.rating}
                         </td>
                       </tr>
-                    </tbody>
+                      ))}
+                    </thead>
+                    
                   </table>
                 </div>
               </div>
