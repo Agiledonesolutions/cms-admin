@@ -211,7 +211,6 @@ class CreateMenu extends React.Component {
                                 role="group"
                               >
                                 <a
-                                  href="https://fleetcart.envaysoft.com/en/admin/menus/4/items/38/edit"
                                   className="btn edit-menu-item "
                                 >
                                   <i className="fa fa-pencil" />
@@ -219,7 +218,6 @@ class CreateMenu extends React.Component {
                                 <button
                                   type="button"
                                   className="btn delete-menu-item"
-                                  data-action="https://fleetcart.envaysoft.com/en/admin/menus/items/4?38"
                                 >
                                   <i className="fa fa-times" />
                                 </button>

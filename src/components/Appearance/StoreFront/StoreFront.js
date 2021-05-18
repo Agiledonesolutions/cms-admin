@@ -21,6 +21,7 @@ class StoreFront extends React.Component {
     tagOptions: [],
     categoryOptions: [],
     brandsOptions: [],
+    productOptions: [],
     data: {
       SocialLinks: {
         Facebook: "",
@@ -189,20 +190,147 @@ class StoreFront extends React.Component {
       },
       FeaturedCategories: {
         SectionStatus: true,
-        SectionTitle: "Top Categories in Sales and Trending",
-        SectionSubtitle: "Last Month upto 1500+ Products Sales From this catagory. You can choose a product from here and save money.",
+        SectionTitle: "",
+        SectionSubtitle: "",
         Categories: [
           {
-            Type: "Category Products",
-            CategoryId: "607d18dff60cc83cccb7b363"
+            CategoryId: "",
+            Type: "",
+            ProductIds: []
           },
-          
+          {
+            CategoryId: "",
+            Type: "",
+            ProductIds: []
+          },
+          {
+            CategoryId: "",
+            Type: "",
+            ProductIds: []
+          },
+          {
+            CategoryId: "",
+            Type: "",
+            ProductIds: []
+          },
+          {
+            CategoryId: "",
+            Type: "",
+            ProductIds: []
+          },
+          {
+            CategoryId: "",
+            Type: "",
+            ProductIds: []
+          },
         ]
       },
       TopBrands: {
         TopBrandsIds: [],
         SectionStatus: false
       },
+      "Product Tabs One": {
+        Name: "Product Tabs One",
+        SectionStatus: false,
+        Tabs: [
+          {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        },
+        {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        },
+        {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        },
+        {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        }
+      ]
+      },
+      "Product Tabs Two":{
+        Name: "Product Tabs Two",
+        SectionStatus: false,
+        Tabs: [
+          {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        },
+        {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        },
+        {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        },
+        {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        }
+      ]
+      },
+      "Product Grid":{
+        Name: "Product Grid",
+        SectionStatus: false,
+        Tabs: [
+          {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        },
+        {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        },
+        {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        },
+        {
+          Title: "",
+          Type: "",
+          CategoryId: "",
+          ProductsLimit: "",
+          ProductIds: []
+        }
+      ]
+      }
     },
     errors: [],
   };
@@ -276,7 +404,7 @@ class StoreFront extends React.Component {
     })
     this.setState({categoryOptions})
 
-    api.get('brand/get').then(res=>{
+    api.post('/brand/get/').then(res=>{
       const {brandsOptions} = this.state
       res.data.data.forEach(val=>{
         let tmp = {
@@ -288,6 +416,18 @@ class StoreFront extends React.Component {
       this.setState({brandsOptions})
     }).catch(err=>{
       console.log("error fetching pages")
+    })
+    api.get('/product/get').then(res=>{
+      const {productOptions} = this.state
+      res.data.data.map(val => {
+        let tmp ={}
+        tmp.value = val._id
+        tmp.label = val.name
+        productOptions.push(tmp)
+      });
+      this.setState({productOptions})
+    }).catch(err=>{
+      console.log("error fetching products")
     })
   }
   setVal = (val, key, key2) => {
@@ -353,6 +493,7 @@ class StoreFront extends React.Component {
 
     //add custom colours
     //add banners to arr
+    //add product tabs and grids to arr
 
     // if (!errors.includes("name") && !Validate.validateNotEmpty(data["Name"])) {
     //   errors.push("name");
@@ -1409,13 +1550,12 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "featuredcategories") {
       return (
-        <div className="tab-pane fade active in" id="featured_categories">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">Featured Categories</h3>
           <div className="row">
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="storefront_featured_categories_section_enabled"
                   className="col-md-3 control-label text-left"
                 >
                   Section Status
@@ -1423,17 +1563,14 @@ class StoreFront extends React.Component {
                 <div className="col-md-9">
                   <div className="checkbox">
                     <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="storefront_featured_categories_section_enabled"
-                    />
-                    <input
                       type="checkbox"
-                      name="storefront_featured_categories_section_enabled"
-                      className
+                      name="SectionStatus"
                       id="storefront_featured_categories_section_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.FeaturedCategories.SectionStatus}
+                      onChange={(e)=>{
+                        this.setVal(!this.state.data.FeaturedCategories.SectionStatus, "FeaturedCategories", e.target.name)
+                      }}
+                      
                     />
                     <label htmlFor="storefront_featured_categories_section_enabled">
                       Enable featured categories section
@@ -1443,40 +1580,43 @@ class StoreFront extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[storefront_featured_categories_section_title]"
                   className="col-md-3 control-label text-left"
                 >
                   Section Title
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[storefront_featured_categories_section_title]"
+                    name="SectionTitle"
                     className="form-control "
-                    id="translatable[storefront_featured_categories_section_title]"
-                    defaultValue="Top Categories in Sales and Trending"
                     type="text"
+                    value={this.state.data.FeaturedCategories.SectionTitle}
+                    onChange={(e)=>{
+                      this.setVal(e.target.value, "FeaturedCategories", e.target.name)
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[storefront_featured_categories_section_subtitle]"
                   className="col-md-3 control-label text-left"
                 >
                   Section Subtitle
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[storefront_featured_categories_section_subtitle]"
+                    name="SectionSubtitle"
                     className="form-control "
-                    id="translatable[storefront_featured_categories_section_subtitle]"
-                    defaultValue="Last Month upto 1500+ Products Sales From this catagory. You can choose a product from here and save money."
                     type="text"
+                    value={this.state.data.FeaturedCategories.SectionSubtitle}
+                    onChange={(e)=>{
+                      this.setVal(e.target.value, "FeaturedCategories", e.target.name)
+                    }}
                   />
                 </div>
               </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Category 1</h4>
+              {this.state.data.FeaturedCategories.Categories.map((val, idx)=>(
+              <div className="box-content clearfix" key={idx}>
+                <h4 className="section-title">Category {idx+1}</h4>
                 <div className="form-group">
                   <label
                     htmlFor="storefront_featured_categories_section_category_1_category_id"
@@ -1485,62 +1625,43 @@ class StoreFront extends React.Component {
                     Category
                   </label>
                   <div className="col-md-9">
-                  <select
-                      name="storefront_featured_categories_section_category_1_category_id"
-                      className="form-control custom-select-black "
-                    >
+                  
                       <MultiSelect
                     onChange={(val) => {
-                      console.log(val)
+                      this.setArr(val, "FeaturedCategories", "Categories", idx,  "CategoryId")
                     }}
                     singleSelect={true}
                     largeData={true}
                     options={this.state.categoryOptions}
-                    defaultValue={this.state.data.General.DefaultCountry}
+                    defaultValue={this.state.data.FeaturedCategories.Categories[idx].CategoryId}
                   />
-                    </select>
                  </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_featured_categories_section_category_1_product_type"
                     className="col-md-3 control-label text-left"
                   >
                     Type
                   </label>
                   <div className="col-md-9">
                     <select
-                      name="storefront_featured_categories_section_category_1_product_type"
+                      name="Type"
                       className="form-control custom-select-black product-type"
-                      id="storefront_featured_categories_section_category_1_product_type"
+                      value={this.state.data.FeaturedCategories.Categories[idx].Type}
+                      onChange={(e)=>{
+                        this.setArr([], "FeaturedCategories", "Categories", idx,  "ProductIds")
+                        this.setArr(e.target.value, "FeaturedCategories", "Categories", idx,  "Type")
+                      }}
                     >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
+                      <option value="">Please Select</option>
+                      <option value={"Category Products"} >
                         Category Products
                       </option>
-                      <option value="custom_products">Custom Products</option>
+                      <option value={"Custom Products"}>Custom Products</option>
                     </select>
                   </div>
                 </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_1_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_featured_categories_section_category_1_products_limit"
-                        className="form-control "
-                        id="storefront_featured_categories_section_category_1_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
+                {this.state.data.FeaturedCategories.Categories[idx].Type == "Custom Products"? 
                 <div className="custom-products">
                   <div className="form-group">
                     <label
@@ -1550,1499 +1671,47 @@ class StoreFront extends React.Component {
                       Products
                     </label>
                     <div className="col-md-9">
-                      <select
-                        name="storefront_featured_categories_section_category_1_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_featured_categories_section_category_1_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full has-options">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_featured_categories_section_category_1_products[]-selectized"
-                            style={{
-                              width: 4,
-                              opacity: 1,
-                              position: "relative",
-                              left: 0,
-                            }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{
-                            display: "none",
-                            width: "434.7px",
-                            top: 40,
-                            left: 0,
-                            visibility: "visible",
-                          }}
-                        >
-                          <div className="selectize-dropdown-content">
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={108}
-                            >
-                              SAUCE ORIGIN 910-CL Selvedge Jeans Raw Jeans Mens
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={33}
-                            >
-                              Google - Pixel 3a with 64GB Memory Cell Phone
-                              (Unlocked) - Just Black - G020G
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={80}
-                            >
-                              HENCHIRY New Men's Winter Jean Jacket
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={81}
-                            >
-                              NaranjaSabor Men's Denim Jackets
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={82}
-                            >
-                              6XL Men jacket jeans military army soldier cotton
-                              Mens Bomber jackets
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={83}
-                            >
-                              0 Degree Super Warm Winter Ski Jacket Men
-                              Waterproof
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={84}
-                            >
-                              Waterproof Jacket Men Outdoor Camping Ski
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={106}
-                            >
-                              KSTUN Men's Jeans Classic Direct Stretch Dark Blue
-                              Business Casual Denim Pants
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={107}
-                            >
-                              Classic Men Casual Mid-Rise Straight Slim Denim
-                              Jeans Youth Long Pants
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={134}
-                            >
-                              NaranjaSabor Fashion Thin Men's Jackets
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={1}
-                            >
-                              Apple MacBook Pro 2019 Model (13-Inch, Intel Core
-                              i5, 1.4Ghz, 8GB, 128GB)
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={5}
-                            >
-                              Huawei Kepler MateBook D 14" - AMD R5 - 8GB+256GB,
-                              Mystic Silver
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={6}
-                            >
-                              Acer Swift 3 SF315-41G-R6MP Laptop, 15.6" Full HD
-                              IPS Display, AMD Ryzen 7 2700U
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={7}
-                            >
-                              Apple MacBook Air (13-inch, 8GB RAM, 256GB
-                              Storage, 1.6GHz Intel Core i5) - Gold
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={8}
-                            >
-                              ASUS ROG Zephyrus S GX502GV Gaming Laptop Intel
-                              i7-9750H, 32GB RAM
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={11}
-                            >
-                              ASUS Mothership X Laptop (Intel i9-9980HK 8-Core,
-                              64GB RAM, 2TB PCIe SSD, 17.3" Full HD
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={14}
-                            >
-                              iPhone 11 Pro Max 64G 6.5-inch Genuine Phone With
-                              Dual Card and Full Screen
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={16}
-                            >
-                              Samsung Galaxy A51 (SM-A515F/DS) Dual SIM 128GB,
-                              GSM Unlocked
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={17}
-                            >
-                              Huawei Mate 30 6.62" No Google Play TAS-AL00/DS
-                              128GB 8GB RAM (GSM Only, No CDMA) Factory Unlocked
-                            </div>
-                            <div
-                              className="option"
-                              data-selectable
-                              data-value={20}
-                            >
-                              Apple iPad Pro (11-inch, Wi-Fi, 64GB) - Silver
-                              (1st Generation)
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                    <MultiSelect
+                    onChange={(val) => {
+                      this.setArr(val.split(), "FeaturedCategories", "Categories", idx,  "ProductIds")
+                    }}
+                    largeData={true}
+                    options={this.state.productOptions}
+                    defaultValue={this.state.data.FeaturedCategories.Categories[idx].ProductIds.toString()}
+                  />
                     </div>
                   </div>
                 </div>
+                :""}
               </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Category 2</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_featured_categories_section_category_2_category_id"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Category
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_featured_categories_section_category_2_category_id"
-                      className="form-control custom-select-black "
-                      id="storefront_featured_categories_section_category_2_category_id"
-                    >
-                      <option value>Please Select</option>
-                      <option value={181}>Electronics</option>
-                      <option value={183} selected>
-                        ¦–– Mobiles
-                      </option>
-                      <option value={192}>¦–– ¦–– Smartphones</option>
-                      <option value={193}>¦–– ¦–– Android</option>
-                      <option value={194}>¦–– ¦–– iPhone</option>
-                      <option value={195}>¦–– ¦–– Featured</option>
-                      <option value={196}>¦–– ¦–– Refurbished</option>
-                      <option value={197}>¦–– ¦–– Brands</option>
-                      <option value={185}>¦–– Mobile Accessories</option>
-                      <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                      <option value={199}>¦–– ¦–– Cables</option>
-                      <option value={200}>¦–– ¦–– Chargers</option>
-                      <option value={201}>¦–– ¦–– Power Bank</option>
-                      <option value={202}>¦–– ¦–– Headphones</option>
-                      <option value={203}>¦–– ¦–– Screen Protectors</option>
-                      <option value={184}>¦–– Hot Brands</option>
-                      <option value={187}>¦–– ¦–– OnePlus</option>
-                      <option value={188}>¦–– ¦–– Apple</option>
-                      <option value={189}>¦–– ¦–– Samsung</option>
-                      <option value={190}>¦–– ¦–– Huawei</option>
-                      <option value={191}>¦–– ¦–– Sony</option>
-                      <option value={182}>¦–– Laptops</option>
-                      <option value={204}>¦–– ¦–– Mackbook</option>
-                      <option value={205}>¦–– ¦–– Gaming</option>
-                      <option value={206}>¦–– ¦–– Ultraslim</option>
-                      <option value={207}>¦–– ¦–– Tablets</option>
-                      <option value={212}>¦–– ¦–– All Laptops</option>
-                      <option value={186}>¦–– Computer Accessories</option>
-                      <option value={208}>¦–– ¦–– Monitors</option>
-                      <option value={209}>¦–– ¦–– Keyboard &amp; Mouse</option>
-                      <option value={210}>¦–– ¦–– Pendrive</option>
-                      <option value={211}>¦–– ¦–– Speaker</option>
-                      <option value={12}>Men's Fashion</option>
-                      <option value={13}>¦–– Clothing</option>
-                      <option value={15}>¦–– ¦–– Shirts</option>
-                      <option value={14}>¦–– ¦–– All Clothing</option>
-                      <option value={16}>¦–– ¦–– Sportswear</option>
-                      <option value={17}>¦–– ¦–– Belts</option>
-                      <option value={18}>¦–– ¦–– Pants</option>
-                      <option value={26}>¦–– ¦–– Formal Shoes</option>
-                      <option value={19}>¦–– Shoes</option>
-                      <option value={20}>¦–– ¦–– All Shoes</option>
-                      <option value={21}>¦–– ¦–– Sneakers</option>
-                      <option value={22}>¦–– ¦–– Boots</option>
-                      <option value={23}>¦–– ¦–– Sandals</option>
-                      <option value={24}>
-                        ¦–– ¦–– Slippers &amp; Flip-flops
-                      </option>
-                      <option value={25}>¦–– ¦–– Sports Shoes</option>
-                      <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                      <option value={28}>¦–– ¦–– Trench</option>
-                      <option value={30}>¦–– ¦–– Genuine Leather</option>
-                      <option value={32}>¦–– ¦–– Down Jackets</option>
-                      <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                      <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                      <option value={35}>¦–– Hot Sale</option>
-                      <option value={36}>¦–– ¦–– Glasses</option>
-                      <option value={37}>¦–– ¦–– Jackets</option>
-                      <option value={38}>¦–– ¦–– T-Shirts</option>
-                      <option value={39}>¦–– ¦–– Shirts</option>
-                      <option value={40}>¦–– ¦–– Belts</option>
-                      <option value={52}>¦–– Bottoms</option>
-                      <option value={53}>¦–– ¦–– Casual Pants</option>
-                      <option value={54}>¦–– ¦–– Sweatpants</option>
-                      <option value={55}>¦–– ¦–– Cargo Pants</option>
-                      <option value={56}>¦–– ¦–– Jeans</option>
-                      <option value={57}>¦–– ¦–– Harem Pants</option>
-                      <option value={59}>Consumer Electronics</option>
-                      <option value={120}>¦–– Televisions</option>
-                      <option value={7}>¦–– Gadgets</option>
-                      <option value={142}>¦–– Drones</option>
-                      <option value={108}>¦–– Supplies</option>
-                      <option value={109}>¦–– Camera &amp; Photo</option>
-                      <option value={110}>¦–– Car &amp; Vehicle</option>
-                      <option value={111}>¦–– Cell Phones</option>
-                      <option value={112}>¦–– Computer</option>
-                      <option value={113}>¦–– GPS &amp; Navigation</option>
-                      <option value={114}>¦–– Headphones</option>
-                      <option value={115}>¦–– Home Audio</option>
-                      <option value={116}>¦–– Office Electronics</option>
-                      <option value={117}>¦–– Audio &amp; Video</option>
-                      <option value={118}>¦–– Security</option>
-                      <option value={119}>¦–– Service Plans</option>
-                      <option value={121}>¦–– Video Game</option>
-                      <option value={122}>¦–– Video Projectors</option>
-                      <option value={123}>¦–– Wearable Technology</option>
-                      <option value={124}>¦–– eBook Readers</option>
-                      <option value={60}>¦–– Office Supplies</option>
-                      <option value={61}>¦–– All Computers</option>
-                      <option value={63}>¦–– Desktops &amp; Monitors</option>
-                      <option value={64}>¦–– Drives &amp; Storage</option>
-                      <option value={65}>¦–– Networking</option>
-                      <option value={66}>¦–– Keyboards &amp; Mice</option>
-                      <option value={67}>¦–– PC Gaming</option>
-                      <option value={68}>¦–– Computer Accessories</option>
-                      <option value={69}>¦–– Printers &amp; Ink</option>
-                      <option value={70}>¦–– Office Supplies</option>
-                      <option value={82}>Watches</option>
-                      <option value={83}>¦–– Men's Watches</option>
-                      <option value={84}>¦–– ¦–– Analog Watches</option>
-                      <option value={85}>¦–– ¦–– Sports Watches</option>
-                      <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                      <option value={87}>¦–– ¦–– Digital Watches</option>
-                      <option value={88}>¦–– Women's Watches</option>
-                      <option value={89}>¦–– Children's Watches</option>
-                      <option value={90}>¦–– Pocket Watches</option>
-                      <option value={91}>¦–– Watch Accessories</option>
-                      <option value={92}>¦–– Women's Bracelets</option>
-                      <option value={156}>Home Appliances</option>
-                      <option value={157}>¦–– Bedding</option>
-                      <option value={158}>¦–– Furniture</option>
-                      <option value={159}>¦–– Decor</option>
-                      <option value={160}>¦–– Curtains</option>
-                      <option value={161}>¦–– Kitchen Utensils</option>
-                      <option value={162}>¦–– Cooking &amp; Baking</option>
-                      <option value={163}>¦–– Gas &amp; Stove</option>
-                      <option value={164}>¦–– Plastics &amp; Melamine</option>
-                      <option value={165}>¦–– Ceramics &amp; Dinnerware</option>
-                      <option value={166}>
-                        ¦–– Storage &amp; Organisation
-                      </option>
-                      <option value={167}>¦–– Home Care</option>
-                      <option value={168}>¦–– Cleaning Tools</option>
-                      <option value={169}>¦–– Laundry</option>
-                      <option value={170}>¦–– Towel</option>
-                      <option value={171}>¦–– Travel Accessories</option>
-                      <option value={172}>¦–– Pest Control</option>
-                      <option value={98}>Backpacks</option>
-                      <option value={99}>¦–– Men's Bags</option>
-                      <option value={100}>¦–– Women's Bags</option>
-                      <option value={102}>¦–– Wallets</option>
-                      <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                      <option value={104}>¦–– Travel Bags</option>
-                      <option value={105}>¦–– Functional Bags</option>
-                      <option value={106}>¦–– Coin Purses</option>
-                      <option value={107}>¦–– Bag Parts</option>
-                      <option value={126}>Women's Fashion</option>
-                      <option value={127}>¦–– All Beauty</option>
-                      <option value={128}>¦–– Make-up</option>
-                      <option value={129}>¦–– Luxury Beauty</option>
-                      <option value={130}>¦–– Watches</option>
-                      <option value={213}>¦–– Necklace</option>
-                      <option value={133}>¦–– Rings</option>
-                      <option value={131}>¦–– Glasses</option>
-                      <option value={132}>¦–– All Perfumes</option>
-                      <option value={134}>¦–– Women Perfumes</option>
-                      <option value={135}>¦–– Gift Sets</option>
-                      <option value={136}>¦–– All Health</option>
-                      <option value={137}>¦–– Personal Care</option>
-                      <option value={138}>¦–– Hair Care &amp; Styling</option>
-                      <option value={139}>¦–– Bath &amp; Body</option>
-                      <option value={140}>¦–– Dental Care</option>
-                      <option value={141}>¦–– Diet &amp; Nutrition</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_featured_categories_section_category_2_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_featured_categories_section_category_2_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_featured_categories_section_category_2_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_2_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_featured_categories_section_category_2_products_limit"
-                        className="form-control "
-                        id="storefront_featured_categories_section_category_2_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_2_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_featured_categories_section_category_2_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_featured_categories_section_category_2_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_featured_categories_section_category_2_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Category 3</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_featured_categories_section_category_3_category_id"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Category
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_featured_categories_section_category_3_category_id"
-                      className="form-control custom-select-black "
-                      id="storefront_featured_categories_section_category_3_category_id"
-                    >
-                      <option value>Please Select</option>
-                      <option value={181}>Electronics</option>
-                      <option value={183}>¦–– Mobiles</option>
-                      <option value={192}>¦–– ¦–– Smartphones</option>
-                      <option value={193}>¦–– ¦–– Android</option>
-                      <option value={194}>¦–– ¦–– iPhone</option>
-                      <option value={195}>¦–– ¦–– Featured</option>
-                      <option value={196}>¦–– ¦–– Refurbished</option>
-                      <option value={197}>¦–– ¦–– Brands</option>
-                      <option value={185}>¦–– Mobile Accessories</option>
-                      <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                      <option value={199}>¦–– ¦–– Cables</option>
-                      <option value={200}>¦–– ¦–– Chargers</option>
-                      <option value={201}>¦–– ¦–– Power Bank</option>
-                      <option value={202}>¦–– ¦–– Headphones</option>
-                      <option value={203}>¦–– ¦–– Screen Protectors</option>
-                      <option value={184}>¦–– Hot Brands</option>
-                      <option value={187}>¦–– ¦–– OnePlus</option>
-                      <option value={188}>¦–– ¦–– Apple</option>
-                      <option value={189}>¦–– ¦–– Samsung</option>
-                      <option value={190}>¦–– ¦–– Huawei</option>
-                      <option value={191}>¦–– ¦–– Sony</option>
-                      <option value={182}>¦–– Laptops</option>
-                      <option value={204}>¦–– ¦–– Mackbook</option>
-                      <option value={205}>¦–– ¦–– Gaming</option>
-                      <option value={206}>¦–– ¦–– Ultraslim</option>
-                      <option value={207} selected>
-                        ¦–– ¦–– Tablets
-                      </option>
-                      <option value={212}>¦–– ¦–– All Laptops</option>
-                      <option value={186}>¦–– Computer Accessories</option>
-                      <option value={208}>¦–– ¦–– Monitors</option>
-                      <option value={209}>¦–– ¦–– Keyboard &amp; Mouse</option>
-                      <option value={210}>¦–– ¦–– Pendrive</option>
-                      <option value={211}>¦–– ¦–– Speaker</option>
-                      <option value={12}>Men's Fashion</option>
-                      <option value={13}>¦–– Clothing</option>
-                      <option value={15}>¦–– ¦–– Shirts</option>
-                      <option value={14}>¦–– ¦–– All Clothing</option>
-                      <option value={16}>¦–– ¦–– Sportswear</option>
-                      <option value={17}>¦–– ¦–– Belts</option>
-                      <option value={18}>¦–– ¦–– Pants</option>
-                      <option value={26}>¦–– ¦–– Formal Shoes</option>
-                      <option value={19}>¦–– Shoes</option>
-                      <option value={20}>¦–– ¦–– All Shoes</option>
-                      <option value={21}>¦–– ¦–– Sneakers</option>
-                      <option value={22}>¦–– ¦–– Boots</option>
-                      <option value={23}>¦–– ¦–– Sandals</option>
-                      <option value={24}>
-                        ¦–– ¦–– Slippers &amp; Flip-flops
-                      </option>
-                      <option value={25}>¦–– ¦–– Sports Shoes</option>
-                      <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                      <option value={28}>¦–– ¦–– Trench</option>
-                      <option value={30}>¦–– ¦–– Genuine Leather</option>
-                      <option value={32}>¦–– ¦–– Down Jackets</option>
-                      <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                      <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                      <option value={35}>¦–– Hot Sale</option>
-                      <option value={36}>¦–– ¦–– Glasses</option>
-                      <option value={37}>¦–– ¦–– Jackets</option>
-                      <option value={38}>¦–– ¦–– T-Shirts</option>
-                      <option value={39}>¦–– ¦–– Shirts</option>
-                      <option value={40}>¦–– ¦–– Belts</option>
-                      <option value={52}>¦–– Bottoms</option>
-                      <option value={53}>¦–– ¦–– Casual Pants</option>
-                      <option value={54}>¦–– ¦–– Sweatpants</option>
-                      <option value={55}>¦–– ¦–– Cargo Pants</option>
-                      <option value={56}>¦–– ¦–– Jeans</option>
-                      <option value={57}>¦–– ¦–– Harem Pants</option>
-                      <option value={59}>Consumer Electronics</option>
-                      <option value={120}>¦–– Televisions</option>
-                      <option value={7}>¦–– Gadgets</option>
-                      <option value={142}>¦–– Drones</option>
-                      <option value={108}>¦–– Supplies</option>
-                      <option value={109}>¦–– Camera &amp; Photo</option>
-                      <option value={110}>¦–– Car &amp; Vehicle</option>
-                      <option value={111}>¦–– Cell Phones</option>
-                      <option value={112}>¦–– Computer</option>
-                      <option value={113}>¦–– GPS &amp; Navigation</option>
-                      <option value={114}>¦–– Headphones</option>
-                      <option value={115}>¦–– Home Audio</option>
-                      <option value={116}>¦–– Office Electronics</option>
-                      <option value={117}>¦–– Audio &amp; Video</option>
-                      <option value={118}>¦–– Security</option>
-                      <option value={119}>¦–– Service Plans</option>
-                      <option value={121}>¦–– Video Game</option>
-                      <option value={122}>¦–– Video Projectors</option>
-                      <option value={123}>¦–– Wearable Technology</option>
-                      <option value={124}>¦–– eBook Readers</option>
-                      <option value={60}>¦–– Office Supplies</option>
-                      <option value={61}>¦–– All Computers</option>
-                      <option value={63}>¦–– Desktops &amp; Monitors</option>
-                      <option value={64}>¦–– Drives &amp; Storage</option>
-                      <option value={65}>¦–– Networking</option>
-                      <option value={66}>¦–– Keyboards &amp; Mice</option>
-                      <option value={67}>¦–– PC Gaming</option>
-                      <option value={68}>¦–– Computer Accessories</option>
-                      <option value={69}>¦–– Printers &amp; Ink</option>
-                      <option value={70}>¦–– Office Supplies</option>
-                      <option value={82}>Watches</option>
-                      <option value={83}>¦–– Men's Watches</option>
-                      <option value={84}>¦–– ¦–– Analog Watches</option>
-                      <option value={85}>¦–– ¦–– Sports Watches</option>
-                      <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                      <option value={87}>¦–– ¦–– Digital Watches</option>
-                      <option value={88}>¦–– Women's Watches</option>
-                      <option value={89}>¦–– Children's Watches</option>
-                      <option value={90}>¦–– Pocket Watches</option>
-                      <option value={91}>¦–– Watch Accessories</option>
-                      <option value={92}>¦–– Women's Bracelets</option>
-                      <option value={156}>Home Appliances</option>
-                      <option value={157}>¦–– Bedding</option>
-                      <option value={158}>¦–– Furniture</option>
-                      <option value={159}>¦–– Decor</option>
-                      <option value={160}>¦–– Curtains</option>
-                      <option value={161}>¦–– Kitchen Utensils</option>
-                      <option value={162}>¦–– Cooking &amp; Baking</option>
-                      <option value={163}>¦–– Gas &amp; Stove</option>
-                      <option value={164}>¦–– Plastics &amp; Melamine</option>
-                      <option value={165}>¦–– Ceramics &amp; Dinnerware</option>
-                      <option value={166}>
-                        ¦–– Storage &amp; Organisation
-                      </option>
-                      <option value={167}>¦–– Home Care</option>
-                      <option value={168}>¦–– Cleaning Tools</option>
-                      <option value={169}>¦–– Laundry</option>
-                      <option value={170}>¦–– Towel</option>
-                      <option value={171}>¦–– Travel Accessories</option>
-                      <option value={172}>¦–– Pest Control</option>
-                      <option value={98}>Backpacks</option>
-                      <option value={99}>¦–– Men's Bags</option>
-                      <option value={100}>¦–– Women's Bags</option>
-                      <option value={102}>¦–– Wallets</option>
-                      <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                      <option value={104}>¦–– Travel Bags</option>
-                      <option value={105}>¦–– Functional Bags</option>
-                      <option value={106}>¦–– Coin Purses</option>
-                      <option value={107}>¦–– Bag Parts</option>
-                      <option value={126}>Women's Fashion</option>
-                      <option value={127}>¦–– All Beauty</option>
-                      <option value={128}>¦–– Make-up</option>
-                      <option value={129}>¦–– Luxury Beauty</option>
-                      <option value={130}>¦–– Watches</option>
-                      <option value={213}>¦–– Necklace</option>
-                      <option value={133}>¦–– Rings</option>
-                      <option value={131}>¦–– Glasses</option>
-                      <option value={132}>¦–– All Perfumes</option>
-                      <option value={134}>¦–– Women Perfumes</option>
-                      <option value={135}>¦–– Gift Sets</option>
-                      <option value={136}>¦–– All Health</option>
-                      <option value={137}>¦–– Personal Care</option>
-                      <option value={138}>¦–– Hair Care &amp; Styling</option>
-                      <option value={139}>¦–– Bath &amp; Body</option>
-                      <option value={140}>¦–– Dental Care</option>
-                      <option value={141}>¦–– Diet &amp; Nutrition</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_featured_categories_section_category_3_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_featured_categories_section_category_3_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_featured_categories_section_category_3_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_3_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_featured_categories_section_category_3_products_limit"
-                        className="form-control "
-                        id="storefront_featured_categories_section_category_3_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_3_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_featured_categories_section_category_3_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_featured_categories_section_category_3_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_featured_categories_section_category_3_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Category 4</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_featured_categories_section_category_4_category_id"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Category
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_featured_categories_section_category_4_category_id"
-                      className="form-control custom-select-black "
-                      id="storefront_featured_categories_section_category_4_category_id"
-                    >
-                      <option value>Please Select</option>
-                      <option value={181}>Electronics</option>
-                      <option value={183}>¦–– Mobiles</option>
-                      <option value={192}>¦–– ¦–– Smartphones</option>
-                      <option value={193}>¦–– ¦–– Android</option>
-                      <option value={194}>¦–– ¦–– iPhone</option>
-                      <option value={195}>¦–– ¦–– Featured</option>
-                      <option value={196}>¦–– ¦–– Refurbished</option>
-                      <option value={197}>¦–– ¦–– Brands</option>
-                      <option value={185}>¦–– Mobile Accessories</option>
-                      <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                      <option value={199}>¦–– ¦–– Cables</option>
-                      <option value={200}>¦–– ¦–– Chargers</option>
-                      <option value={201}>¦–– ¦–– Power Bank</option>
-                      <option value={202}>¦–– ¦–– Headphones</option>
-                      <option value={203}>¦–– ¦–– Screen Protectors</option>
-                      <option value={184}>¦–– Hot Brands</option>
-                      <option value={187}>¦–– ¦–– OnePlus</option>
-                      <option value={188}>¦–– ¦–– Apple</option>
-                      <option value={189}>¦–– ¦–– Samsung</option>
-                      <option value={190}>¦–– ¦–– Huawei</option>
-                      <option value={191}>¦–– ¦–– Sony</option>
-                      <option value={182}>¦–– Laptops</option>
-                      <option value={204}>¦–– ¦–– Mackbook</option>
-                      <option value={205}>¦–– ¦–– Gaming</option>
-                      <option value={206}>¦–– ¦–– Ultraslim</option>
-                      <option value={207}>¦–– ¦–– Tablets</option>
-                      <option value={212}>¦–– ¦–– All Laptops</option>
-                      <option value={186}>¦–– Computer Accessories</option>
-                      <option value={208}>¦–– ¦–– Monitors</option>
-                      <option value={209}>¦–– ¦–– Keyboard &amp; Mouse</option>
-                      <option value={210}>¦–– ¦–– Pendrive</option>
-                      <option value={211}>¦–– ¦–– Speaker</option>
-                      <option value={12}>Men's Fashion</option>
-                      <option value={13}>¦–– Clothing</option>
-                      <option value={15}>¦–– ¦–– Shirts</option>
-                      <option value={14}>¦–– ¦–– All Clothing</option>
-                      <option value={16}>¦–– ¦–– Sportswear</option>
-                      <option value={17}>¦–– ¦–– Belts</option>
-                      <option value={18}>¦–– ¦–– Pants</option>
-                      <option value={26}>¦–– ¦–– Formal Shoes</option>
-                      <option value={19}>¦–– Shoes</option>
-                      <option value={20}>¦–– ¦–– All Shoes</option>
-                      <option value={21}>¦–– ¦–– Sneakers</option>
-                      <option value={22}>¦–– ¦–– Boots</option>
-                      <option value={23}>¦–– ¦–– Sandals</option>
-                      <option value={24}>
-                        ¦–– ¦–– Slippers &amp; Flip-flops
-                      </option>
-                      <option value={25}>¦–– ¦–– Sports Shoes</option>
-                      <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                      <option value={28}>¦–– ¦–– Trench</option>
-                      <option value={30}>¦–– ¦–– Genuine Leather</option>
-                      <option value={32}>¦–– ¦–– Down Jackets</option>
-                      <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                      <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                      <option value={35}>¦–– Hot Sale</option>
-                      <option value={36}>¦–– ¦–– Glasses</option>
-                      <option value={37}>¦–– ¦–– Jackets</option>
-                      <option value={38}>¦–– ¦–– T-Shirts</option>
-                      <option value={39}>¦–– ¦–– Shirts</option>
-                      <option value={40}>¦–– ¦–– Belts</option>
-                      <option value={52}>¦–– Bottoms</option>
-                      <option value={53}>¦–– ¦–– Casual Pants</option>
-                      <option value={54}>¦–– ¦–– Sweatpants</option>
-                      <option value={55}>¦–– ¦–– Cargo Pants</option>
-                      <option value={56}>¦–– ¦–– Jeans</option>
-                      <option value={57}>¦–– ¦–– Harem Pants</option>
-                      <option value={59}>Consumer Electronics</option>
-                      <option value={120}>¦–– Televisions</option>
-                      <option value={7}>¦–– Gadgets</option>
-                      <option value={142}>¦–– Drones</option>
-                      <option value={108}>¦–– Supplies</option>
-                      <option value={109}>¦–– Camera &amp; Photo</option>
-                      <option value={110}>¦–– Car &amp; Vehicle</option>
-                      <option value={111}>¦–– Cell Phones</option>
-                      <option value={112}>¦–– Computer</option>
-                      <option value={113}>¦–– GPS &amp; Navigation</option>
-                      <option value={114}>¦–– Headphones</option>
-                      <option value={115}>¦–– Home Audio</option>
-                      <option value={116}>¦–– Office Electronics</option>
-                      <option value={117}>¦–– Audio &amp; Video</option>
-                      <option value={118}>¦–– Security</option>
-                      <option value={119}>¦–– Service Plans</option>
-                      <option value={121}>¦–– Video Game</option>
-                      <option value={122}>¦–– Video Projectors</option>
-                      <option value={123}>¦–– Wearable Technology</option>
-                      <option value={124}>¦–– eBook Readers</option>
-                      <option value={60}>¦–– Office Supplies</option>
-                      <option value={61}>¦–– All Computers</option>
-                      <option value={63}>¦–– Desktops &amp; Monitors</option>
-                      <option value={64}>¦–– Drives &amp; Storage</option>
-                      <option value={65}>¦–– Networking</option>
-                      <option value={66}>¦–– Keyboards &amp; Mice</option>
-                      <option value={67}>¦–– PC Gaming</option>
-                      <option value={68}>¦–– Computer Accessories</option>
-                      <option value={69}>¦–– Printers &amp; Ink</option>
-                      <option value={70}>¦–– Office Supplies</option>
-                      <option value={82} selected>
-                        Watches
-                      </option>
-                      <option value={83}>¦–– Men's Watches</option>
-                      <option value={84}>¦–– ¦–– Analog Watches</option>
-                      <option value={85}>¦–– ¦–– Sports Watches</option>
-                      <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                      <option value={87}>¦–– ¦–– Digital Watches</option>
-                      <option value={88}>¦–– Women's Watches</option>
-                      <option value={89}>¦–– Children's Watches</option>
-                      <option value={90}>¦–– Pocket Watches</option>
-                      <option value={91}>¦–– Watch Accessories</option>
-                      <option value={92}>¦–– Women's Bracelets</option>
-                      <option value={156}>Home Appliances</option>
-                      <option value={157}>¦–– Bedding</option>
-                      <option value={158}>¦–– Furniture</option>
-                      <option value={159}>¦–– Decor</option>
-                      <option value={160}>¦–– Curtains</option>
-                      <option value={161}>¦–– Kitchen Utensils</option>
-                      <option value={162}>¦–– Cooking &amp; Baking</option>
-                      <option value={163}>¦–– Gas &amp; Stove</option>
-                      <option value={164}>¦–– Plastics &amp; Melamine</option>
-                      <option value={165}>¦–– Ceramics &amp; Dinnerware</option>
-                      <option value={166}>
-                        ¦–– Storage &amp; Organisation
-                      </option>
-                      <option value={167}>¦–– Home Care</option>
-                      <option value={168}>¦–– Cleaning Tools</option>
-                      <option value={169}>¦–– Laundry</option>
-                      <option value={170}>¦–– Towel</option>
-                      <option value={171}>¦–– Travel Accessories</option>
-                      <option value={172}>¦–– Pest Control</option>
-                      <option value={98}>Backpacks</option>
-                      <option value={99}>¦–– Men's Bags</option>
-                      <option value={100}>¦–– Women's Bags</option>
-                      <option value={102}>¦–– Wallets</option>
-                      <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                      <option value={104}>¦–– Travel Bags</option>
-                      <option value={105}>¦–– Functional Bags</option>
-                      <option value={106}>¦–– Coin Purses</option>
-                      <option value={107}>¦–– Bag Parts</option>
-                      <option value={126}>Women's Fashion</option>
-                      <option value={127}>¦–– All Beauty</option>
-                      <option value={128}>¦–– Make-up</option>
-                      <option value={129}>¦–– Luxury Beauty</option>
-                      <option value={130}>¦–– Watches</option>
-                      <option value={213}>¦–– Necklace</option>
-                      <option value={133}>¦–– Rings</option>
-                      <option value={131}>¦–– Glasses</option>
-                      <option value={132}>¦–– All Perfumes</option>
-                      <option value={134}>¦–– Women Perfumes</option>
-                      <option value={135}>¦–– Gift Sets</option>
-                      <option value={136}>¦–– All Health</option>
-                      <option value={137}>¦–– Personal Care</option>
-                      <option value={138}>¦–– Hair Care &amp; Styling</option>
-                      <option value={139}>¦–– Bath &amp; Body</option>
-                      <option value={140}>¦–– Dental Care</option>
-                      <option value={141}>¦–– Diet &amp; Nutrition</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_featured_categories_section_category_4_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_featured_categories_section_category_4_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_featured_categories_section_category_4_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_4_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_featured_categories_section_category_4_products_limit"
-                        className="form-control "
-                        id="storefront_featured_categories_section_category_4_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_4_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_featured_categories_section_category_4_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_featured_categories_section_category_4_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_featured_categories_section_category_4_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Category 5</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_featured_categories_section_category_5_category_id"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Category
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_featured_categories_section_category_5_category_id"
-                      className="form-control custom-select-black "
-                      id="storefront_featured_categories_section_category_5_category_id"
-                    >
-                      <option value>Please Select</option>
-                      <option value={181}>Electronics</option>
-                      <option value={183}>¦–– Mobiles</option>
-                      <option value={192}>¦–– ¦–– Smartphones</option>
-                      <option value={193}>¦–– ¦–– Android</option>
-                      <option value={194}>¦–– ¦–– iPhone</option>
-                      <option value={195}>¦–– ¦–– Featured</option>
-                      <option value={196}>¦–– ¦–– Refurbished</option>
-                      <option value={197}>¦–– ¦–– Brands</option>
-                      <option value={185}>¦–– Mobile Accessories</option>
-                      <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                      <option value={199}>¦–– ¦–– Cables</option>
-                      <option value={200}>¦–– ¦–– Chargers</option>
-                      <option value={201}>¦–– ¦–– Power Bank</option>
-                      <option value={202}>¦–– ¦–– Headphones</option>
-                      <option value={203}>¦–– ¦–– Screen Protectors</option>
-                      <option value={184}>¦–– Hot Brands</option>
-                      <option value={187}>¦–– ¦–– OnePlus</option>
-                      <option value={188}>¦–– ¦–– Apple</option>
-                      <option value={189}>¦–– ¦–– Samsung</option>
-                      <option value={190}>¦–– ¦–– Huawei</option>
-                      <option value={191}>¦–– ¦–– Sony</option>
-                      <option value={182}>¦–– Laptops</option>
-                      <option value={204}>¦–– ¦–– Mackbook</option>
-                      <option value={205}>¦–– ¦–– Gaming</option>
-                      <option value={206}>¦–– ¦–– Ultraslim</option>
-                      <option value={207}>¦–– ¦–– Tablets</option>
-                      <option value={212}>¦–– ¦–– All Laptops</option>
-                      <option value={186}>¦–– Computer Accessories</option>
-                      <option value={208}>¦–– ¦–– Monitors</option>
-                      <option value={209}>¦–– ¦–– Keyboard &amp; Mouse</option>
-                      <option value={210}>¦–– ¦–– Pendrive</option>
-                      <option value={211}>¦–– ¦–– Speaker</option>
-                      <option value={12} selected>
-                        Men's Fashion
-                      </option>
-                      <option value={13}>¦–– Clothing</option>
-                      <option value={15}>¦–– ¦–– Shirts</option>
-                      <option value={14}>¦–– ¦–– All Clothing</option>
-                      <option value={16}>¦–– ¦–– Sportswear</option>
-                      <option value={17}>¦–– ¦–– Belts</option>
-                      <option value={18}>¦–– ¦–– Pants</option>
-                      <option value={26}>¦–– ¦–– Formal Shoes</option>
-                      <option value={19}>¦–– Shoes</option>
-                      <option value={20}>¦–– ¦–– All Shoes</option>
-                      <option value={21}>¦–– ¦–– Sneakers</option>
-                      <option value={22}>¦–– ¦–– Boots</option>
-                      <option value={23}>¦–– ¦–– Sandals</option>
-                      <option value={24}>
-                        ¦–– ¦–– Slippers &amp; Flip-flops
-                      </option>
-                      <option value={25}>¦–– ¦–– Sports Shoes</option>
-                      <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                      <option value={28}>¦–– ¦–– Trench</option>
-                      <option value={30}>¦–– ¦–– Genuine Leather</option>
-                      <option value={32}>¦–– ¦–– Down Jackets</option>
-                      <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                      <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                      <option value={35}>¦–– Hot Sale</option>
-                      <option value={36}>¦–– ¦–– Glasses</option>
-                      <option value={37}>¦–– ¦–– Jackets</option>
-                      <option value={38}>¦–– ¦–– T-Shirts</option>
-                      <option value={39}>¦–– ¦–– Shirts</option>
-                      <option value={40}>¦–– ¦–– Belts</option>
-                      <option value={52}>¦–– Bottoms</option>
-                      <option value={53}>¦–– ¦–– Casual Pants</option>
-                      <option value={54}>¦–– ¦–– Sweatpants</option>
-                      <option value={55}>¦–– ¦–– Cargo Pants</option>
-                      <option value={56}>¦–– ¦–– Jeans</option>
-                      <option value={57}>¦–– ¦–– Harem Pants</option>
-                      <option value={59}>Consumer Electronics</option>
-                      <option value={120}>¦–– Televisions</option>
-                      <option value={7}>¦–– Gadgets</option>
-                      <option value={142}>¦–– Drones</option>
-                      <option value={108}>¦–– Supplies</option>
-                      <option value={109}>¦–– Camera &amp; Photo</option>
-                      <option value={110}>¦–– Car &amp; Vehicle</option>
-                      <option value={111}>¦–– Cell Phones</option>
-                      <option value={112}>¦–– Computer</option>
-                      <option value={113}>¦–– GPS &amp; Navigation</option>
-                      <option value={114}>¦–– Headphones</option>
-                      <option value={115}>¦–– Home Audio</option>
-                      <option value={116}>¦–– Office Electronics</option>
-                      <option value={117}>¦–– Audio &amp; Video</option>
-                      <option value={118}>¦–– Security</option>
-                      <option value={119}>¦–– Service Plans</option>
-                      <option value={121}>¦–– Video Game</option>
-                      <option value={122}>¦–– Video Projectors</option>
-                      <option value={123}>¦–– Wearable Technology</option>
-                      <option value={124}>¦–– eBook Readers</option>
-                      <option value={60}>¦–– Office Supplies</option>
-                      <option value={61}>¦–– All Computers</option>
-                      <option value={63}>¦–– Desktops &amp; Monitors</option>
-                      <option value={64}>¦–– Drives &amp; Storage</option>
-                      <option value={65}>¦–– Networking</option>
-                      <option value={66}>¦–– Keyboards &amp; Mice</option>
-                      <option value={67}>¦–– PC Gaming</option>
-                      <option value={68}>¦–– Computer Accessories</option>
-                      <option value={69}>¦–– Printers &amp; Ink</option>
-                      <option value={70}>¦–– Office Supplies</option>
-                      <option value={82}>Watches</option>
-                      <option value={83}>¦–– Men's Watches</option>
-                      <option value={84}>¦–– ¦–– Analog Watches</option>
-                      <option value={85}>¦–– ¦–– Sports Watches</option>
-                      <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                      <option value={87}>¦–– ¦–– Digital Watches</option>
-                      <option value={88}>¦–– Women's Watches</option>
-                      <option value={89}>¦–– Children's Watches</option>
-                      <option value={90}>¦–– Pocket Watches</option>
-                      <option value={91}>¦–– Watch Accessories</option>
-                      <option value={92}>¦–– Women's Bracelets</option>
-                      <option value={156}>Home Appliances</option>
-                      <option value={157}>¦–– Bedding</option>
-                      <option value={158}>¦–– Furniture</option>
-                      <option value={159}>¦–– Decor</option>
-                      <option value={160}>¦–– Curtains</option>
-                      <option value={161}>¦–– Kitchen Utensils</option>
-                      <option value={162}>¦–– Cooking &amp; Baking</option>
-                      <option value={163}>¦–– Gas &amp; Stove</option>
-                      <option value={164}>¦–– Plastics &amp; Melamine</option>
-                      <option value={165}>¦–– Ceramics &amp; Dinnerware</option>
-                      <option value={166}>
-                        ¦–– Storage &amp; Organisation
-                      </option>
-                      <option value={167}>¦–– Home Care</option>
-                      <option value={168}>¦–– Cleaning Tools</option>
-                      <option value={169}>¦–– Laundry</option>
-                      <option value={170}>¦–– Towel</option>
-                      <option value={171}>¦–– Travel Accessories</option>
-                      <option value={172}>¦–– Pest Control</option>
-                      <option value={98}>Backpacks</option>
-                      <option value={99}>¦–– Men's Bags</option>
-                      <option value={100}>¦–– Women's Bags</option>
-                      <option value={102}>¦–– Wallets</option>
-                      <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                      <option value={104}>¦–– Travel Bags</option>
-                      <option value={105}>¦–– Functional Bags</option>
-                      <option value={106}>¦–– Coin Purses</option>
-                      <option value={107}>¦–– Bag Parts</option>
-                      <option value={126}>Women's Fashion</option>
-                      <option value={127}>¦–– All Beauty</option>
-                      <option value={128}>¦–– Make-up</option>
-                      <option value={129}>¦–– Luxury Beauty</option>
-                      <option value={130}>¦–– Watches</option>
-                      <option value={213}>¦–– Necklace</option>
-                      <option value={133}>¦–– Rings</option>
-                      <option value={131}>¦–– Glasses</option>
-                      <option value={132}>¦–– All Perfumes</option>
-                      <option value={134}>¦–– Women Perfumes</option>
-                      <option value={135}>¦–– Gift Sets</option>
-                      <option value={136}>¦–– All Health</option>
-                      <option value={137}>¦–– Personal Care</option>
-                      <option value={138}>¦–– Hair Care &amp; Styling</option>
-                      <option value={139}>¦–– Bath &amp; Body</option>
-                      <option value={140}>¦–– Dental Care</option>
-                      <option value={141}>¦–– Diet &amp; Nutrition</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_featured_categories_section_category_5_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_featured_categories_section_category_5_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_featured_categories_section_category_5_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_5_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_featured_categories_section_category_5_products_limit"
-                        className="form-control "
-                        id="storefront_featured_categories_section_category_5_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_5_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_featured_categories_section_category_5_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_featured_categories_section_category_5_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_featured_categories_section_category_5_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Category 6</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_featured_categories_section_category_6_category_id"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Category
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_featured_categories_section_category_6_category_id"
-                      className="form-control custom-select-black "
-                      id="storefront_featured_categories_section_category_6_category_id"
-                    >
-                      <option value>Please Select</option>
-                      <option value={181}>Electronics</option>
-                      <option value={183}>¦–– Mobiles</option>
-                      <option value={192}>¦–– ¦–– Smartphones</option>
-                      <option value={193}>¦–– ¦–– Android</option>
-                      <option value={194}>¦–– ¦–– iPhone</option>
-                      <option value={195}>¦–– ¦–– Featured</option>
-                      <option value={196}>¦–– ¦–– Refurbished</option>
-                      <option value={197}>¦–– ¦–– Brands</option>
-                      <option value={185}>¦–– Mobile Accessories</option>
-                      <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                      <option value={199}>¦–– ¦–– Cables</option>
-                      <option value={200}>¦–– ¦–– Chargers</option>
-                      <option value={201}>¦–– ¦–– Power Bank</option>
-                      <option value={202}>¦–– ¦–– Headphones</option>
-                      <option value={203}>¦–– ¦–– Screen Protectors</option>
-                      <option value={184}>¦–– Hot Brands</option>
-                      <option value={187}>¦–– ¦–– OnePlus</option>
-                      <option value={188}>¦–– ¦–– Apple</option>
-                      <option value={189}>¦–– ¦–– Samsung</option>
-                      <option value={190}>¦–– ¦–– Huawei</option>
-                      <option value={191}>¦–– ¦–– Sony</option>
-                      <option value={182}>¦–– Laptops</option>
-                      <option value={204}>¦–– ¦–– Mackbook</option>
-                      <option value={205}>¦–– ¦–– Gaming</option>
-                      <option value={206}>¦–– ¦–– Ultraslim</option>
-                      <option value={207}>¦–– ¦–– Tablets</option>
-                      <option value={212}>¦–– ¦–– All Laptops</option>
-                      <option value={186}>¦–– Computer Accessories</option>
-                      <option value={208}>¦–– ¦–– Monitors</option>
-                      <option value={209}>¦–– ¦–– Keyboard &amp; Mouse</option>
-                      <option value={210}>¦–– ¦–– Pendrive</option>
-                      <option value={211}>¦–– ¦–– Speaker</option>
-                      <option value={12}>Men's Fashion</option>
-                      <option value={13}>¦–– Clothing</option>
-                      <option value={15}>¦–– ¦–– Shirts</option>
-                      <option value={14}>¦–– ¦–– All Clothing</option>
-                      <option value={16}>¦–– ¦–– Sportswear</option>
-                      <option value={17}>¦–– ¦–– Belts</option>
-                      <option value={18}>¦–– ¦–– Pants</option>
-                      <option value={26}>¦–– ¦–– Formal Shoes</option>
-                      <option value={19}>¦–– Shoes</option>
-                      <option value={20}>¦–– ¦–– All Shoes</option>
-                      <option value={21}>¦–– ¦–– Sneakers</option>
-                      <option value={22}>¦–– ¦–– Boots</option>
-                      <option value={23}>¦–– ¦–– Sandals</option>
-                      <option value={24}>
-                        ¦–– ¦–– Slippers &amp; Flip-flops
-                      </option>
-                      <option value={25}>¦–– ¦–– Sports Shoes</option>
-                      <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                      <option value={28}>¦–– ¦–– Trench</option>
-                      <option value={30}>¦–– ¦–– Genuine Leather</option>
-                      <option value={32}>¦–– ¦–– Down Jackets</option>
-                      <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                      <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                      <option value={35}>¦–– Hot Sale</option>
-                      <option value={36}>¦–– ¦–– Glasses</option>
-                      <option value={37}>¦–– ¦–– Jackets</option>
-                      <option value={38}>¦–– ¦–– T-Shirts</option>
-                      <option value={39}>¦–– ¦–– Shirts</option>
-                      <option value={40}>¦–– ¦–– Belts</option>
-                      <option value={52}>¦–– Bottoms</option>
-                      <option value={53}>¦–– ¦–– Casual Pants</option>
-                      <option value={54}>¦–– ¦–– Sweatpants</option>
-                      <option value={55}>¦–– ¦–– Cargo Pants</option>
-                      <option value={56}>¦–– ¦–– Jeans</option>
-                      <option value={57}>¦–– ¦–– Harem Pants</option>
-                      <option value={59}>Consumer Electronics</option>
-                      <option value={120} selected>
-                        ¦–– Televisions
-                      </option>
-                      <option value={7}>¦–– Gadgets</option>
-                      <option value={142}>¦–– Drones</option>
-                      <option value={108}>¦–– Supplies</option>
-                      <option value={109}>¦–– Camera &amp; Photo</option>
-                      <option value={110}>¦–– Car &amp; Vehicle</option>
-                      <option value={111}>¦–– Cell Phones</option>
-                      <option value={112}>¦–– Computer</option>
-                      <option value={113}>¦–– GPS &amp; Navigation</option>
-                      <option value={114}>¦–– Headphones</option>
-                      <option value={115}>¦–– Home Audio</option>
-                      <option value={116}>¦–– Office Electronics</option>
-                      <option value={117}>¦–– Audio &amp; Video</option>
-                      <option value={118}>¦–– Security</option>
-                      <option value={119}>¦–– Service Plans</option>
-                      <option value={121}>¦–– Video Game</option>
-                      <option value={122}>¦–– Video Projectors</option>
-                      <option value={123}>¦–– Wearable Technology</option>
-                      <option value={124}>¦–– eBook Readers</option>
-                      <option value={60}>¦–– Office Supplies</option>
-                      <option value={61}>¦–– All Computers</option>
-                      <option value={63}>¦–– Desktops &amp; Monitors</option>
-                      <option value={64}>¦–– Drives &amp; Storage</option>
-                      <option value={65}>¦–– Networking</option>
-                      <option value={66}>¦–– Keyboards &amp; Mice</option>
-                      <option value={67}>¦–– PC Gaming</option>
-                      <option value={68}>¦–– Computer Accessories</option>
-                      <option value={69}>¦–– Printers &amp; Ink</option>
-                      <option value={70}>¦–– Office Supplies</option>
-                      <option value={82}>Watches</option>
-                      <option value={83}>¦–– Men's Watches</option>
-                      <option value={84}>¦–– ¦–– Analog Watches</option>
-                      <option value={85}>¦–– ¦–– Sports Watches</option>
-                      <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                      <option value={87}>¦–– ¦–– Digital Watches</option>
-                      <option value={88}>¦–– Women's Watches</option>
-                      <option value={89}>¦–– Children's Watches</option>
-                      <option value={90}>¦–– Pocket Watches</option>
-                      <option value={91}>¦–– Watch Accessories</option>
-                      <option value={92}>¦–– Women's Bracelets</option>
-                      <option value={156}>Home Appliances</option>
-                      <option value={157}>¦–– Bedding</option>
-                      <option value={158}>¦–– Furniture</option>
-                      <option value={159}>¦–– Decor</option>
-                      <option value={160}>¦–– Curtains</option>
-                      <option value={161}>¦–– Kitchen Utensils</option>
-                      <option value={162}>¦–– Cooking &amp; Baking</option>
-                      <option value={163}>¦–– Gas &amp; Stove</option>
-                      <option value={164}>¦–– Plastics &amp; Melamine</option>
-                      <option value={165}>¦–– Ceramics &amp; Dinnerware</option>
-                      <option value={166}>
-                        ¦–– Storage &amp; Organisation
-                      </option>
-                      <option value={167}>¦–– Home Care</option>
-                      <option value={168}>¦–– Cleaning Tools</option>
-                      <option value={169}>¦–– Laundry</option>
-                      <option value={170}>¦–– Towel</option>
-                      <option value={171}>¦–– Travel Accessories</option>
-                      <option value={172}>¦–– Pest Control</option>
-                      <option value={98}>Backpacks</option>
-                      <option value={99}>¦–– Men's Bags</option>
-                      <option value={100}>¦–– Women's Bags</option>
-                      <option value={102}>¦–– Wallets</option>
-                      <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                      <option value={104}>¦–– Travel Bags</option>
-                      <option value={105}>¦–– Functional Bags</option>
-                      <option value={106}>¦–– Coin Purses</option>
-                      <option value={107}>¦–– Bag Parts</option>
-                      <option value={126}>Women's Fashion</option>
-                      <option value={127}>¦–– All Beauty</option>
-                      <option value={128}>¦–– Make-up</option>
-                      <option value={129}>¦–– Luxury Beauty</option>
-                      <option value={130}>¦–– Watches</option>
-                      <option value={213}>¦–– Necklace</option>
-                      <option value={133}>¦–– Rings</option>
-                      <option value={131}>¦–– Glasses</option>
-                      <option value={132}>¦–– All Perfumes</option>
-                      <option value={134}>¦–– Women Perfumes</option>
-                      <option value={135}>¦–– Gift Sets</option>
-                      <option value={136}>¦–– All Health</option>
-                      <option value={137}>¦–– Personal Care</option>
-                      <option value={138}>¦–– Hair Care &amp; Styling</option>
-                      <option value={139}>¦–– Bath &amp; Body</option>
-                      <option value={140}>¦–– Dental Care</option>
-                      <option value={141}>¦–– Diet &amp; Nutrition</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_featured_categories_section_category_6_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_featured_categories_section_category_6_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_featured_categories_section_category_6_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_6_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_featured_categories_section_category_6_products_limit"
-                        className="form-control "
-                        id="storefront_featured_categories_section_category_6_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_featured_categories_section_category_6_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_featured_categories_section_category_6_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_featured_categories_section_category_6_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_featured_categories_section_category_6_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              ))}
+           </div>
           </div>
         </div>
       );
     } else if (this.state.activePanel == "producttabs1") {
       return (
-        <div className="tab-pane fade active in" id="product_tabs_one">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">Product Tabs One</h3>
           <div className="row">
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="storefront_product_tabs_1_section_enabled"
                   className="col-md-3 control-label text-left"
                 >
                   Section Status
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="storefront_product_tabs_1_section_enabled"
-                    />
+                    
                     <input
                       type="checkbox"
-                      name="storefront_product_tabs_1_section_enabled"
-                      className
+                      name="SectionStatus"
                       id="storefront_product_tabs_1_section_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data["Product Tabs One"].SectionStatus}
+                      onChange={(e)=>{
+                        this.setVal(!this.state.data["Product Tabs One"].SectionStatus, "Product Tabs One", e.target.name)
+                      }}
                     />
                     <label htmlFor="storefront_product_tabs_1_section_enabled">
                       Enable product tabs one section
@@ -3050,1128 +1719,125 @@ class StoreFront extends React.Component {
                   </div>
                 </div>
               </div>
-              <div className="clearfix" />
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 1</h4>
+              {this.state.data["Product Tabs One"].Tabs.map((val,idx)=>(
+              <div className="box-content clearfix" key={idx}>
+                <h4 className="section-title">Tab {idx+1}</h4>
                 <div className="form-group">
                   <label
-                    htmlFor="translatable[storefront_product_tabs_1_section_tab_1_title]"
                     className="col-md-3 control-label text-left"
                   >
                     Title
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="translatable[storefront_product_tabs_1_section_tab_1_title]"
+                      name="Title"
                       className="form-control "
-                      id="translatable[storefront_product_tabs_1_section_tab_1_title]"
-                      defaultValue="Featured"
                       type="text"
+                      value={this.state.data["Product Tabs One"].Tabs[idx].Title}
+                      onChange={(e)=>{
+                        this.setArr(e.target.value, "Product Tabs One", "Tabs",idx, e.target.name)
+                      }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_product_tabs_1_section_tab_1_product_type"
                     className="col-md-3 control-label text-left"
                   >
                     Type
                   </label>
                   <div className="col-md-9">
                     <select
-                      name="storefront_product_tabs_1_section_tab_1_product_type"
+                      name="Type"
                       className="form-control custom-select-black product-type"
-                      id="storefront_product_tabs_1_section_tab_1_product_type"
+                      value={this.state.data["Product Tabs One"].Tabs[idx].Type}
+                      onChange={(e)=>{
+                        this.setArr("", "Product Tabs One", "Tabs", idx, "CategoryId")
+                        this.setArr("", "Product Tabs One", "Tabs", idx, "ProductsLimit")
+                        this.setArr([], "Product Tabs One", "Tabs", idx, "ProductIds")
+                        this.setArr(e.target.value, "Product Tabs One", "Tabs", idx,e.target.name)
+                      }}
                     >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
+                      <option value="">Please Select</option>
+                      <option value={"Category Products"} >
                         Category Products
                       </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
+                      <option value={"Latest Products"}>Latest Products</option>
+                      <option value={"Recently Viewed Products"}>
                         Recently Viewed Products
                       </option>
-                      <option value="custom_products">Custom Products</option>
+                      <option value={"Custom Products"}>Custom Products</option>
                     </select>
                   </div>
                 </div>
-                <div className="category-products hide">
+                {this.state.data["Product Tabs One"].Tabs[idx].Type == "Category Products"? 
+                <div className="category-products ">
                   <div className="form-group">
                     <label
-                      htmlFor="storefront_product_tabs_1_section_tab_1_category_id"
                       className="col-md-3 control-label text-left"
                     >
                       Category
                     </label>
                     <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_1_section_tab_1_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_tabs_1_section_tab_1_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15} selected>
-                          ¦–– ¦–– Shirts
-                        </option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
+                    <MultiSelect
+                    onChange={(val) => {
+                      this.setArr(val, "Product Tabs One", "Tabs", idx,  "CategoryId")
+                    }}
+                    singleSelect={true}
+                    largeData={true}
+                    options={this.state.categoryOptions}
+                    defaultValue={this.state.data["Product Tabs One"].Tabs[idx].CategoryId}
+                  />
                     </div>
                   </div>
                 </div>
+                :""}
+                {this.state.data["Product Tabs One"].Tabs[idx].Type == "Latest Products" || this.state.data["Product Tabs One"].Tabs[idx].Type == "Recently Viewed Products"? 
                 <div className="products-limit">
                   <div className="form-group">
                     <label
-                      htmlFor="storefront_product_tabs_1_section_tab_1_products_limit"
                       className="col-md-3 control-label text-left"
                     >
                       Products Limit
                     </label>
                     <div className="col-md-9">
                       <input
-                        name="storefront_product_tabs_1_section_tab_1_products_limit"
+                        name="ProductsLimit"
                         className="form-control "
-                        id="storefront_product_tabs_1_section_tab_1_products_limit"
-                        defaultValue
                         type="number"
+                        value={this.state.data["Product Tabs One"].Tabs[idx].ProductsLimit}
+                      onChange={(e)=>{
+                        this.setArr(e.target.value, "Product Tabs One", "Tabs",idx ,e.target.name)
+                      }}
                       />
                     </div>
                   </div>
                 </div>
-                <div className="custom-products hide">
+                :""}
+                {this.state.data["Product Tabs One"].Tabs[idx].Type == "Custom Products"?
+                <div className="custom-products ">
                   <div className="form-group">
                     <label
-                      htmlFor="storefront_product_tabs_1_section_tab_1_products[]-selectized"
                       className="col-md-3 control-label text-left"
                     >
                       Products
                     </label>
                     <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_1_section_tab_1_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_tabs_1_section_tab_1_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_tabs_1_section_tab_1_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
+                    <MultiSelect
+                    onChange={(val) => {
+                      this.setArr(val.split(), "Product Tabs One", "Tabs", idx,  "ProductIds")
+                    }}
+                    largeData={true}
+                    options={this.state.productOptions}
+                    defaultValue={this.state.data["Product Tabs One"].Tabs[idx].ProductIds.toString()}
+                  />
                     </div>
                   </div>
                 </div>
+                :""}
               </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 2</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="translatable[storefront_product_tabs_1_section_tab_2_title]"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="translatable[storefront_product_tabs_1_section_tab_2_title]"
-                      className="form-control "
-                      id="translatable[storefront_product_tabs_1_section_tab_2_title]"
-                      defaultValue="Special"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_product_tabs_1_section_tab_2_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_product_tabs_1_section_tab_2_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_tabs_1_section_tab_2_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_1_section_tab_2_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_1_section_tab_2_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_tabs_1_section_tab_2_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7} selected>
-                          ¦–– Gadgets
-                        </option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_1_section_tab_2_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_tabs_1_section_tab_2_products_limit"
-                        className="form-control "
-                        id="storefront_product_tabs_1_section_tab_2_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_1_section_tab_2_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_1_section_tab_2_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_tabs_1_section_tab_2_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_tabs_1_section_tab_2_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 3</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="translatable[storefront_product_tabs_1_section_tab_3_title]"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="translatable[storefront_product_tabs_1_section_tab_3_title]"
-                      className="form-control "
-                      id="translatable[storefront_product_tabs_1_section_tab_3_title]"
-                      defaultValue="New Arrival"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_product_tabs_1_section_tab_3_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_product_tabs_1_section_tab_3_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_tabs_1_section_tab_3_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_1_section_tab_3_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_1_section_tab_3_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_tabs_1_section_tab_3_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19} selected>
-                          ¦–– Shoes
-                        </option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_1_section_tab_3_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_tabs_1_section_tab_3_products_limit"
-                        className="form-control "
-                        id="storefront_product_tabs_1_section_tab_3_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_1_section_tab_3_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_1_section_tab_3_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_tabs_1_section_tab_3_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_tabs_1_section_tab_3_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 4</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="translatable[storefront_product_tabs_1_section_tab_4_title]"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="translatable[storefront_product_tabs_1_section_tab_4_title]"
-                      className="form-control "
-                      id="translatable[storefront_product_tabs_1_section_tab_4_title]"
-                      defaultValue="Latest"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_product_tabs_1_section_tab_4_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_product_tabs_1_section_tab_4_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_tabs_1_section_tab_4_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_1_section_tab_4_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_1_section_tab_4_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_tabs_1_section_tab_4_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98} selected>
-                          Backpacks
-                        </option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_1_section_tab_4_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_tabs_1_section_tab_4_products_limit"
-                        className="form-control "
-                        id="storefront_product_tabs_1_section_tab_4_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_1_section_tab_4_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_1_section_tab_4_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_tabs_1_section_tab_4_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_tabs_1_section_tab_4_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              ))}
+           </div>
           </div>
         </div>
       );
@@ -4561,7 +2227,7 @@ class StoreFront extends React.Component {
                         name="storefront_vertical_products_1_products[]"
                         className="selectize prevent-creation selectized"
                         id="storefront_vertical_products_1_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
+                        
                         multiple="multiple"
                         tabIndex={-1}
                         style={{ display: "none" }}
@@ -4841,7 +2507,7 @@ class StoreFront extends React.Component {
                         name="storefront_vertical_products_2_products[]"
                         className="selectize prevent-creation selectized"
                         id="storefront_vertical_products_2_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
+                        
                         multiple="multiple"
                         tabIndex={-1}
                         style={{ display: "none" }}
@@ -5121,7 +2787,7 @@ class StoreFront extends React.Component {
                         name="storefront_vertical_products_3_products[]"
                         className="selectize prevent-creation selectized"
                         id="storefront_vertical_products_3_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
+                        
                         multiple="multiple"
                         tabIndex={-1}
                         style={{ display: "none" }}
@@ -5252,1163 +2918,157 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "productgrid") {
       return (
-        <div className="tab-pane fade active in" id="product_grid">
-          <h3 className="tab-content-title">Product Grid</h3>
-          <div className="row">
-            <div className="col-md-8">
-              <div className="form-group">
-                <label
-                  htmlFor="storefront_product_grid_section_enabled"
-                  className="col-md-3 control-label text-left"
-                >
-                  Section Status
-                </label>
-                <div className="col-md-9">
-                  <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="storefront_product_grid_section_enabled"
-                    />
-                    <input
-                      type="checkbox"
-                      name="storefront_product_grid_section_enabled"
-                      className
-                      id="storefront_product_grid_section_enabled"
-                      defaultValue={1}
-                      defaultChecked
-                    />
-                    <label htmlFor="storefront_product_grid_section_enabled">
-                      Enable product grid section
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div className="clearfix" />
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 1</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="translatable[storefront_product_grid_section_tab_1_title]"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
+        <div className="tab-pane fade active in" >
+        <h3 className="tab-content-title">Product Grid</h3>
+        <div className="row">
+          <div className="col-md-8">
+            <div className="form-group">
+              <label
+                className="col-md-3 control-label text-left"
+              >
+                Section Status
+              </label>
+              <div className="col-md-9">
+                <div className="checkbox">
+                  
+                  <input
+                    type="checkbox"
+                    name="SectionStatus"
+                    id="storefront_product_tabs_1_section_enabled"
+                    checked={this.state.data["Product Grid"].SectionStatus}
+                    onChange={(e)=>{
+                      this.setVal(!this.state.data["Product Grid"].SectionStatus, "Product Grid", e.target.name)
+                    }}
+                  />
+                  <label htmlFor="storefront_product_tabs_1_section_enabled">
+                    Enable Product Grid section
                   </label>
-                  <div className="col-md-9">
-                    <input
-                      name="translatable[storefront_product_grid_section_tab_1_title]"
-                      className="form-control "
-                      id="translatable[storefront_product_grid_section_tab_1_title]"
-                      defaultValue="Mobiles"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_product_grid_section_tab_1_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_product_grid_section_tab_1_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_grid_section_tab_1_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_1_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_grid_section_tab_1_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_grid_section_tab_1_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183} selected>
-                          ¦–– Mobiles
-                        </option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_1_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_grid_section_tab_1_products_limit"
-                        className="form-control "
-                        id="storefront_product_grid_section_tab_1_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_1_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_grid_section_tab_1_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_grid_section_tab_1_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_grid_section_tab_1_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 2</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="translatable[storefront_product_grid_section_tab_2_title]"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="translatable[storefront_product_grid_section_tab_2_title]"
-                      className="form-control "
-                      id="translatable[storefront_product_grid_section_tab_2_title]"
-                      defaultValue="Fashion"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_product_grid_section_tab_2_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_product_grid_section_tab_2_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_grid_section_tab_2_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_2_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_grid_section_tab_2_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_grid_section_tab_2_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12} selected>
-                          Men's Fashion
-                        </option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_2_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_grid_section_tab_2_products_limit"
-                        className="form-control "
-                        id="storefront_product_grid_section_tab_2_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_2_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_grid_section_tab_2_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_grid_section_tab_2_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_grid_section_tab_2_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 3</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="translatable[storefront_product_grid_section_tab_3_title]"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="translatable[storefront_product_grid_section_tab_3_title]"
-                      className="form-control "
-                      id="translatable[storefront_product_grid_section_tab_3_title]"
-                      defaultValue="Laptops"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_product_grid_section_tab_3_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_product_grid_section_tab_3_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_grid_section_tab_3_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_3_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_grid_section_tab_3_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_grid_section_tab_3_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182} selected>
-                          ¦–– Laptops
-                        </option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_3_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_grid_section_tab_3_products_limit"
-                        className="form-control "
-                        id="storefront_product_grid_section_tab_3_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_3_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_grid_section_tab_3_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_grid_section_tab_3_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_grid_section_tab_3_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 4</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="translatable[storefront_product_grid_section_tab_4_title]"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="translatable[storefront_product_grid_section_tab_4_title]"
-                      className="form-control "
-                      id="translatable[storefront_product_grid_section_tab_4_title]"
-                      defaultValue="Tablets"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_product_grid_section_tab_4_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_product_grid_section_tab_4_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_grid_section_tab_4_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_4_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_grid_section_tab_4_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_grid_section_tab_4_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207} selected>
-                          ¦–– ¦–– Tablets
-                        </option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_4_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_grid_section_tab_4_products_limit"
-                        className="form-control "
-                        id="storefront_product_grid_section_tab_4_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_grid_section_tab_4_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_grid_section_tab_4_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_grid_section_tab_4_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_grid_section_tab_4_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
-          </div>
+            {this.state.data["Product Grid"].Tabs.map((val,idx)=>(
+            <div className="box-content clearfix" key={idx}>
+              <h4 className="section-title">Tab {idx+1}</h4>
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Title
+                </label>
+                <div className="col-md-9">
+                  <input
+                    name="Title"
+                    className="form-control "
+                    type="text"
+                    value={this.state.data["Product Grid"].Tabs[idx].Title}
+                    onChange={(e)=>{
+                      this.setArr(e.target.value, "Product Grid", "Tabs",idx, e.target.name)
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Type
+                </label>
+                <div className="col-md-9">
+                  <select
+                    name="Type"
+                    className="form-control custom-select-black product-type"
+                    value={this.state.data["Product Grid"].Tabs[idx].Type}
+                    onChange={(e)=>{
+                      this.setArr("", "Product Grid", "Tabs", idx, "CategoryId")
+                      this.setArr("", "Product Grid", "Tabs", idx, "ProductsLimit")
+                      this.setArr([], "Product Grid", "Tabs", idx, "ProductIds")
+                      this.setArr(e.target.value, "Product Grid", "Tabs", idx,e.target.name)
+                    }}
+                  >
+                    <option value="">Please Select</option>
+                    <option value={"Category Products"} >
+                      Category Products
+                    </option>
+                    <option value={"Latest Products"}>Latest Products</option>
+                    <option value={"Recently Viewed Products"}>
+                      Recently Viewed Products
+                    </option>
+                    <option value={"Custom Products"}>Custom Products</option>
+                  </select>
+                </div>
+              </div>
+              {this.state.data["Product Grid"].Tabs[idx].Type == "Category Products"? 
+              <div className="category-products ">
+                <div className="form-group">
+                  <label
+                    className="col-md-3 control-label text-left"
+                  >
+                    Category
+                  </label>
+                  <div className="col-md-9">
+                  <MultiSelect
+                  onChange={(val) => {
+                    this.setArr(val, "Product Grid", "Tabs", idx,  "CategoryId")
+                  }}
+                  singleSelect={true}
+                  largeData={true}
+                  options={this.state.categoryOptions}
+                  defaultValue={this.state.data["Product Grid"].Tabs[idx].CategoryId}
+                />
+                  </div>
+                </div>
+              </div>
+              :""}
+              {this.state.data["Product Grid"].Tabs[idx].Type == "Latest Products" || this.state.data["Product Grid"].Tabs[idx].Type == "Recently Viewed Products"? 
+              <div className="products-limit">
+                <div className="form-group">
+                  <label
+                    className="col-md-3 control-label text-left"
+                  >
+                    Products Limit
+                  </label>
+                  <div className="col-md-9">
+                    <input
+                      name="ProductsLimit"
+                      className="form-control "
+                      type="number"
+                      value={this.state.data["Product Grid"].Tabs[idx].ProductsLimit}
+                    onChange={(e)=>{
+                      this.setArr(e.target.value, "Product Grid", "Tabs",idx ,e.target.name)
+                    }}
+                    />
+                  </div>
+                </div>
+              </div>
+              :""}
+              {this.state.data["Product Grid"].Tabs[idx].Type == "Custom Products"?
+              <div className="custom-products ">
+                <div className="form-group">
+                  <label
+                    className="col-md-3 control-label text-left"
+                  >
+                    Products
+                  </label>
+                  <div className="col-md-9">
+                  <MultiSelect
+                  onChange={(val) => {
+                    this.setArr(val.split(), "Product Grid", "Tabs", idx,  "ProductIds")
+                  }}
+                  largeData={true}
+                  options={this.state.productOptions}
+                  defaultValue={this.state.data["Product Grid"].Tabs[idx].ProductIds.toString()}
+                />
+                  </div>
+                </div>
+              </div>
+              :""}
+            </div>
+            ))}
+         </div>
         </div>
-      );
+      </div>
+   
+     );
     } else if (this.state.activePanel == "threecolbanners") {
       return (
         <div className="tab-pane fade active in" >
@@ -6511,39 +3171,35 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "producttabs2") {
       return (
-        <div className="tab-pane fade active in" id="product_tabs_two">
-          <h3 className="tab-content-title">Product Tabs Two</h3>
-          <div className="row">
-            <div className="col-md-8">
-              <div className="form-group">
-                <label
-                  htmlFor="storefront_product_tabs_2_section_enabled"
-                  className="col-md-3 control-label text-left"
-                >
-                  Section Status
-                </label>
-                <div className="col-md-9">
-                  <div className="checkbox">
-                    <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="storefront_product_tabs_2_section_enabled"
-                    />
-                    <input
-                      type="checkbox"
-                      name="storefront_product_tabs_2_section_enabled"
-                      className
-                      id="storefront_product_tabs_2_section_enabled"
-                      defaultValue={1}
-                      defaultChecked
-                    />
-                    <label htmlFor="storefront_product_tabs_2_section_enabled">
-                      Enable product tabs two section
-                    </label>
-                  </div>
+        <div className="tab-pane fade active in" >
+        <h3 className="tab-content-title">Product Tabs Two</h3>
+        <div className="row">
+          <div className="col-md-8">
+            <div className="form-group">
+              <label
+                className="col-md-3 control-label text-left"
+              >
+                Section Status
+              </label>
+              <div className="col-md-9">
+                <div className="checkbox">
+                  
+                  <input
+                    type="checkbox"
+                    name="SectionStatus"
+                    id="storefront_product_tabs_1_section_enabled"
+                    checked={this.state.data["Product Tabs Two"].SectionStatus}
+                    onChange={(e)=>{
+                      this.setVal(!this.state.data["Product Tabs Two"].SectionStatus, "Product Tabs Two", e.target.name)
+                    }}
+                  />
+                  <label htmlFor="storefront_product_tabs_1_section_enabled">
+                    Enable Product Tabs Two section
+                  </label>
                 </div>
               </div>
-              <div className="form-group">
+            </div>
+            <div className="form-group">
                 <label
                   htmlFor="translatable[storefront_product_tabs_2_section_title]"
                   className="col-md-3 control-label text-left"
@@ -6560,1133 +3216,130 @@ class StoreFront extends React.Component {
                   />
                 </div>
               </div>
-              <div className="clearfix" />
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 1</h4>
+            {this.state.data["Product Tabs Two"].Tabs.map((val,idx)=>(
+            <div className="box-content clearfix" key={idx}>
+              <h4 className="section-title">Tab {idx+1}</h4>
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Title
+                </label>
+                <div className="col-md-9">
+                  <input
+                    name="Title"
+                    className="form-control "
+                    type="text"
+                    value={this.state.data["Product Tabs Two"].Tabs[idx].Title}
+                    onChange={(e)=>{
+                      this.setArr(e.target.value, "Product Tabs Two", "Tabs",idx, e.target.name)
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  Type
+                </label>
+                <div className="col-md-9">
+                  <select
+                    name="Type"
+                    className="form-control custom-select-black product-type"
+                    value={this.state.data["Product Tabs Two"].Tabs[idx].Type}
+                    onChange={(e)=>{
+                      this.setArr("", "Product Tabs Two", "Tabs", idx, "CategoryId")
+                      this.setArr("", "Product Tabs Two", "Tabs", idx, "ProductsLimit")
+                      this.setArr([], "Product Tabs Two", "Tabs", idx, "ProductIds")
+                      this.setArr(e.target.value, "Product Tabs Two", "Tabs", idx,e.target.name)
+                    }}
+                  >
+                    <option value="">Please Select</option>
+                    <option value={"Category Products"} >
+                      Category Products
+                    </option>
+                    <option value={"Latest Products"}>Latest Products</option>
+                    <option value={"Recently Viewed Products"}>
+                      Recently Viewed Products
+                    </option>
+                    <option value={"Custom Products"}>Custom Products</option>
+                  </select>
+                </div>
+              </div>
+              {this.state.data["Product Tabs Two"].Tabs[idx].Type == "Category Products"? 
+              <div className="category-products ">
                 <div className="form-group">
                   <label
-                    htmlFor="translatable[storefront_product_tabs_2_section_tab_1_title]"
                     className="col-md-3 control-label text-left"
                   >
-                    Title
+                    Category
                   </label>
                   <div className="col-md-9">
-                    <input
-                      name="translatable[storefront_product_tabs_2_section_tab_1_title]"
-                      className="form-control "
-                      id="translatable[storefront_product_tabs_2_section_tab_1_title]"
-                      defaultValue="Latest Products"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_product_tabs_2_section_tab_1_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_product_tabs_2_section_tab_1_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_tabs_2_section_tab_1_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products">
-                        Category Products
-                      </option>
-                      <option value="latest_products" selected>
-                        Latest Products
-                      </option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_1_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_2_section_tab_1_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_tabs_2_section_tab_1_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181} selected>
-                          Electronics
-                        </option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_1_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_tabs_2_section_tab_1_products_limit"
-                        className="form-control "
-                        id="storefront_product_tabs_2_section_tab_1_products_limit"
-                        defaultValue={10}
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_1_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_2_section_tab_1_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_tabs_2_section_tab_1_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_tabs_2_section_tab_1_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
+                  <MultiSelect
+                  onChange={(val) => {
+                    this.setArr(val, "Product Tabs Two", "Tabs", idx,  "CategoryId")
+                  }}
+                  singleSelect={true}
+                  largeData={true}
+                  options={this.state.categoryOptions}
+                  defaultValue={this.state.data["Product Tabs Two"].Tabs[idx].CategoryId}
+                />
                   </div>
                 </div>
               </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 2</h4>
+              :""}
+              {this.state.data["Product Tabs Two"].Tabs[idx].Type == "Latest Products" || this.state.data["Product Tabs Two"].Tabs[idx].Type == "Recently Viewed Products"? 
+              <div className="products-limit">
                 <div className="form-group">
                   <label
-                    htmlFor="translatable[storefront_product_tabs_2_section_tab_2_title]"
                     className="col-md-3 control-label text-left"
                   >
-                    Title
+                    Products Limit
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="translatable[storefront_product_tabs_2_section_tab_2_title]"
+                      name="ProductsLimit"
                       className="form-control "
-                      id="translatable[storefront_product_tabs_2_section_tab_2_title]"
-                      defaultValue="Recently Viewed"
-                      type="text"
+                      type="number"
+                      value={this.state.data["Product Tabs Two"].Tabs[idx].ProductsLimit}
+                    onChange={(e)=>{
+                      this.setArr(e.target.value, "Product Tabs Two", "Tabs",idx ,e.target.name)
+                    }}
                     />
                   </div>
                 </div>
+              </div>
+              :""}
+              {this.state.data["Product Tabs Two"].Tabs[idx].Type == "Custom Products"?
+              <div className="custom-products ">
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_product_tabs_2_section_tab_2_product_type"
                     className="col-md-3 control-label text-left"
                   >
-                    Type
+                    Products
                   </label>
                   <div className="col-md-9">
-                    <select
-                      name="storefront_product_tabs_2_section_tab_2_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_tabs_2_section_tab_2_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products">
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products" selected>
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_2_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_2_section_tab_2_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_tabs_2_section_tab_2_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181} selected>
-                          Electronics
-                        </option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_2_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_tabs_2_section_tab_2_products_limit"
-                        className="form-control "
-                        id="storefront_product_tabs_2_section_tab_2_products_limit"
-                        defaultValue={10}
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_2_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_2_section_tab_2_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_tabs_2_section_tab_2_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_tabs_2_section_tab_2_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
+                  <MultiSelect
+                  onChange={(val) => {
+                    this.setArr(val.split(), "Product Tabs Two", "Tabs", idx,  "ProductIds")
+                  }}
+                  largeData={true}
+                  options={this.state.productOptions}
+                  defaultValue={this.state.data["Product Tabs Two"].Tabs[idx].ProductIds.toString()}
+                />
                   </div>
                 </div>
               </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 3</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="translatable[storefront_product_tabs_2_section_tab_3_title]"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="translatable[storefront_product_tabs_2_section_tab_3_title]"
-                      className="form-control "
-                      id="translatable[storefront_product_tabs_2_section_tab_3_title]"
-                      defaultValue="On Sale"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_product_tabs_2_section_tab_3_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_product_tabs_2_section_tab_3_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_tabs_2_section_tab_3_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_3_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_2_section_tab_3_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_tabs_2_section_tab_3_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126} selected>
-                          Women's Fashion
-                        </option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_3_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_tabs_2_section_tab_3_products_limit"
-                        className="form-control "
-                        id="storefront_product_tabs_2_section_tab_3_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_3_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_2_section_tab_3_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_tabs_2_section_tab_3_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_tabs_2_section_tab_3_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Tab 4</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="translatable[storefront_product_tabs_2_section_tab_4_title]"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="translatable[storefront_product_tabs_2_section_tab_4_title]"
-                      className="form-control "
-                      id="translatable[storefront_product_tabs_2_section_tab_4_title]"
-                      defaultValue="Top Selling"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_product_tabs_2_section_tab_4_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_product_tabs_2_section_tab_4_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_product_tabs_2_section_tab_4_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_4_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_2_section_tab_4_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_product_tabs_2_section_tab_4_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35} selected>
-                          ¦–– Hot Sale
-                        </option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_4_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_product_tabs_2_section_tab_4_products_limit"
-                        className="form-control "
-                        id="storefront_product_tabs_2_section_tab_4_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_product_tabs_2_section_tab_4_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_product_tabs_2_section_tab_4_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_product_tabs_2_section_tab_4_products[]"
-                        data-url="https://fleetcart.envaysoft.com/en/admin/products"
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_product_tabs_2_section_tab_4_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              :""}
             </div>
-          </div>
+            ))}
+         </div>
         </div>
-      );
+      </div>
+   
+     
+     );
     } else if (this.state.activePanel == "onecolbanner") {
       return (
         <div className="tab-pane fade active in" >

@@ -101,7 +101,7 @@ class EditOrder extends React.Component {
             <div className="order-information-wrapper">
               <div className="order-information-buttons">
                 <a
-                  href="https://fleetcart.envaysoft.com/en/admin/orders/1/print"
+                  href="#"
                   className="btn btn-default"
                   target="_blank"
                   data-toggle="tooltip"

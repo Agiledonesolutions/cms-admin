@@ -70,7 +70,7 @@ const Wrapper = (props) => {
         &nbsp;
         <span>
           Copyright © 2021{" "}
-          <a href="https://envaysoft.com/fleetcart" target="_blank">
+          <a href="#" target="_blank">
             FleetCart
           </a>
         </span>
