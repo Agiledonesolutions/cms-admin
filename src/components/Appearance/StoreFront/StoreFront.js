@@ -22,6 +22,7 @@ class StoreFront extends React.Component {
     categoryOptions: [],
     brandsOptions: [],
     productOptions: [],
+    menuOptions: [],
     data: {
       SocialLinks: {
         Facebook: "",
@@ -266,6 +267,7 @@ class StoreFront extends React.Component {
       "Product Tabs Two":{
         Name: "Product Tabs Two",
         SectionStatus: false,
+        Title: "",
         Tabs: [
           {
           Title: "",
@@ -330,6 +332,42 @@ class StoreFront extends React.Component {
           ProductIds: []
         }
       ]
+      },
+      FlashSaleVerticalProducts: {
+        FlashSale: {
+          Title: "",
+          ActiveCampaign: ""
+        },
+        SectionStatus: true,
+        VerticalProducts: [
+          {
+            Title: "",
+            Type: "",
+            CategoryId: "",
+            ProductsLimit: "",
+            ProductIds: []
+          },
+          {
+            Title: "",
+            Type: "",
+            CategoryId: "",
+            ProductsLimit: "",
+            ProductIds: []
+          },
+          {
+            Title: "",
+            Type: "",
+            CategoryId: "",
+            ProductsLimit: "",
+            ProductIds: []
+          }
+        ]
+      },
+      Menus: {
+        NavbarText: "",
+        FooterMenuOneTitle: "",
+        FooterMenuTwoTitle: "",
+        PrimaryMenuId: ""
       }
     },
     errors: [],
@@ -429,6 +467,41 @@ class StoreFront extends React.Component {
     }).catch(err=>{
       console.log("error fetching products")
     })
+
+    api.get('/menu/get').then(res=>{
+      const {menuOptions} = this.state
+      res.data.data.forEach(val=>{
+        let tmp = {
+          label: val.name,
+          value: val._id
+        }
+        menuOptions.push(tmp)
+      })
+      this.setState({menuOptions})
+    }).catch(err=>{
+      console.log("error fetching menus")
+    })
+
+    // api.get('/storefront/get').then(res=>{
+    //   const {data} = this.state
+    //   const fetched = res.data.data[0]
+    //   console.log(fetched)
+    //   data.General = fetched.General
+    //   data.SocialLinks = fetched.SocialLinks
+    //   data.ProductPage = fetched.ProductPage
+    //   data.Features = fetched.Features
+    //   data.Newsletter = fetched.Newsletter
+    //   fetched.Products.forEach(val=>{
+    //     data[val.Name] = val
+    //   })
+    //   fetched.Banners.forEach(ban=>{
+    //     data[ban.Name] = ban
+    //   })
+    //   this.setState({data})
+
+    // }).catch(err=>{
+    //   console.log("error fetching storefront details")
+    // })
   }
   setVal = (val, key, key2) => {
     const { data } = this.state;   
@@ -831,24 +904,25 @@ class StoreFront extends React.Component {
       );
     } else if (this.state.activePanel == "menus") {
       return (
-        <div className="tab-pane fade active in" id="menus">
+        <div className="tab-pane fade active in" >
           <h3 className="tab-content-title">Menus</h3>
           <div className="row">
             <div className="col-md-8">
               <div className="form-group">
                 <label
-                  htmlFor="translatable[storefront_navbar_text]"
                   className="col-md-3 control-label text-left"
                 >
                   Navbar Text
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[storefront_navbar_text]"
+                    name="NavbarText"
                     className="form-control "
-                    id="translatable[storefront_navbar_text]"
-                    defaultValue="Free shipping over $100+"
                     type="text"
+                    value={this.state.data.Menus.NavbarText}
+                    onChange={(e)=>{
+                      this.setVal(e.target.value, "Menus", e.target.name)
+                    }}
                   />
                 </div>
               </div>
@@ -860,19 +934,14 @@ class StoreFront extends React.Component {
                   Primary Menu
                 </label>
                 <div className="col-md-9">
-                  <select
-                    name="storefront_primary_menu"
-                    className="form-control custom-select-black "
-                    id="storefront_primary_menu"
-                  >
-                    <option value>Please Select</option>
-                    <option value={1} selected>
-                      Primary Menu
-                    </option>
-                    <option value={2}>Category Menu</option>
-                    <option value={3}>Footer Menu 1</option>
-                    <option value={4}>Footer Menu 2</option>
-                  </select>
+                <MultiSelect
+                    onChange={(val) => {
+                      this.setVal(val, "Menus",  "PrimaryMenuId")
+                    }}
+                    singleSelect={true}
+                    options={this.state.menuOptions}
+                    defaultValue={this.state.data.Menus.PrimaryMenuId}
+                  />
                 </div>
               </div>
               <div className="form-group">
@@ -883,35 +952,31 @@ class StoreFront extends React.Component {
                   Category Menu
                 </label>
                 <div className="col-md-9">
-                  <select
-                    name="storefront_category_menu"
-                    className="form-control custom-select-black "
-                    id="storefront_category_menu"
-                  >
-                    <option value>Please Select</option>
-                    <option value={1}>Primary Menu</option>
-                    <option value={2} selected>
-                      Category Menu
-                    </option>
-                    <option value={3}>Footer Menu 1</option>
-                    <option value={4}>Footer Menu 2</option>
-                  </select>
+                <MultiSelect
+                    onChange={(val) => {
+                      this.setVal(val, "Menus",  "PrimaryMenuId")
+                    }}
+                    singleSelect={true}
+                    options={this.state.menuOptions}
+                    defaultValue={this.state.data.Menus.PrimaryMenuId}
+                  />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[storefront_footer_menu_one_title]"
                   className="col-md-3 control-label text-left"
                 >
                   Footer Menu One Title
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[storefront_footer_menu_one_title]"
+                    name="FooterMenuOneTitle"
                     className="form-control "
-                    id="translatable[storefront_footer_menu_one_title]"
-                    defaultValue="Our Services"
                     type="text"
+                    value={this.state.data.Menus.FooterMenuOneTitle}
+                    onChange={(e)=>{
+                      this.setVal(e.target.value, "Menus", e.target.name)
+                    }}
                   />
                 </div>
               </div>
@@ -923,35 +988,31 @@ class StoreFront extends React.Component {
                   Footer Menu One
                 </label>
                 <div className="col-md-9">
-                  <select
-                    name="storefront_footer_menu_one"
-                    className="form-control custom-select-black "
-                    id="storefront_footer_menu_one"
-                  >
-                    <option value>Please Select</option>
-                    <option value={1}>Primary Menu</option>
-                    <option value={2}>Category Menu</option>
-                    <option value={3} selected>
-                      Footer Menu 1
-                    </option>
-                    <option value={4}>Footer Menu 2</option>
-                  </select>
+                <MultiSelect
+                    onChange={(val) => {
+                      this.setVal(val, "Menus",  "PrimaryMenuId")
+                    }}
+                    singleSelect={true}
+                    options={this.state.menuOptions}
+                    defaultValue={this.state.data.Menus.PrimaryMenuId}
+                  />
                 </div>
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="translatable[storefront_footer_menu_two_title]"
                   className="col-md-3 control-label text-left"
                 >
                   Footer Menu Two Title
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[storefront_footer_menu_two_title]"
+                    name="FooterMenuTwoTitle"
                     className="form-control "
-                    id="translatable[storefront_footer_menu_two_title]"
-                    defaultValue="Information"
                     type="text"
+                    value={this.state.data.Menus.FooterMenuTwoTitle}
+                    onChange={(e)=>{
+                      this.setVal(e.target.value, "Menus", e.target.name)
+                    }}
                   />
                 </div>
               </div>
@@ -963,19 +1024,14 @@ class StoreFront extends React.Component {
                   Footer Menu Two
                 </label>
                 <div className="col-md-9">
-                  <select
-                    name="storefront_footer_menu_two"
-                    className="form-control custom-select-black "
-                    id="storefront_footer_menu_two"
-                  >
-                    <option value>Please Select</option>
-                    <option value={1}>Primary Menu</option>
-                    <option value={2}>Category Menu</option>
-                    <option value={3}>Footer Menu 1</option>
-                    <option value={4} selected>
-                      Footer Menu 2
-                    </option>
-                  </select>
+                <MultiSelect
+                    onChange={(val) => {
+                      this.setVal(val, "Menus",  "PrimaryMenuId")
+                    }}
+                    singleSelect={true}
+                    options={this.state.menuOptions}
+                    defaultValue={this.state.data.Menus.PrimaryMenuId}
+                  />
                 </div>
               </div>
             </div>
@@ -1897,7 +1953,6 @@ class StoreFront extends React.Component {
       return (
         <div
           className="tab-pane fade active in"
-          id="flashSaleAndVerticalProducts"
         >
           <h3 className="tab-content-title">
             Flash Sale &amp; Vertical Products
@@ -1914,17 +1969,13 @@ class StoreFront extends React.Component {
                 <div className="col-md-9">
                   <div className="checkbox">
                     <input
-                      type="hidden"
-                      defaultValue={0}
-                      name="storefront_flash_sale_and_vertical_products_section_enabled"
-                    />
-                    <input
                       type="checkbox"
-                      name="storefront_flash_sale_and_vertical_products_section_enabled"
-                      className
+                      name="SectionStatus"
                       id="storefront_flash_sale_and_vertical_products_section_enabled"
-                      defaultValue={1}
-                      defaultChecked
+                      checked={this.state.data.FlashSaleVerticalProducts.SectionStatus}
+                      onChange={(e)=>{
+                        this.setVal(!this.state.data.FlashSaleVerticalProducts.SectionStatus, "FlashSaleVerticalProducts", e.target.name)
+                      }}
                     />
                     <label htmlFor="storefront_flash_sale_and_vertical_products_section_enabled">
                       Enable flash sale &amp; vertical products section
@@ -1936,7 +1987,6 @@ class StoreFront extends React.Component {
                 <h4 className="section-title">Flash Sale</h4>
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_flash_sale_title"
                     className="col-md-3 control-label text-left"
                   >
                     Title
@@ -1945,9 +1995,11 @@ class StoreFront extends React.Component {
                     <input
                       name="storefront_flash_sale_title"
                       className="form-control "
-                      id="storefront_flash_sale_title"
-                      defaultValue="Best <b>Deals</b>"
                       type="text"
+                      // value={this.state.data.FlashSaleVerticalProducts.FlashSale.Title}
+                      // onChange={(e)=>{
+
+                      // }}
                     />
                   </div>
                 </div>
@@ -1965,7 +2017,7 @@ class StoreFront extends React.Component {
                       id="storefront_active_flash_sale_campaign"
                     >
                       <option value>Please Select</option>
-                      <option value={1} selected>
+                      <option value={1} >
                         Flash Sale
                       </option>
                       <option value={2}>Winter Sale</option>
@@ -1973,847 +2025,125 @@ class StoreFront extends React.Component {
                   </div>
                 </div>
               </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Vertical Products 1</h4>
+              {this.state.data.FlashSaleVerticalProducts.VerticalProducts.map((val,idx)=>(
+              <div className="box-content clearfix" key={idx}>
+                <h4 className="section-title">Vertical Products {idx+1}</h4>
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_vertical_products_1_title"
                     className="col-md-3 control-label text-left"
                   >
                     Title
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="storefront_vertical_products_1_title"
+                      name="Title"
                       className="form-control "
-                      id="storefront_vertical_products_1_title"
-                      defaultValue="Watches"
                       type="text"
+                      value={this.state.data.FlashSaleVerticalProducts.VerticalProducts[idx].Title}
+                      onChange={(e)=>{
+                        this.setArr(e.target.value, "FlashSaleVerticalProducts", "VerticalProducts",idx, e.target.name)
+                      }}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label
-                    htmlFor="storefront_vertical_products_1_product_type"
                     className="col-md-3 control-label text-left"
                   >
                     Type
                   </label>
                   <div className="col-md-9">
                     <select
-                      name="storefront_vertical_products_1_product_type"
+                      name="Type"
                       className="form-control custom-select-black product-type"
-                      id="storefront_vertical_products_1_product_type"
+                      value={this.state.data.FlashSaleVerticalProducts.VerticalProducts[idx].Type}
+                      onChange={(e)=>{
+                        this.setArr("", "FlashSaleVerticalProducts", "VerticalProducts", idx, "CategoryId")
+                        this.setArr("", "FlashSaleVerticalProducts", "VerticalProducts", idx, "ProductsLimit")
+                        this.setArr([], "FlashSaleVerticalProducts", "VerticalProducts", idx, "ProductIds")
+                        this.setArr(e.target.value, "FlashSaleVerticalProducts", "VerticalProducts", idx,e.target.name)
+                      }}
                     >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
+                      <option value="">Please Select</option>
+                      <option value={"Category Products"} >
                         Category Products
                       </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
+                      <option value={"Latest Products"}>Latest Products</option>
+                      <option value={"Recently Viewed Products"}>
                         Recently Viewed Products
                       </option>
-                      <option value="custom_products">Custom Products</option>
+                      <option value={"Custom Products"}>Custom Products</option>
                     </select>
                   </div>
                 </div>
+                {this.state.data.FlashSaleVerticalProducts.VerticalProducts[idx].Type == "Category Products"? 
                 <div className="category-products ">
                   <div className="form-group">
                     <label
-                      htmlFor="storefront_vertical_products_1_category_id"
                       className="col-md-3 control-label text-left"
                     >
                       Category
                     </label>
                     <div className="col-md-9">
-                      <select
-                        name="storefront_vertical_products_1_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_vertical_products_1_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82} selected>
-                          Watches
-                        </option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
+                    <MultiSelect
+                    onChange={(val) => {
+                      this.setArr(val, "FlashSaleVerticalProducts", "VerticalProducts", idx,  "CategoryId")
+                    }}
+                    singleSelect={true}
+                    largeData={true}
+                    options={this.state.categoryOptions}
+                    defaultValue={this.state.data.FlashSaleVerticalProducts.VerticalProducts[idx].CategoryId}
+                  />
                     </div>
                   </div>
                 </div>
-                <div className="products-limit hide">
+                :""}
+                {this.state.data.FlashSaleVerticalProducts.VerticalProducts[idx].Type == "Latest Products" || this.state.data.FlashSaleVerticalProducts.VerticalProducts[idx].Type == "Recently Viewed Products"? 
+                <div className="products-limit">
                   <div className="form-group">
                     <label
-                      htmlFor="storefront_vertical_products_1_products_limit"
                       className="col-md-3 control-label text-left"
                     >
                       Products Limit
                     </label>
                     <div className="col-md-9">
                       <input
-                        name="storefront_vertical_products_1_products_limit"
+                        name="ProductsLimit"
                         className="form-control "
-                        id="storefront_vertical_products_1_products_limit"
-                        defaultValue
                         type="number"
+                        value={this.state.data.FlashSaleVerticalProducts.VerticalProducts[idx].ProductsLimit}
+                      onChange={(e)=>{
+                        this.setArr(e.target.value, "FlashSaleVerticalProducts", "VerticalProducts",idx ,e.target.name)
+                      }}
                       />
                     </div>
                   </div>
                 </div>
-                <div className="custom-products hide">
+                :""}
+                {this.state.data.FlashSaleVerticalProducts.VerticalProducts[idx].Type == "Custom Products"?
+                <div className="custom-products ">
                   <div className="form-group">
                     <label
-                      htmlFor="storefront_vertical_products_1_products[]-selectized"
                       className="col-md-3 control-label text-left"
                     >
                       Products
                     </label>
                     <div className="col-md-9">
-                      <select
-                        name="storefront_vertical_products_1_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_vertical_products_1_products[]"
-                        
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_vertical_products_1_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
+                    <MultiSelect
+                    onChange={(val) => {
+                      this.setArr(val.split(), "FlashSaleVerticalProducts", "VerticalProducts", idx,  "ProductIds")
+                    }}
+                    largeData={true}
+                    options={this.state.productOptions}
+                    defaultValue={this.state.data.FlashSaleVerticalProducts.VerticalProducts[idx].ProductIds.toString()}
+                  />
                     </div>
                   </div>
                 </div>
+                :""}
               </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Vertical Products 2</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_vertical_products_2_title"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="storefront_vertical_products_2_title"
-                      className="form-control "
-                      id="storefront_vertical_products_2_title"
-                      defaultValue="Backpacks"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_vertical_products_2_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_vertical_products_2_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_vertical_products_2_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_vertical_products_2_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_vertical_products_2_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_vertical_products_2_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15}>¦–– ¦–– Shirts</option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98} selected>
-                          Backpacks
-                        </option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_vertical_products_2_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_vertical_products_2_products_limit"
-                        className="form-control "
-                        id="storefront_vertical_products_2_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_vertical_products_2_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_vertical_products_2_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_vertical_products_2_products[]"
-                        
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_vertical_products_2_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="box-content clearfix">
-                <h4 className="section-title">Vertical Products 3</h4>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_vertical_products_3_title"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Title
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="storefront_vertical_products_3_title"
-                      className="form-control "
-                      id="storefront_vertical_products_3_title"
-                      defaultValue="Shirts"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="storefront_vertical_products_3_product_type"
-                    className="col-md-3 control-label text-left"
-                  >
-                    Type
-                  </label>
-                  <div className="col-md-9">
-                    <select
-                      name="storefront_vertical_products_3_product_type"
-                      className="form-control custom-select-black product-type"
-                      id="storefront_vertical_products_3_product_type"
-                    >
-                      <option value>Please Select</option>
-                      <option value="category_products" selected>
-                        Category Products
-                      </option>
-                      <option value="latest_products">Latest Products</option>
-                      <option value="recently_viewed_products">
-                        Recently Viewed Products
-                      </option>
-                      <option value="custom_products">Custom Products</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="category-products ">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_vertical_products_3_category_id"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Category
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_vertical_products_3_category_id"
-                        className="form-control custom-select-black "
-                        id="storefront_vertical_products_3_category_id"
-                      >
-                        <option value>Please Select</option>
-                        <option value={181}>Electronics</option>
-                        <option value={183}>¦–– Mobiles</option>
-                        <option value={192}>¦–– ¦–– Smartphones</option>
-                        <option value={193}>¦–– ¦–– Android</option>
-                        <option value={194}>¦–– ¦–– iPhone</option>
-                        <option value={195}>¦–– ¦–– Featured</option>
-                        <option value={196}>¦–– ¦–– Refurbished</option>
-                        <option value={197}>¦–– ¦–– Brands</option>
-                        <option value={185}>¦–– Mobile Accessories</option>
-                        <option value={198}>¦–– ¦–– Cases &amp; Covers</option>
-                        <option value={199}>¦–– ¦–– Cables</option>
-                        <option value={200}>¦–– ¦–– Chargers</option>
-                        <option value={201}>¦–– ¦–– Power Bank</option>
-                        <option value={202}>¦–– ¦–– Headphones</option>
-                        <option value={203}>¦–– ¦–– Screen Protectors</option>
-                        <option value={184}>¦–– Hot Brands</option>
-                        <option value={187}>¦–– ¦–– OnePlus</option>
-                        <option value={188}>¦–– ¦–– Apple</option>
-                        <option value={189}>¦–– ¦–– Samsung</option>
-                        <option value={190}>¦–– ¦–– Huawei</option>
-                        <option value={191}>¦–– ¦–– Sony</option>
-                        <option value={182}>¦–– Laptops</option>
-                        <option value={204}>¦–– ¦–– Mackbook</option>
-                        <option value={205}>¦–– ¦–– Gaming</option>
-                        <option value={206}>¦–– ¦–– Ultraslim</option>
-                        <option value={207}>¦–– ¦–– Tablets</option>
-                        <option value={212}>¦–– ¦–– All Laptops</option>
-                        <option value={186}>¦–– Computer Accessories</option>
-                        <option value={208}>¦–– ¦–– Monitors</option>
-                        <option value={209}>
-                          ¦–– ¦–– Keyboard &amp; Mouse
-                        </option>
-                        <option value={210}>¦–– ¦–– Pendrive</option>
-                        <option value={211}>¦–– ¦–– Speaker</option>
-                        <option value={12}>Men's Fashion</option>
-                        <option value={13}>¦–– Clothing</option>
-                        <option value={15} selected>
-                          ¦–– ¦–– Shirts
-                        </option>
-                        <option value={14}>¦–– ¦–– All Clothing</option>
-                        <option value={16}>¦–– ¦–– Sportswear</option>
-                        <option value={17}>¦–– ¦–– Belts</option>
-                        <option value={18}>¦–– ¦–– Pants</option>
-                        <option value={26}>¦–– ¦–– Formal Shoes</option>
-                        <option value={19}>¦–– Shoes</option>
-                        <option value={20}>¦–– ¦–– All Shoes</option>
-                        <option value={21}>¦–– ¦–– Sneakers</option>
-                        <option value={22}>¦–– ¦–– Boots</option>
-                        <option value={23}>¦–– ¦–– Sandals</option>
-                        <option value={24}>
-                          ¦–– ¦–– Slippers &amp; Flip-flops
-                        </option>
-                        <option value={25}>¦–– ¦–– Sports Shoes</option>
-                        <option value={27}>¦–– Outerwear &amp; Jackets</option>
-                        <option value={28}>¦–– ¦–– Trench</option>
-                        <option value={30}>¦–– ¦–– Genuine Leather</option>
-                        <option value={32}>¦–– ¦–– Down Jackets</option>
-                        <option value={33}>¦–– ¦–– Wool &amp; Blends</option>
-                        <option value={34}>¦–– ¦–– Suits &amp; Blazer</option>
-                        <option value={35}>¦–– Hot Sale</option>
-                        <option value={36}>¦–– ¦–– Glasses</option>
-                        <option value={37}>¦–– ¦–– Jackets</option>
-                        <option value={38}>¦–– ¦–– T-Shirts</option>
-                        <option value={39}>¦–– ¦–– Shirts</option>
-                        <option value={40}>¦–– ¦–– Belts</option>
-                        <option value={52}>¦–– Bottoms</option>
-                        <option value={53}>¦–– ¦–– Casual Pants</option>
-                        <option value={54}>¦–– ¦–– Sweatpants</option>
-                        <option value={55}>¦–– ¦–– Cargo Pants</option>
-                        <option value={56}>¦–– ¦–– Jeans</option>
-                        <option value={57}>¦–– ¦–– Harem Pants</option>
-                        <option value={59}>Consumer Electronics</option>
-                        <option value={120}>¦–– Televisions</option>
-                        <option value={7}>¦–– Gadgets</option>
-                        <option value={142}>¦–– Drones</option>
-                        <option value={108}>¦–– Supplies</option>
-                        <option value={109}>¦–– Camera &amp; Photo</option>
-                        <option value={110}>¦–– Car &amp; Vehicle</option>
-                        <option value={111}>¦–– Cell Phones</option>
-                        <option value={112}>¦–– Computer</option>
-                        <option value={113}>¦–– GPS &amp; Navigation</option>
-                        <option value={114}>¦–– Headphones</option>
-                        <option value={115}>¦–– Home Audio</option>
-                        <option value={116}>¦–– Office Electronics</option>
-                        <option value={117}>¦–– Audio &amp; Video</option>
-                        <option value={118}>¦–– Security</option>
-                        <option value={119}>¦–– Service Plans</option>
-                        <option value={121}>¦–– Video Game</option>
-                        <option value={122}>¦–– Video Projectors</option>
-                        <option value={123}>¦–– Wearable Technology</option>
-                        <option value={124}>¦–– eBook Readers</option>
-                        <option value={60}>¦–– Office Supplies</option>
-                        <option value={61}>¦–– All Computers</option>
-                        <option value={63}>¦–– Desktops &amp; Monitors</option>
-                        <option value={64}>¦–– Drives &amp; Storage</option>
-                        <option value={65}>¦–– Networking</option>
-                        <option value={66}>¦–– Keyboards &amp; Mice</option>
-                        <option value={67}>¦–– PC Gaming</option>
-                        <option value={68}>¦–– Computer Accessories</option>
-                        <option value={69}>¦–– Printers &amp; Ink</option>
-                        <option value={70}>¦–– Office Supplies</option>
-                        <option value={82}>Watches</option>
-                        <option value={83}>¦–– Men's Watches</option>
-                        <option value={84}>¦–– ¦–– Analog Watches</option>
-                        <option value={85}>¦–– ¦–– Sports Watches</option>
-                        <option value={86}>¦–– ¦–– Mechanical Watches</option>
-                        <option value={87}>¦–– ¦–– Digital Watches</option>
-                        <option value={88}>¦–– Women's Watches</option>
-                        <option value={89}>¦–– Children's Watches</option>
-                        <option value={90}>¦–– Pocket Watches</option>
-                        <option value={91}>¦–– Watch Accessories</option>
-                        <option value={92}>¦–– Women's Bracelets</option>
-                        <option value={156}>Home Appliances</option>
-                        <option value={157}>¦–– Bedding</option>
-                        <option value={158}>¦–– Furniture</option>
-                        <option value={159}>¦–– Decor</option>
-                        <option value={160}>¦–– Curtains</option>
-                        <option value={161}>¦–– Kitchen Utensils</option>
-                        <option value={162}>¦–– Cooking &amp; Baking</option>
-                        <option value={163}>¦–– Gas &amp; Stove</option>
-                        <option value={164}>¦–– Plastics &amp; Melamine</option>
-                        <option value={165}>
-                          ¦–– Ceramics &amp; Dinnerware
-                        </option>
-                        <option value={166}>
-                          ¦–– Storage &amp; Organisation
-                        </option>
-                        <option value={167}>¦–– Home Care</option>
-                        <option value={168}>¦–– Cleaning Tools</option>
-                        <option value={169}>¦–– Laundry</option>
-                        <option value={170}>¦–– Towel</option>
-                        <option value={171}>¦–– Travel Accessories</option>
-                        <option value={172}>¦–– Pest Control</option>
-                        <option value={98}>Backpacks</option>
-                        <option value={99}>¦–– Men's Bags</option>
-                        <option value={100}>¦–– Women's Bags</option>
-                        <option value={102}>¦–– Wallets</option>
-                        <option value={103}>¦–– Kids &amp; Baby's Bags</option>
-                        <option value={104}>¦–– Travel Bags</option>
-                        <option value={105}>¦–– Functional Bags</option>
-                        <option value={106}>¦–– Coin Purses</option>
-                        <option value={107}>¦–– Bag Parts</option>
-                        <option value={126}>Women's Fashion</option>
-                        <option value={127}>¦–– All Beauty</option>
-                        <option value={128}>¦–– Make-up</option>
-                        <option value={129}>¦–– Luxury Beauty</option>
-                        <option value={130}>¦–– Watches</option>
-                        <option value={213}>¦–– Necklace</option>
-                        <option value={133}>¦–– Rings</option>
-                        <option value={131}>¦–– Glasses</option>
-                        <option value={132}>¦–– All Perfumes</option>
-                        <option value={134}>¦–– Women Perfumes</option>
-                        <option value={135}>¦–– Gift Sets</option>
-                        <option value={136}>¦–– All Health</option>
-                        <option value={137}>¦–– Personal Care</option>
-                        <option value={138}>¦–– Hair Care &amp; Styling</option>
-                        <option value={139}>¦–– Bath &amp; Body</option>
-                        <option value={140}>¦–– Dental Care</option>
-                        <option value={141}>¦–– Diet &amp; Nutrition</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="products-limit hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_vertical_products_3_products_limit"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products Limit
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="storefront_vertical_products_3_products_limit"
-                        className="form-control "
-                        id="storefront_vertical_products_3_products_limit"
-                        defaultValue
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="custom-products hide">
-                  <div className="form-group">
-                    <label
-                      htmlFor="storefront_vertical_products_3_products[]-selectized"
-                      className="col-md-3 control-label text-left"
-                    >
-                      Products
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="storefront_vertical_products_3_products[]"
-                        className="selectize prevent-creation selectized"
-                        id="storefront_vertical_products_3_products[]"
-                        
-                        multiple="multiple"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                      />
-                      <div className="selectize-control selectize prevent-creation multi plugin-remove_button">
-                        <div className="selectize-input items not-full">
-                          <input
-                            type="select-multiple"
-                            autoComplete="off"
-                            tabIndex
-                            id="storefront_vertical_products_3_products[]-selectized"
-                            style={{ width: 4 }}
-                          />
-                        </div>
-                        <div
-                          className="selectize-dropdown multi selectize prevent-creation plugin-remove_button"
-                          style={{ display: "none" }}
-                        >
-                          <div className="selectize-dropdown-content" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              ))}
+          </div>
           </div>
         </div>
       );
@@ -3201,18 +2531,19 @@ class StoreFront extends React.Component {
             </div>
             <div className="form-group">
                 <label
-                  htmlFor="translatable[storefront_product_tabs_2_section_title]"
                   className="col-md-3 control-label text-left"
                 >
                   Title
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="translatable[storefront_product_tabs_2_section_title]"
+                    name="Title"
                     className="form-control "
-                    id="translatable[storefront_product_tabs_2_section_title]"
-                    defaultValue="Hot Best Sellers"
                     type="text"
+                    value={this.state.data["Product Tabs Two"].Title}
+                    onChange={(e)=>{
+                      this.setVal(e.target.value, "Product Tabs Two", e.target.name)
+                    }}
                   />
                 </div>
               </div>

@@ -58,7 +58,7 @@ const routes = (
 
         <PrivateRoute exact path='/users' component={()=><Dashboard abc={<Users />} />} />
         <PrivateRoute exact path='/users/create' component={()=><Dashboard abc={<CreateUser />} />} />
-        <PrivateRoute exact path='/users/:id/edit' component={()=><Dashboard abc={<CreateUser edit="true"/>} />} />
+        <PrivateRoute exact path='/users/:id/edit' component={()=><Dashboard abc={<CreateUser edit="true" />} />} />
 
         <PrivateRoute exact path='/roles' component={()=><Dashboard abc={<Roles />} />} />
         <PrivateRoute exact path='/roles/create' component={()=><Dashboard abc={<CreateRole />} />} />
@@ -84,7 +84,7 @@ const routes = (
         
         <PrivateRoute exact path='/options' component={()=><Dashboard abc={ <Options />} />} />
         <PrivateRoute exact path='/options/create' component={()=><Dashboard abc={ <CreateOption />} />} />
-        <PrivateRoute exact path='/options/:id/edit' component={()=><Dashboard abc={ <CreateOption edit="true"/>} />} />
+        <PrivateRoute exact path='/options/:id/edit' component={(props)=><Dashboard abc={ <CreateOption edit="true" {...props}/>} />} />
         
         <PrivateRoute exact path='/tags' component={()=><Dashboard abc={ <Tags />} />} />
         <PrivateRoute exact path='/tags/create' component={()=><Dashboard abc={ <CreateTag />} />} />

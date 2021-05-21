@@ -104,7 +104,15 @@ class CreateMenuItem extends React.Component {
     if (this.props.edit == "true") {
       const url2 = "menu/menuitem/get/"+this.props.match.params.id2
       api.get(url2).then(res=>{
-        console.log(res.data.data)
+        const {data, CategoryId, PageId, ImageId, image, parentMenuId, url} = this.state
+        console.log(res.data)
+        data.name = res.data.data.name
+        data.type = res.data.data.type
+        data.icon = res.data.data.icon
+        data.fluidMenu = res.data.data.fluidMenu
+        data.target = res.data.data.target
+        data.status = res.data.data.status
+        this.setState({data, CategoryId, PageId, ImageId, image, parentMenuId, url})
       }).catch(err=>{
         console.log("error fetching menu item details")
       })

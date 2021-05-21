@@ -53,7 +53,7 @@ class Brands extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/brand/get")
+      .post("/brand/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
