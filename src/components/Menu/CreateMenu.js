@@ -143,7 +143,7 @@ class CreateMenu extends React.Component {
                         <div className="dd">
                           <ol className="dd-list">
                             ignore this now
-                            <SortableTree
+                            {/* <SortableTree
                               treeData={this.state.treeData}
                               onChange={this.handleTreeOnChange}
                               onMoveNode={({ node, treeIndex, path }) =>
@@ -197,7 +197,7 @@ class CreateMenu extends React.Component {
                                       </div>,
                                     ],
                               })}
-                            />
+                            /> */}
                             {/* <li className="dd-item" data-id={35}>
                           <div className="dd-handle-root">root</div>
                           <ol className="dd-list">

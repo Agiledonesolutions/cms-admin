@@ -20,12 +20,13 @@ class CreateMenuItem extends React.Component {
     activePanel: "general",
     data: {
       name: "",
-      type: "category",
+      type: "Category",
       parentMenu: null,
       icon: "",
       target: "",
       fluidMenu: false,
       status: false,
+      url: ""
     },
     CategoryId: "",
     PageId: "",
@@ -33,11 +34,11 @@ class CreateMenuItem extends React.Component {
     ImageId: "",
     image: "",
     menuId: "",
-    url: "",
     errors: [],
   };
 
   componentDidMount() {
+    
     const {categoryOptions} = this.state
     const addToCategories = (x, sub) =>{
       let tmp = {}
@@ -104,15 +105,23 @@ class CreateMenuItem extends React.Component {
     if (this.props.edit == "true") {
       const url2 = "menu/menuitem/get/"+this.props.match.params.id2
       api.get(url2).then(res=>{
-        const {data, CategoryId, PageId, ImageId, image, parentMenuId, url} = this.state
-        console.log(res.data)
+        const {data, CategoryId, url} = this.state
+        console.log(res.data.data)
         data.name = res.data.data.name
         data.type = res.data.data.type
-        data.icon = res.data.data.icon
+        data.icon = res.data.data.icon?res.data.data.icon: ""
         data.fluidMenu = res.data.data.fluidMenu
         data.target = res.data.data.target
         data.status = res.data.data.status
-        this.setState({data, CategoryId, PageId, ImageId, image, parentMenuId, url})
+
+        if(res.data.data.parentMenu){
+          this.setState({parentMenuId: res.data.data.parentMenu._id})
+        }
+        if(res.data.data.image){
+          this.setState({ImageId: res.data.data.image._id, image: res.data.data.image.image})
+        }
+        res.data.data.page?this.setState({PageId: res.data.data.page._id}): res.data.data.category?this.setState({CategoryId: res.data.data.category._id}):data.url = res.data.data.url
+        this.setState({data})
       }).catch(err=>{
         console.log("error fetching menu item details")
       })
@@ -131,7 +140,7 @@ class CreateMenuItem extends React.Component {
 
   handleSubmit = () => {
     const { errors } = this.state;
-    const { data, CategoryId, PageId, url } = this.state;
+    const { data, CategoryId, PageId } = this.state;
     if (!errors.includes("name") && !Validate.validateNotEmpty(data["name"])) {
       errors.push("name");
       this.setState({ errors });
@@ -154,7 +163,7 @@ class CreateMenuItem extends React.Component {
       this.setState({ errors });
     }
     
-    if (data.type == "category" && !errors.includes("category") && !Validate.validateNotEmpty(CategoryId)) {
+    if (data.type == "Category" && !errors.includes("category") && !Validate.validateNotEmpty(CategoryId)) {
       errors.push("category");
       this.setState({ errors });
     } else if (
@@ -164,7 +173,7 @@ class CreateMenuItem extends React.Component {
       errors.splice(errors.indexOf("category"), 1);
       this.setState({ errors });
     }
-    if (data.type == "page" && !errors.includes("page") && !Validate.validateNotEmpty(PageId)) {
+    if (data.type == "Page" && !errors.includes("page") && !Validate.validateNotEmpty(PageId)) {
       errors.push("page");
       this.setState({ errors });
     } else if (
@@ -174,12 +183,12 @@ class CreateMenuItem extends React.Component {
       errors.splice(errors.indexOf("page"), 1);
       this.setState({ errors });
     }
-    if (data.type == "url" && !errors.includes("url") && !Validate.validateNotEmpty(url)) {
+    if (data.type == "URL" && !errors.includes("url") && !Validate.validateNotEmpty(data["url"])) {
       errors.push("url");
       this.setState({ errors });
     } else if (
       errors.includes("url") &&
-      Validate.validateNotEmpty(url)
+      Validate.validateNotEmpty(data["url"])
     ) {
       errors.splice(errors.indexOf("url"), 1);
       this.setState({ errors });
@@ -188,10 +197,15 @@ class CreateMenuItem extends React.Component {
     if (!Validate.validateNotEmpty(this.state.errors)) {
       console.log(this.state);
       // this.setState({ submitting: true });
-
       if (this.props.edit == "true") {
+        console.log(this.state)
+        api.put('/menu/menuitem', {data: this.state.data, CategoryId: this.state.CategoryId, PageId: this.state.PageId, parentMenuId: this.state.parentMenuId, ImageId: this.state.ImageId, menuId: this.props.match.params.id, requiredPermission: "Edit Menu Items", _id: this.props.match.params.id2}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log(err.response.message)
+        })
       } else {
-        api.post('/menu/menuitem', {data: this.state.data, CategoryId: this.state.CategoryId, PageId: this.state.PageId, parentMenuId: this.state.parentMenuId, ImageId: this.state.ImageId, url: this.state.url, menuId: this.props.match.params.id, requiredPermission: "Create Menu Items"}).then(res=>{
+        api.post('/menu/menuitem', {data: this.state.data, CategoryId: this.state.CategoryId, PageId: this.state.PageId, parentMenuId: this.state.parentMenuId, ImageId: this.state.ImageId, menuId: this.props.match.params.id, requiredPermission: "Create Menu Items"}).then(res=>{
           console.log(res)
         }).catch(err=>{
           console.log("error adding item")
@@ -238,17 +252,18 @@ class CreateMenuItem extends React.Component {
                     className="form-control custom-select-black "
                     value={this.state.data.type}
                     onChange={(e)=>{
-                      this.setState({PageId : "", CategoryId: "", url: ""})
+                      this.setState({PageId : "", CategoryId: ""})
+                      this.setVal("url", "")
                       this.setVal(e.target.name, e.target.value)
                     }}
                   >
-                    <option value="category">Category</option>
-                    <option value="page">Page</option>
-                    <option value="url">URL</option>
+                    <option value="Category">Category</option>
+                    <option value="Page">Page</option>
+                    <option value="URL">URL</option>
                   </select>
                 </div>
               </div>
-              {this.state.data.type == "category"? 
+              {this.state.data.type == "Category"? 
               <div className="link-field category-field ">
                 <div className="form-group">
                   <label
@@ -262,14 +277,13 @@ class CreateMenuItem extends React.Component {
                       this.setState({CategoryId: val})
                     }}
                     singleSelect={true}
-                    largeData={true}
                     options={this.state.categoryOptions}
                     defaultValue={this.state.CategoryId}
                   />
                   </div>
                 </div>
               </div>
-              : this.state.data.type == "page"? 
+              : this.state.data.type == "Page"? 
               <div className="link-field page-field ">
                 <div className="form-group">
                   <label
@@ -303,9 +317,9 @@ class CreateMenuItem extends React.Component {
                       name="url"
                       className="form-control "
                       type="text"
-                      value={this.state.url}
+                      value={this.state.data.url}
                       onChange={(e)=>{
-                        this.setState({url: e.target.value})
+                        this.setVal(e.target.name, e.target.value)
                       }}
                     />
                   </div>
@@ -492,7 +506,7 @@ class CreateMenuItem extends React.Component {
               <Link to="/menus">Menus</Link>
             </li>
             <li>
-              <Link to="/menus/:id/edit">Edit Menu</Link>
+              <Link to={"/menus/"+this.props.match.params.id+"/edit"}>Edit Menu</Link>
             </li>
 
             {this.props.edit == "true" ? (

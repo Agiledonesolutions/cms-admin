@@ -455,7 +455,7 @@ class StoreFront extends React.Component {
     }).catch(err=>{
       console.log("error fetching pages")
     })
-    api.get('/product/get').then(res=>{
+    api.post('/product/get').then(res=>{
       const {productOptions} = this.state
       res.data.data.map(val => {
         let tmp ={}
