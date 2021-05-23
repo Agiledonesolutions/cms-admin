@@ -7,6 +7,7 @@ import table from "braft-extensions/dist/table";
 import "braft-editor/dist/index.css";
 import "braft-extensions/dist/table.css";
 import imageCompression from "browser-image-compression";
+import { siteUrl } from "../../utils/utils";
 
 const options = {
     defaultColumns: 3,
@@ -76,7 +77,7 @@ class CreatePage extends React.Component {
       .then((res) => {
         console.log(res.data.data);
         param.success({
-          url: "https://big-cms.herokuapp.com/" + res.data.data.image,
+          url: siteUrl + res.data.data.image,
         });
       })
       .catch((err) => {

@@ -8,6 +8,7 @@ import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import FileManager from "../../Media/FileManager";
 import Loading from "../../Loading";
+import {siteUrl} from '../../../utils/utils'
 
 class StoreFront extends React.Component {
   state = {
@@ -824,7 +825,7 @@ class StoreFront extends React.Component {
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
             {this.state.data.Logo.image.FaviconId? <div className="image-holder">
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data.Logo.image.FaviconId} height={120} width={120}/>
+                <img src={siteUrl+this.state.data.Logo.image.FaviconId} height={120} width={120}/>
                 <button
                   type="button"
                   className="btn remove-image"
@@ -854,7 +855,7 @@ class StoreFront extends React.Component {
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
             {this.state.data.Logo.image.HeaderLogoId? <div className="image-holder">
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data.Logo.image.HeaderLogoId} height={120} width={120}/>
+                <img src={siteUrl+this.state.data.Logo.image.HeaderLogoId} height={120} width={120}/>
                 <button
                   type="button"
                   className="btn remove-image"
@@ -885,7 +886,7 @@ class StoreFront extends React.Component {
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
             {this.state.data.Logo.image.MailLogoId? <div className="image-holder">
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data.Logo.image.MailLogoId} height={120} width={120}/>
+                <img src={siteUrl+this.state.data.Logo.image.MailLogoId} height={120} width={120}/>
                 <button
                   type="button"
                   className="btn remove-image"
@@ -1100,7 +1101,7 @@ class StoreFront extends React.Component {
                   <div className="clearfix" />
                   <div className="single-image image-holder-wrapper clearfix">
                   {this.state.data.Footer.image? <div className="image-holder">
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data.Footer.image} height={120} width={120}/>
+                <img src={siteUrl+this.state.data.Footer.image} height={120} width={120}/>
                 <button
                   type="button"
                   className="btn remove-image"
@@ -1140,7 +1141,7 @@ class StoreFront extends React.Component {
             <div className="single-image image-holder-wrapper clearfix">
              
               {this.state.data.Newsletter.image? <div className="image-holder">
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data.Newsletter.image} height={120} width={120}/>
+                <img src={siteUrl+this.state.data.Newsletter.image} height={120} width={120}/>
                 <button
                   type="button"
                   className="btn remove-image"
@@ -1267,7 +1268,7 @@ class StoreFront extends React.Component {
                       this.setState({showModal: true, multiple: false, imageFor: "ImageId"})
                     }}>
                     {this.state.data.ProductPage.image?  
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data.ProductPage.image} />
+                <img src={siteUrl+this.state.data.ProductPage.image} />
                 
                 
                 : <div className="placeholder">
@@ -1418,7 +1419,7 @@ class StoreFront extends React.Component {
                       this.setState({showModal: true, multiple: false, imageFor: idx})
                     }}>
                        {this.state.data["Slider Banners"].Banners[idx].image?  
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data["Slider Banners"].Banners[idx].image} />
+                <img src={siteUrl+this.state.data["Slider Banners"].Banners[idx].image} />
                 
                 
                 : <div className="placeholder">
@@ -1524,7 +1525,7 @@ class StoreFront extends React.Component {
                   <div className="clearfix" />
                   <div className="single-image image-holder-wrapper clearfix">
                   {this.state.data["Three Column Full Width Banners"].BackgroundIdImage? <div className="image-holder">
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data["Three Column Full Width Banners"].BackgroundIdImage} height={120} width={120}/>
+                <img src={siteUrl+this.state.data["Three Column Full Width Banners"].BackgroundIdImage} height={120} width={120}/>
                 <button
                   type="button"
                   className="btn remove-image"
@@ -1549,7 +1550,7 @@ class StoreFront extends React.Component {
                       this.setState({showModal: true, multiple: false, imageFor: idx})
                     }}>
                        {this.state.data["Three Column Full Width Banners"].Banners[idx].image?  
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data["Three Column Full Width Banners"].Banners[idx].image} />
+                <img src={siteUrl+this.state.data["Three Column Full Width Banners"].Banners[idx].image} />
                 
                 
                 : <div className="placeholder">
@@ -2191,7 +2192,7 @@ class StoreFront extends React.Component {
                       this.setState({showModal: true, multiple: false, imageFor: idx})
                     }}>
                        {this.state.data["Two column banners"].Banners[idx].image?  
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data["Two column banners"].Banners[idx].image} />
+                <img src={siteUrl+this.state.data["Two column banners"].Banners[idx].image} />
                 
                 
                 : <div className="placeholder">
@@ -2444,7 +2445,7 @@ class StoreFront extends React.Component {
                       this.setState({showModal: true, multiple: false, imageFor: idx})
                     }}>
                        {this.state.data["Three Column Banners"].Banners[idx].image?  
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data["Three Column Banners"].Banners[idx].image} />
+                <img src={siteUrl+this.state.data["Three Column Banners"].Banners[idx].image} />
                 
                 
                 : <div className="placeholder">
@@ -2715,7 +2716,7 @@ class StoreFront extends React.Component {
                       this.setState({showModal: true, multiple: false, imageFor: idx})
                     }}>
                        {this.state.data["One Column Banner"].Banners[idx].image?  
-                <img src={"https://big-cms.herokuapp.com/"+this.state.data["One Column Banner"].Banners[idx].image} />
+                <img src={siteUrl+this.state.data["One Column Banner"].Banners[idx].image} />
                 
                 
                 : <div className="placeholder">

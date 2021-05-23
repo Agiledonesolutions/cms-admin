@@ -10,7 +10,7 @@ import { format } from "timeago.js";
 import DropzoneComponent from "react-dropzone-component";
 import "react-dropzone-component/styles/filepicker.css";
 import "dropzone/dist/min/dropzone.min.css";
-import imageCompression from "browser-image-compression";
+import {siteUrl} from '../../utils/utils'
 import './media.css'
 
 class FileManager extends React.Component {
@@ -45,7 +45,7 @@ class FileManager extends React.Component {
           sortable: true,
           cell: (row) => (
             <img
-              src={"https://big-cms.herokuapp.com/" + row.thumbnail}
+              src={siteUrl + row.thumbnail}
               height={60}
               width={60}
             />

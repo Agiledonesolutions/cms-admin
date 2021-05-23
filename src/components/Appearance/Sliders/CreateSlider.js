@@ -5,6 +5,7 @@ import Validate from "../../../utils/validation";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import FileManager from "../../Media/FileManager";
+import {siteUrl} from '../../../utils/utils'
 import "./slider.css";
 
 class CreateSlide extends React.Component {
@@ -209,7 +210,7 @@ class CreateSlide extends React.Component {
                 
                 {this.state.slides[idx].image? <div className="slide-image" onClick={()=>{
                   this.setState({showModal: true, multiple: false, idx: idx})
-                }} ><img src={"https://big-cms.herokuapp.com/"+this.state.slides[idx].image} height={120} width={120}/></div>: <div className="slide-image" onClick={()=>{
+                }} ><img src={siteUrl+this.state.slides[idx].image} height={120} width={120}/></div>: <div className="slide-image" onClick={()=>{
                   this.setState({showModal: true, multiple: false, idx: idx})
                 }} >
                 <i className="fa fa-picture-o" />

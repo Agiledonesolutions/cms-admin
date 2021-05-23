@@ -12,3 +12,5 @@ export default class Utils {
     return ret;
   }
 }
+
+export const siteUrl = "https://big-cms.herokuapp.com/"

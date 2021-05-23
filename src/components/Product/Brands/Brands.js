@@ -8,6 +8,7 @@ import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
 import Loading from "../../Loading";
+import { siteUrl } from "../../../utils/utils";
 
 class Brands extends React.Component {
   state = {
@@ -25,7 +26,7 @@ class Brands extends React.Component {
           name: "Logo",
           selector: "logo",
           sortable: true,
-          cell: row => <img height={50} width={50} src={row.logo? "https://big-cms.herokuapp.com/" + row.logo: "https://via.placeholder.com/60"}/>
+          cell: row => <img height={50} width={50} src={row.logo? siteUrl + row.logo: "https://via.placeholder.com/60"}/>
         },
         {
           name: "Name",

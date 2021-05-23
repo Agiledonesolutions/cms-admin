@@ -8,6 +8,7 @@ import Loading from "../Loading";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import FileManager from '../Media/FileManager'
+import { siteUrl } from "../../utils/utils";
 
 class CreateMenuItem extends React.Component {
   state = {
@@ -446,7 +447,7 @@ class CreateMenuItem extends React.Component {
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
                {this.state.image? <div className="image-holder">
-                <img src={"https://big-cms.herokuapp.com/"+this.state.image} height={120} width={120}/>
+                <img src={siteUrl+this.state.image} height={120} width={120}/>
                 <button
                   type="button"
                   className="btn remove-image"

@@ -10,7 +10,7 @@ import { format } from "timeago.js";
 import DropzoneComponent from "react-dropzone-component";
 import "react-dropzone-component/styles/filepicker.css";
 import "dropzone/dist/min/dropzone.min.css";
-import imageCompression from "browser-image-compression";
+import {siteUrl} from '../../utils/utils'
 class Media extends React.Component {
   constructor(props) {
     super(props);
@@ -42,7 +42,7 @@ class Media extends React.Component {
           sortable: true,
           cell: (row) => (
             <img
-              src={"https://big-cms.herokuapp.com/" + row.thumbnail}
+              src={siteUrl + row.thumbnail}
               height={60}
               width={60}
             />
@@ -116,14 +116,9 @@ class Media extends React.Component {
   };
 
   handlePost = async (file) => {
-    const options = {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-    };
-    const compressedFile = await imageCompression(file, options);
+    
     var formData = new FormData();
-    await formData.append("image", compressedFile);
+    await formData.append("image", file);
     api
       .post("/media", formData, {
         headers: {
@@ -132,6 +127,7 @@ class Media extends React.Component {
       })
       .then((res) => {
         console.log(res);
+        this.componentDidMount()
       })
       .catch((err) => {
         console.log(err);

@@ -8,6 +8,7 @@ import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
 import Loading from '../../Loading'
+import { siteUrl } from "../../../utils/utils";
 
 class Catalog extends React.Component {
   state = {
@@ -27,7 +28,7 @@ class Catalog extends React.Component {
           sortable: true,
           cell: (row) => (
             <img
-              src={row.thumbnail? "https://big-cms.herokuapp.com/" + row.thumbnail: "https://via.placeholder.com/60"}
+              src={row.thumbnail? siteUrl + row.thumbnail: "https://via.placeholder.com/60"}
               height={60}
               width={60}
             />
@@ -66,7 +67,7 @@ class Catalog extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/product/get")
+      .post("/product/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;

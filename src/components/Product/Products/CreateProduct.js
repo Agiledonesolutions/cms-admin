@@ -18,6 +18,7 @@ import UpSells from "./UpSells";
 import CrossSells from "./CrossSells";
 import Validate from '../../../utils/validation'
 import Loading from '../../Loading'
+import { siteUrl } from "../../../utils/utils";
 
 const options = {
   defaultColumns: 3,
@@ -46,7 +47,7 @@ class CreateProduct extends React.Component {
           sortable: true,
           cell: (row) => (
             <img
-              src={row.thumbnail? "https://big-cms.herokuapp.com/" + row.thumbnail: "https://via.placeholder.com/60"}
+              src={row.thumbnail? siteUrl + row.thumbnail: "https://via.placeholder.com/60"}
               height={60}
               width={60}
             />
@@ -243,7 +244,7 @@ class CreateProduct extends React.Component {
     }
     const { brands } = this.state;
     api
-      .get("/brand/get")
+      .post("/brand/get")
       .then((res) => {
         res.data.data.map((val) => {
           let tmp = {};
@@ -327,7 +328,7 @@ class CreateProduct extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/product/get")
+      .post("/product/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
@@ -429,13 +430,13 @@ class CreateProduct extends React.Component {
     this.setState({
       editorState,
     });
-    this.setVal("description", this.state.editorState.toHTML());
+    this.setVal("description", editorState.toHTML());
   };
   handleSubmit = () => {
     const {data, errors} = this.state
     const required = ["name", "description", "price"]
     required.forEach(val=>{
-      if (!errors.includes(val) && !Validate.validateNotEmpty(data[val])) {
+      if (!errors.includes(val) && !Validate.validateNotEmpty(data[val].toString())) {
         errors.push(val);
         this.setState({ errors });
       } else if (
@@ -482,14 +483,14 @@ class CreateProduct extends React.Component {
 
   };
   uploadImageEditor = async (param) => {
-    const options = {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-    };
-    const compressedFile = await imageCompression(param.file, options);
+    // const options = {
+    //   maxSizeMB: 0.5,
+    //   maxWidthOrHeight: 1920,
+    //   useWebWorker: true,
+    // };
+    // const compressedFile = await imageCompression(param.file, options);
     var formData = new FormData();
-    await formData.append("image", compressedFile);
+    await formData.append("image", param.file);
     api
       .post("/media", formData, {
         headers: {
@@ -499,7 +500,7 @@ class CreateProduct extends React.Component {
       .then((res) => {
         console.log(res.data.data);
         param.success({
-          url: "https://big-cms.herokuapp.com/" + res.data.data.image,
+          url: siteUrl + res.data.data.image,
         });
       })
       .catch((err) => {
@@ -942,7 +943,7 @@ class CreateProduct extends React.Component {
                     className="form-control "
                     min={0}
                     type="number"
-                    value={this.state.data.specialPrice}
+                    value={this.state.data.specialPrice || ""}
                     onChange={(e) => {
                       this.setVal(e.target.name, e.target.value);
                     }}
@@ -1118,7 +1119,7 @@ class CreateProduct extends React.Component {
                 <div className="image-holder">
                   <img
                     src={
-                      "https://big-cms.herokuapp.com/" + this.state.baseImage
+                      siteUrl + this.state.baseImage
                     }
                     height={120}
                     width={120}
@@ -1151,7 +1152,7 @@ class CreateProduct extends React.Component {
                         return (
                           <div className="image-holder" key={key}>
                             <img
-                              src={"https://big-cms.herokuapp.com/" + image}
+                              src={siteUrl + image}
                               height={120}
                               width={120}
                             />

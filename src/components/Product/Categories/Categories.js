@@ -9,6 +9,7 @@ import treeData from "./treeData";
 import FileManager from '../../Media/FileManager'
 import Validate from '../../../utils/validation'
 import api from '../../../apis/api'
+import { siteUrl } from "../../../utils/utils";
 
 const alertNodeInfo = ({ node, path, treeIndex }) => {
   const objectString = Object.keys(node)
@@ -202,7 +203,7 @@ class Categories extends React.Component {
               </button>
               <div className="clearfix" />
               <div className="single-image image-holder-wrapper clearfix">
-              {this.state.logoImage? <div className="image-holder"><img src={"https://big-cms.herokuapp.com/"+this.state.logoImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
+              {this.state.logoImage? <div className="image-holder"><img src={siteUrl+this.state.logoImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
                 <i className="fa fa-picture-o" />
               </div>}
               </div>
@@ -223,7 +224,7 @@ class Categories extends React.Component {
               </button>
               <div className="clearfix" />
               <div className="single-image image-holder-wrapper clearfix">
-              {this.state.bannerImage? <div className="image-holder"><img src={"https://big-cms.herokuapp.com/"+this.state.bannerImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
+              {this.state.bannerImage? <div className="image-holder"><img src={siteUrl+this.state.bannerImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
                 <i className="fa fa-picture-o" />
               </div>}
               </div>

@@ -6,6 +6,7 @@ import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import FileManager from "../../Media/FileManager";
 import Loading from '../../Loading'
+import { siteUrl } from "../../../utils/utils";
 
 class CreateBrand extends React.Component {
   state = {
@@ -170,7 +171,7 @@ class CreateBrand extends React.Component {
             </button>
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
-            {this.state.logoImage? <div className="image-holder"><img src={"https://big-cms.herokuapp.com/"+this.state.logoImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
+            {this.state.logoImage? <div className="image-holder"><img src={siteUrl+this.state.logoImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
                 <i className="fa fa-picture-o" />
               </div>}
             </div>
@@ -190,7 +191,7 @@ class CreateBrand extends React.Component {
             </button>
             <div className="clearfix" />
             <div className="single-image image-holder-wrapper clearfix">
-            {this.state.bannerImage? <div className="image-holder"><img src={"https://big-cms.herokuapp.com/"+this.state.bannerImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
+            {this.state.bannerImage? <div className="image-holder"><img src={siteUrl+this.state.bannerImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
                 <i className="fa fa-picture-o" />
               </div>}
             </div>
