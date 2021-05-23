@@ -24,6 +24,7 @@ class StoreFront extends React.Component {
     brandsOptions: [],
     productOptions: [],
     menuOptions: [],
+    flashsaleOptions:[],
     data: {
       SocialLinks: {
         Facebook: "",
@@ -82,7 +83,7 @@ class StoreFront extends React.Component {
         CustomThemeColor: "#000000",
         MailThemeColor: "",
         CustomMailThemeColor: "#000000",
-        sliderId: "",
+        SliderId: "",
         Address: "",
         TermsConditionsPageId: "",
         PrivacyPolicyPageId: ""
@@ -335,10 +336,8 @@ class StoreFront extends React.Component {
       ]
       },
       FlashSaleVerticalProducts: {
-        FlashSale: {
-          Title: "",
-          ActiveCampaign: ""
-        },
+        Title: "",
+        ActiveCampaignId: "",
         SectionStatus: true,
         VerticalProducts: [
           {
@@ -368,9 +367,13 @@ class StoreFront extends React.Component {
         NavbarText: "",
         FooterMenuOneTitle: "",
         FooterMenuTwoTitle: "",
-        PrimaryMenuId: ""
+        PrimaryMenuId: "",
+        CategoryMenuId: "",
+        FooterMenuOneId: "",
+        FooterMenuTwoId: ""
       }
     },
+    _id: "",
     errors: [],
   };
   componentDidMount() {
@@ -483,26 +486,45 @@ class StoreFront extends React.Component {
       console.log("error fetching menus")
     })
 
-    // api.get('/storefront/get').then(res=>{
-    //   const {data} = this.state
-    //   const fetched = res.data.data[0]
-    //   console.log(fetched)
-    //   data.General = fetched.General
-    //   data.SocialLinks = fetched.SocialLinks
-    //   data.ProductPage = fetched.ProductPage
-    //   data.Features = fetched.Features
-    //   data.Newsletter = fetched.Newsletter
-    //   fetched.Products.forEach(val=>{
-    //     data[val.Name] = val
-    //   })
-    //   fetched.Banners.forEach(ban=>{
-    //     data[ban.Name] = ban
-    //   })
-    //   this.setState({data})
+    api.get('/flashsale/get').then(res=>{
+      const {flashsaleOptions} = this.state
+      res.data.data.forEach(val=>{
+        let tmp = {
+          label: val.campaignName,
+          value: val._id
+        }
+        flashsaleOptions.push(tmp)
+      })
+      this.setState({flashsaleOptions})
+    }).catch(err=>{
+      console.log("error fetching flashsale")
+    })
 
-    // }).catch(err=>{
-    //   console.log("error fetching storefront details")
-    // })
+    api.get('/storefront/get').then(res=>{
+      const {data} = this.state
+      const fetched = res.data.data[0]
+      console.log(fetched)
+      data.General = {...data.General,...fetched.General}
+      data.Menus = {...data.Menus,...fetched.Menus}
+      data.Logo = {...data.Logo, ...fetched.Logo}
+      data.Footer = {...data.Footer,...fetched.Footer}
+      data.SocialLinks = {...data.SocialLinks,...fetched.SocialLinks}
+      data.ProductPage = {...data.ProductPage,...fetched.ProductPage}
+      data.Features = {...data.Features,...fetched.Features}
+      data.FeaturedCategories = {...data.FeaturedCategories,...fetched.FeaturedCategories}
+      data.TopBrands = {...data.TopBrands,...fetched.TopBrands}
+      data.Newsletter = { ...data.Newsletter, ...fetched.Newsletter}
+      fetched.Products.forEach(val=>{
+        data[val.Name] = {...data[val.Name],...val}
+      })
+      fetched.Banners.forEach(ban=>{
+        data[ban.Name] = {...data[ban.Name], ...ban}
+      })
+      this.setState({data, _id: fetched._id})
+
+    }).catch(err=>{
+      console.log("error fetching storefront details")
+    })
   }
   setVal = (val, key, key2) => {
     const { data } = this.state;   
@@ -564,26 +586,23 @@ class StoreFront extends React.Component {
     console.log(this.state.data);
     const { errors } = this.state;
     const { data } = this.state;
-
-    //add custom colours
-    //add banners to arr
-    //add product tabs and grids to arr
-
-    // if (!errors.includes("name") && !Validate.validateNotEmpty(data["Name"])) {
-    //   errors.push("name");
-    //   this.setState({ errors });
-    // } else if (
-    //   errors.includes("name") &&
-    //   Validate.validateNotEmpty(data["Name"])
-    // ) {
-    //   errors.splice(errors.indexOf("name"), 1);
-    //   this.setState({ errors });
-    // }
+    const Banners = []
+    const Products = []
+    Banners.push(data["Slider Banners"], data["Three Column Full Width Banners"], data["Two column banners"], data["Three Column Banners"], data["One Column Banner"])
+    Products.push(data["Product Tabs One"],data["Product Grid"], data["Product Tabs Two"])
+    if(this.state.data.General.MailThemeColor == "custom color"){
+      data.General.MailThemeColor = this.state.data.General.CustomMailThemeColor
+    }
+    if(this.state.data.General.ThemeColor == "custom color"){
+      data.General.ThemeColor = this.state.data.General.CustomThemeColor
+    } 
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
-      if (this.props.edit == "true") {
-      } else {
-      }
+      api.put('/storefront', {General: data.General, Logo: data.Logo, Menus: data.Menus, Footer: data.Footer, Newsletter: data.Newsletter, Features: data.Features, ProductPage: data.ProductPage, SocialLinks: data.SocialLinks, FeaturedCategories: data.FeaturedCategories, TopBrands: data.TopBrands, FlashSaleVerticalProducts: data.FlashSaleVerticalProducts, Banners: Banners, Products: Products, requiredPermission: "Edit Storefront", _id: this.state._id }).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log("error posting storefront")
+      })
     } else {
       console.log(errors);
     }
@@ -709,7 +728,6 @@ class StoreFront extends React.Component {
                       className="form-control "
                       type="color"
                       value={this.state.data.General.CustomMailThemeColor}
-                      value={this.state.data.General.ThemeColor}
                       onChange={(e)=>{
                         this.setVal(e.target.value, "General", e.target.name)
                       }}
@@ -725,9 +743,9 @@ class StoreFront extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <select
-                    name="sliderId"
+                    name="SliderId"
                     className="form-control custom-select-black "
-                    value={this.state.data.General.sliderId}
+                    value={this.state.data.General.SliderId}
                       onChange={(e)=>{
                         this.setVal(e.target.value, "General", e.target.name)
                       }}
@@ -955,11 +973,11 @@ class StoreFront extends React.Component {
                 <div className="col-md-9">
                 <MultiSelect
                     onChange={(val) => {
-                      this.setVal(val, "Menus",  "PrimaryMenuId")
+                      this.setVal(val, "Menus",  "CategoryMenuId")
                     }}
                     singleSelect={true}
                     options={this.state.menuOptions}
-                    defaultValue={this.state.data.Menus.PrimaryMenuId}
+                    defaultValue={this.state.data.Menus.CategoryMenuId}
                   />
                 </div>
               </div>
@@ -991,11 +1009,11 @@ class StoreFront extends React.Component {
                 <div className="col-md-9">
                 <MultiSelect
                     onChange={(val) => {
-                      this.setVal(val, "Menus",  "PrimaryMenuId")
+                      this.setVal(val, "Menus",  "FooterMenuOneId")
                     }}
                     singleSelect={true}
                     options={this.state.menuOptions}
-                    defaultValue={this.state.data.Menus.PrimaryMenuId}
+                    defaultValue={this.state.data.Menus.FooterMenuOneId}
                   />
                 </div>
               </div>
@@ -1027,11 +1045,11 @@ class StoreFront extends React.Component {
                 <div className="col-md-9">
                 <MultiSelect
                     onChange={(val) => {
-                      this.setVal(val, "Menus",  "PrimaryMenuId")
+                      this.setVal(val, "Menus",  "FooterMenuTwoId")
                     }}
                     singleSelect={true}
                     options={this.state.menuOptions}
-                    defaultValue={this.state.data.Menus.PrimaryMenuId}
+                    defaultValue={this.state.data.Menus.FooterMenuTwoId}
                   />
                 </div>
               </div>
@@ -1221,7 +1239,7 @@ class StoreFront extends React.Component {
                       name="SubTitle"
                       className="form-control "
                       type="text"
-                      value={this.state.data.Features.Features[0].SubTitle}
+                      value={this.state.data.Features.Features[idx].SubTitle}
                       onChange={(e)=>{
                         this.setArr(e.target.value, "Features","Features", idx, e.target.name)
                       }}
@@ -1239,7 +1257,7 @@ class StoreFront extends React.Component {
                       name="Icon"
                       className="form-control "
                       type="text"
-                      value={this.state.data.Features.Features[0].Icon}
+                      value={this.state.data.Features.Features[idx].Icon}
                       onChange={(e)=>{
                         this.setArr(e.target.value, "Features","Features", idx, e.target.name)
                       }}
@@ -1994,13 +2012,13 @@ class StoreFront extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="storefront_flash_sale_title"
+                      name="Title"
                       className="form-control "
                       type="text"
-                      // value={this.state.data.FlashSaleVerticalProducts.FlashSale.Title}
-                      // onChange={(e)=>{
-
-                      // }}
+                      value={this.state.data.FlashSaleVerticalProducts.Title}
+                      onChange={(e)=>{
+                        this.setVal(e.target.value, "FlashSaleVerticalProducts", e.target.name)
+                      }}
                     />
                   </div>
                 </div>
@@ -2012,17 +2030,15 @@ class StoreFront extends React.Component {
                     Active Campaign
                   </label>
                   <div className="col-md-9">
-                    <select
-                      name="storefront_active_flash_sale_campaign"
-                      className="form-control custom-select-black "
-                      id="storefront_active_flash_sale_campaign"
-                    >
-                      <option value>Please Select</option>
-                      <option value={1} >
-                        Flash Sale
-                      </option>
-                      <option value={2}>Winter Sale</option>
-                    </select>
+                  <MultiSelect
+                    onChange={(val) => {
+                      this.setVal(val, "FlashSaleVerticalProducts", "ActiveCampaignId")
+                    }}
+                    singleSelect={true}
+                    largeData={true}
+                    options={this.state.flashsaleOptions}
+                    defaultValue={this.state.data.FlashSaleVerticalProducts.ActiveCampaignId}
+                  />
                   </div>
                 </div>
               </div>
