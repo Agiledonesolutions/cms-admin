@@ -94,7 +94,7 @@ class FileManager extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/media/get")
+      .post("/media/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;

@@ -48,6 +48,7 @@ class Brands extends React.Component {
     },
     requiredPermission: "Delete Brand",
     edit: "",
+    ID: ""
   };
 
   componentDidMount() {
@@ -57,10 +58,8 @@ class Brands extends React.Component {
       .post("/brand/get")
       .then((res) => {
         res.data.data.map((val) => {
-          i++;
-          console.log(val)
           var tmp = {
-            id: i,
+            id: val.ID,
             logo: val.logo? val.logo.image: false,
             name: val["name"],
             status: val["status"],
@@ -99,7 +98,7 @@ class Brands extends React.Component {
 
   render() {
     if (this.state.edit != "") {
-      return <Redirect to={"/brands/" + this.state.edit + "/edit"} />;
+      return <Redirect to={{pathname: "/brands/" + this.state.edit + "/edit", _id: this.state.edit}} />;
     }
     return (
       <div>
@@ -156,7 +155,7 @@ class Brands extends React.Component {
                   pagination
                   selectableRows
                   onRowClicked={(index) => {
-                    this.setState({ edit: index._id });
+                    this.setState({ edit: index._id, ID: index.id });
                   }}
                   pointerOnHover
                   highlightOnHover

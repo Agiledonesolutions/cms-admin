@@ -127,9 +127,12 @@ a {
   width: 100% !important;
 }
 .table-delete-button {
-  position: absolute;
+  /* position: absolute;
   left: 20%;
-  top: 4%;
+  top: 4%; */
+  position: absolute;
+  top: 20px;
+  left: 250px;
 }
 .dropzone .dz-preview.dz-image-preview{
   background: none !important;
@@ -258,11 +261,11 @@ a {
   .single-grid.total-products {
     margin-top: 15px;
   }
-  .table-delete-button {
+  /* .table-delete-button {
     position: absolute;
     left: 30%;
     top: 5%;
-  }
+  } */
 }
 
 @media screen and (max-width: 767px) {
@@ -272,6 +275,6 @@ a {
   .table-delete-button {
     position: relative;
     left: 5%;
-    top: 0;
+    top: 10px;
   }
 }

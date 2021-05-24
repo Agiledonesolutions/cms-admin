@@ -64,6 +64,7 @@ class Catalog extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -84,10 +85,12 @@ class Catalog extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
+        
       })
       .catch((err) => {
         console.log(err);
+        this.setState({submitting: false})
       });
   }
 
@@ -138,8 +141,7 @@ class Catalog extends React.Component {
           </div>
           <Loading show={this.state.submitting}/>
           <div className="box box-primary">
-            <div className="box-body index-table" id="attributes-table">
-              <div className="table-delete-button">
+          <div className="table-delete-button">
                 <button
                   type="button"
                   className="btn btn-default btn-delete"
@@ -148,6 +150,8 @@ class Catalog extends React.Component {
                   Delete
                 </button>
               </div>
+            <div className="box-body index-table" id="attributes-table">
+              
               <DataTableExtensions {...this.state.tableData}>
                 <DataTable
                   noHeader

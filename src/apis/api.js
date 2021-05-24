@@ -13,7 +13,6 @@ if (getToken()) {
   delete axios.defaults.headers.common["token"];
 }
 export default axios.create({
-    // baseURL: 'http://localhost:5000',
   baseURL: siteUrl,
   headers: {
     Accept: "applications/json",

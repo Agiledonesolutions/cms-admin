@@ -37,7 +37,7 @@ class CreateBrand extends React.Component {
   };
   componentDidMount(){
     if(this.props.edit == "true"){
-      const url = "/brand/get/" + this.props.match.params.id
+      const url = "/brand/get/" +  this.props.match.params.id
       api.get(url).then(res=>{
         console.log(res)
         const {data} = this.state

@@ -341,7 +341,8 @@ class Categories extends React.Component {
                   </div>
                   <div className="category-tree">
                     <div className="tree-wrapper">
-                      <SortableTree
+                      Later
+                      {/* <SortableTree
                         treeData={this.state.treeData}
                         onChange={this.handleTreeOnChange}
                         onMoveNode={({ node, treeIndex, path }) =>
@@ -394,7 +395,7 @@ class Categories extends React.Component {
                                 ],
                           
                           })}
-                      />
+                      /> */}
                     </div>
                   </div>
                 </div>
