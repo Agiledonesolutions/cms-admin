@@ -14,6 +14,7 @@ class StoreFront extends React.Component {
   state = {
     showModal: false,
     multiple: false,
+    submitting: false,
     imageFor: "",
     activePanel: "general",
     activeTab: "generalsettings",
@@ -377,6 +378,8 @@ class StoreFront extends React.Component {
     errors: [],
   };
   componentDidMount() {
+    this.setState({submitting: true})
+
     api
       .post("page/get")
       .then((res) => {
@@ -598,7 +601,7 @@ class StoreFront extends React.Component {
           ...data.FeaturedCategories,
           ...fetched.FeaturedCategories,
         };
-        data.TopBrands = { ...data.TopBrands, ...fetched.TopBrands };
+        data.TopBrands = { ...data.TopBrands, ...fetched.TopBrands, TopBrandsIds:  fetched.TopBrands.TopBrands.length>0? fetched.TopBrands.TopBrands.map(function(ids){return ids._id}):[]};
         data.Newsletter = {
           BackgroundImageId: fetched.Newsletter.BackgroundImage
             ? fetched.Newsletter.BackgroundImage._id
@@ -607,16 +610,31 @@ class StoreFront extends React.Component {
             ? fetched.Newsletter.BackgroundImage.image
             : "",
         };
+        fetched.FlashSaleVerticalProducts.VerticalProducts.forEach(val=>{
+          val.ProductIds = val.Products
+        })
         data.FlashSaleVerticalProducts = {
           ...data.FlashSaleVerticalProducts,
           ...fetched.FlashSaleVerticalProducts,
+          ActiveCampaignId: fetched.FlashSaleVerticalProducts.ActiveCampaign
         };
-        data.FlashSaleVerticalProducts.ActiveCampaignId =
-          fetched.FlashSaleVerticalProducts.ActiveCampaign;
         fetched.Products.forEach((val) => {
+          val.Tabs.forEach(tab=>{
+            tab.ProductIds = tab.Products
+          })
           data[val.Name] = { ...data[val.Name], ...val };
         });
         fetched.Banners.forEach((ban) => {
+          ban.Banners.forEach(val=>{
+            if(val.Image){
+              val.ImageId = val.Image._id
+              val.image = val.Image.image
+            }
+          })
+          if(ban.Name == "Three Column Full Width Banners" && ban.Background){
+            ban.BackgroundId = ban.Background._id
+            ban.BackgroundIdImage = ban.Background.image
+          }
           data[ban.Name] = { ...data[ban.Name], ...ban };
         });
         if (fetched.General.ThemeColor[0] == "#") {
@@ -627,10 +645,11 @@ class StoreFront extends React.Component {
           data.General.CustomMailThemeColor = fetched.General.MailThemeColor;
           data.General.MailThemeColor = "custom color";
         }
-        this.setState({ data, _id: fetched._id });
+        this.setState({ data, _id: fetched._id, submitting: false });
       })
       .catch((err) => {
         console.log("error fetching storefront details");
+        this.setState({submitting: false})
       });
   }
   setVal = (val, key, key2) => {
@@ -658,7 +677,7 @@ class StoreFront extends React.Component {
       data.Footer[imageFor] = id;
       data.Footer.image = image;
     } else if (this.state.activePanel == "sliderbanners") {
-      data["Slider Banners"].Banners[imageFor].imageId = id;
+      data["Slider Banners"].Banners[imageFor].ImageId = id;
       data["Slider Banners"].Banners[imageFor].image = image;
     } else if (this.state.activePanel == "threecolfullwidth") {
       if (imageFor == "BackgroundId") {
@@ -669,19 +688,20 @@ class StoreFront extends React.Component {
         data["Three Column Full Width Banners"].Banners[imageFor].image = image;
       }
     } else if (this.state.activePanel == "twocolbanners") {
-      data["Two column banners"].Banners[imageFor].imageId = id;
+      data["Two column banners"].Banners[imageFor].ImageId = id;
       data["Two column banners"].Banners[imageFor].image = image;
     } else if (this.state.activePanel == "threecolbanners") {
-      data["Three Column Banners"].Banners[imageFor].imageId = id;
+      data["Three Column Banners"].Banners[imageFor].ImageId = id;
       data["Three Column Banners"].Banners[imageFor].image = image;
     } else if (this.state.activePanel == "onecolbanner") {
-      data["One Column Banner"].Banners[imageFor].imageId = id;
+      data["One Column Banner"].Banners[imageFor].ImageId = id;
       data["One Column Banner"].Banners[imageFor].image = image;
     }
     this.setState({ data });
   };
 
   handleSubmit = () => {
+    
     const { errors } = this.state;
     const { data } = this.state;
     const Banners = [];
@@ -3599,6 +3619,7 @@ class StoreFront extends React.Component {
               <li className="active">Storefront</li>
             </ol>
           </section>
+          <Loading show={this.state.submitting}/>
           <section className="content">
             <form className="form-horizontal">
               <div className="accordion-content clearfix">
@@ -3948,7 +3969,7 @@ class StoreFront extends React.Component {
                           >
                             Save
                           </button>
-                          <Loading show={this.state.submitting} />
+                          {/* <Loading show={this.state.submitting} /> */}
                         </div>
                       </div>
                     </div>

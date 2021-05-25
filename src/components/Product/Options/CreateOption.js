@@ -26,7 +26,6 @@ class CreateOption extends React.Component {
 
   componentDidMount() {
     if(this.props.edit == "true"){
-      console.log(this.props.location)
       const url = "/option/get/" + this.props.match.params.id
       api.get(url).then(res=>{
         const {data} = this.state

@@ -49,7 +49,7 @@ class CreateBrand extends React.Component {
         this.setState({data})
         this.setState({banner: res.data.data.banner._id, bannerImage: res.data.data.banner.image, logo: res.data.data.logo._id, logoImage: res.data.data.logo.image})
       }).catch(err=>{
-        console.log("error fetching brand")
+        // console.log("error fetching brand")
       })
     }
   }

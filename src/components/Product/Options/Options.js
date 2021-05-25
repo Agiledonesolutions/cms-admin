@@ -90,7 +90,7 @@ class Options extends React.Component {
 
   render() {
     if (this.state.edit != "") {
-      return <Redirect to={{pathname: "/options/" + this.state.edit + "/edit", _id: 123}} />;
+      return <Redirect to={"/options/" + this.state.edit + "/edit"} />;
     }
     return (
       <div>

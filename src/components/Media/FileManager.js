@@ -12,6 +12,7 @@ import "react-dropzone-component/styles/filepicker.css";
 import "dropzone/dist/min/dropzone.min.css";
 import {siteUrl} from '../../utils/utils'
 import './media.css'
+import Loading from "../Loading";
 
 class FileManager extends React.Component {
   constructor(props) {
@@ -28,6 +29,7 @@ class FileManager extends React.Component {
 
   }
   state = {
+    submitting: false,
     files: [],
     selectedRows: [],
     ImageIds: [],
@@ -117,6 +119,7 @@ class FileManager extends React.Component {
   }
 
   deleteSelectedItems = () => {
+    this.setState({submitting: true})
     const { selectedRows } = this.state;
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
@@ -124,10 +127,12 @@ class FileManager extends React.Component {
       .delete("/media", { data })
       .then((res) => {
         console.log(res);
+        this.setState({submitting: false})
         this.componentDidMount();
       })
       .catch((err) => {
         console.log("delete error");
+        this.setState({submitting: false})
       });
   };
   handleFileAdded = (file) => {
@@ -142,6 +147,7 @@ class FileManager extends React.Component {
   };
 
   handlePost = async (file) => {
+    this.setState({submitting: true})
     // const options = {
     //   maxSizeMB: 0.5,
     //   maxWidthOrHeight: 1920,
@@ -158,10 +164,12 @@ class FileManager extends React.Component {
       })
       .then((res) => {
         console.log(res);
+        this.setState({submitting: false})
         this.componentDidMount()
       })
       .catch((err) => {
         console.log(err);
+        this.setState({submitting: false})
       });
   };
   handleImagePost = () => {
@@ -197,6 +205,7 @@ class FileManager extends React.Component {
               </button>
             </div>
           </div>
+          <Loading show={this.state.submitting}/>
           <div className="box box-primary">
             <div className="box-body index-table" id="attributes-table">
               <div className="table-delete-button">
