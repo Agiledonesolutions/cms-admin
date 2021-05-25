@@ -597,6 +597,10 @@ class StoreFront extends React.Component {
             : "",
         };
         data.Features = { ...data.Features, ...fetched.Features };
+        fetched.FeaturedCategories.Categories.forEach(val=>{
+          val.CategoryId = val.Category?val.Category._id:""
+          val.ProductIds = val.Products
+        })
         data.FeaturedCategories = {
           ...data.FeaturedCategories,
           ...fetched.FeaturedCategories,
@@ -1974,7 +1978,7 @@ class StoreFront extends React.Component {
                       type="checkbox"
                       name="SectionStatus"
                       id="storefront_featured_categories_section_enabled"
-                      checked={this.state.data.FeaturedCategories.SectionStatus}
+                      checked={this.state.data.FeaturedCategories.SectionStatus?true:false}
                       onChange={(e) => {
                         this.setVal(
                           !this.state.data.FeaturedCategories.SectionStatus,
@@ -2113,7 +2117,7 @@ class StoreFront extends React.Component {
                           <MultiSelect
                             onChange={(val) => {
                               this.setArr(
-                                val.split(),
+                                val.split(","),
                                 "FeaturedCategories",
                                 "Categories",
                                 idx,
@@ -2333,7 +2337,7 @@ class StoreFront extends React.Component {
                           <MultiSelect
                             onChange={(val) => {
                               this.setArr(
-                                val.split(),
+                                val.split(","),
                                 "Product Tabs One",
                                 "Tabs",
                                 idx,
@@ -2668,7 +2672,7 @@ class StoreFront extends React.Component {
                             <MultiSelect
                               onChange={(val) => {
                                 this.setArr(
-                                  val.split(),
+                                  val.split(","),
                                   "FlashSaleVerticalProducts",
                                   "VerticalProducts",
                                   idx,
@@ -3027,7 +3031,7 @@ class StoreFront extends React.Component {
                           <MultiSelect
                             onChange={(val) => {
                               this.setArr(
-                                val.split(),
+                                val.split(","),
                                 "Product Grid",
                                 "Tabs",
                                 idx,
@@ -3411,7 +3415,7 @@ class StoreFront extends React.Component {
                           <MultiSelect
                             onChange={(val) => {
                               this.setArr(
-                                val.split(),
+                                val.split(","),
                                 "Product Tabs Two",
                                 "Tabs",
                                 idx,
