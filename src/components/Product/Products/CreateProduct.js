@@ -90,7 +90,6 @@ class CreateProduct extends React.Component {
     additionalImages: [],
     downloadFilenames: [],
     attributesOptions: {},
-    attributeOptionsValues: [],
     optionsGlobal: [],
     selectedGlobalOption: {},
     activePanel: "general",
@@ -152,96 +151,7 @@ class CreateProduct extends React.Component {
   };
 
   componentDidMount() {
-    if(this.props.edit == "true"){
-      const url = "/product/get/" + this.props.match.params.id;
-      api.get(url).then(res=>{
-        console.log(res.data.data)
-        let tmp= {
-          name: res.data.data.name,
-          taxClass: res.data.data.taxClass,
-          virtual: res.data.data.virtual,
-          status: res.data.data.status,
-          description: res.data.data.description,
-          price: res.data.data.price,
-          specialPrice: res.data.data.specialPrice,
-          specialPriceType: res.data.data.specialPriceType,
-          specialPriceStart: res.data.data.specialPriceStart == null? "": res.data.data.specialPriceStart.substr(0,10),
-          specialPriceEnd: res.data.data.specialPriceEnd == null? "": res.data.data.specialPriceEnd.substr(0,10),
-          inventoryManagement: res.data.data.inventoryManagement,
-          Qty: res.data.data.Qty,
-          SKU: res.data.data.SKU,
-          stockAvailability: res.data.data.stockAvailability,
-          metaTitle: res.data.data.metaTitle? res.data.data.metaTitle: "",
-          metaDescription: res.data.data.metaDescription? res.data.data.metaDescription : "",
-          shortDescription: res.data.data.shortDescription? res.data.data.shortDescription: "",
-          productNewFrom: res.data.data.productNewFrom == null? "":res.data.data.productNewFrom.substr(0,10),
-          productNewTo: res.data.data.productNewTo == null? "":res.data.data.productNewTo.substr(0,10),
-          options: res.data.data.options
-        }
-        const {tagIds, categoryIds,additionalImageIds, additionalImages, downloadFilenames, downloadsIds, relatedProductIds, upSellsIds, crossSellsIds} = this.state
-        res.data.data.tags.forEach(tag=>{
-          tagIds.push(tag._id)
-        })
-        res.data.data.categories.forEach(category=>{
-          categoryIds.push(category._id)
-        })
-        
-        if(res.data.data.additionalImages.length>0){
-          res.data.data.additionalImages.forEach(image=>{
-            additionalImageIds.push(image._id)
-            additionalImages.push(image.image)
-          })
-        }
-        if(res.data.data.attributes.length>0){
-          const attributesNew = []
-          // const attributeOptionsValuesNew = []
-          res.data.data.attributes.forEach(attr=>{
-            let tmp = {
-              attributeId: attr.attribute._id,
-              value: attr.value
-            }
-            // attr.attribute.value.forEach(val=>{
-            //   let tmp2 ={
-            //     label: val,
-            //     value: val
-            //   }
-            //   attributeOptionsValuesNew.push(tmp2)
-            // })
-           
-            attributesNew.push(tmp)
-          })
-          this.setState({attributes: attributesNew})
-        }
-        if(res.data.data.downloads.length>0){
-          downloadFilenames.splice(0,1)
-          downloadsIds.splice(0,1)
-          res.data.data.downloads.forEach(down=>{
-            downloadFilenames.push(down.fileName)
-            downloadsIds.push(down._id)
-          })
-        }
-        if(res.data.data.relatedProducts.length>0){
-          res.data.data.relatedProducts.forEach(prod=>{
-            relatedProductIds.push(prod._id)
-          })
-        }
-        if(res.data.data.upSells.length>0){
-          res.data.data.upSells.forEach(prod=>{
-            upSellsIds.push(prod._id)
-          })
-        } 
-        if(res.data.data.crossSells.length>0){
-          res.data.data.crossSells.forEach(prod=>{
-            crossSellsIds.push(prod._id)
-          })
-        }    
-        this.setState({data: tmp,relatedProductIds, upSellsIds, crossSellsIds, downloadFilenames, downloadsIds, brandId: res.data.data.brand?res.data.data.brand._id: "", baseImage: res.data.data.baseImage?res.data.data.baseImage.image: "", baseImageId:  res.data.data.baseImage?res.data.data.baseImage._id: "" ,additionalImageIds, additionalImages ,editorState: BraftEditor.createEditorState(res.data.data.description), options: res.data.data.options, tagIds, categoryIds})
-      }).catch(err=>{
-        console.log(err)
-        console.log("error fetching product details")
-      })
-
-    }
+    
     const { brands } = this.state;
     api
       .post("/brand/get")
@@ -310,7 +220,7 @@ class CreateProduct extends React.Component {
     this.setState({ categoryOptions });
 
     api
-      .get("/tag/get")
+      .post("/tag/get")
       .then((res) => {
         res.data.data.forEach((val) => {
           let tmp = {};
@@ -356,7 +266,7 @@ class CreateProduct extends React.Component {
       });
 
     api
-      .get("/attribute/get")
+      .post("/attribute/get")
       .then((res) => {
         const { attributesOptions } = this.state;
         res.data.data.map((val) => {
@@ -378,7 +288,7 @@ class CreateProduct extends React.Component {
         console.log("cannot fetch attribute");
       });
     api
-      .get("/option/get")
+      .post("/option/get")
       .then((res) => {
         const { optionsGlobal } = this.state;
         res.data.data.forEach((val) => {
@@ -402,6 +312,87 @@ class CreateProduct extends React.Component {
       .catch((err) => {
         console.log("error fetching options");
       });
+      if(this.props.edit == "true"){
+        const url = "/product/get/" + this.props.match.params.id;
+        api.get(url).then(res=>{
+          console.log(res.data.data)
+          let tmp= {
+            name: res.data.data.name,
+            taxClass: res.data.data.taxClass,
+            virtual: res.data.data.virtual,
+            status: res.data.data.status,
+            description: res.data.data.description,
+            price: res.data.data.price,
+            specialPrice: res.data.data.specialPrice,
+            specialPriceType: res.data.data.specialPriceType,
+            specialPriceStart: res.data.data.specialPriceStart == null? "": res.data.data.specialPriceStart.substr(0,10),
+            specialPriceEnd: res.data.data.specialPriceEnd == null? "": res.data.data.specialPriceEnd.substr(0,10),
+            inventoryManagement: res.data.data.inventoryManagement,
+            Qty: res.data.data.Qty,
+            SKU: res.data.data.SKU,
+            stockAvailability: res.data.data.stockAvailability,
+            metaTitle: res.data.data.metaTitle? res.data.data.metaTitle: "",
+            metaDescription: res.data.data.metaDescription? res.data.data.metaDescription : "",
+            shortDescription: res.data.data.shortDescription? res.data.data.shortDescription: "",
+            productNewFrom: res.data.data.productNewFrom == null? "":res.data.data.productNewFrom.substr(0,10),
+            productNewTo: res.data.data.productNewTo == null? "":res.data.data.productNewTo.substr(0,10),
+            options: res.data.data.options
+          }
+          const {tagIds, categoryIds,additionalImageIds, additionalImages, downloadFilenames, downloadsIds, relatedProductIds, upSellsIds, crossSellsIds} = this.state
+          res.data.data.tags.forEach(tag=>{
+            tagIds.push(tag._id)
+          })
+          res.data.data.categories.forEach(category=>{
+            categoryIds.push(category._id)
+          })
+          
+          if(res.data.data.additionalImages.length>0){
+            res.data.data.additionalImages.forEach(image=>{
+              additionalImageIds.push(image._id)
+              additionalImages.push(image.image)
+            })
+          }
+          if(res.data.data.attributes.length>0){
+            const attributesNew = []
+            res.data.data.attributes.forEach(attr=>{
+              let tmp = {
+                attributeId: attr.attribute._id,
+                value: attr.value
+              }
+              attributesNew.push(tmp)
+            })
+            this.setState({attributes: attributesNew})
+          }
+          if(res.data.data.downloads.length>0){
+            downloadFilenames.splice(0,1)
+            downloadsIds.splice(0,1)
+            res.data.data.downloads.forEach(down=>{
+              downloadFilenames.push(down.fileName)
+              downloadsIds.push(down._id)
+            })
+          }
+          if(res.data.data.relatedProducts.length>0){
+            res.data.data.relatedProducts.forEach(prod=>{
+              relatedProductIds.push(prod._id)
+            })
+          }
+          if(res.data.data.upSells.length>0){
+            res.data.data.upSells.forEach(prod=>{
+              upSellsIds.push(prod._id)
+            })
+          } 
+          if(res.data.data.crossSells.length>0){
+            res.data.data.crossSells.forEach(prod=>{
+              crossSellsIds.push(prod._id)
+            })
+          }    
+          this.setState({data: tmp,relatedProductIds, upSellsIds, crossSellsIds, downloadFilenames, downloadsIds, brandId: res.data.data.brand?res.data.data.brand._id: "", baseImage: res.data.data.baseImage?res.data.data.baseImage.image: "", baseImageId:  res.data.data.baseImage?res.data.data.baseImage._id: "" ,additionalImageIds, additionalImages ,editorState: BraftEditor.createEditorState(res.data.data.description), options: res.data.data.options, tagIds, categoryIds})
+        }).catch(err=>{
+          console.log(err)
+          console.log("error fetching product details")
+        })
+  
+      }
   }
 
   setVal = (key, val) => {
@@ -527,10 +518,11 @@ class CreateProduct extends React.Component {
     this.setState({ attributes });
   };
   handleRemoveSpecificRowAttribute = (idx) => {
-    const { attributes, attributeOptionsValues } = this.state;
+    const { attributes } = this.state;
     attributes.splice(idx, 1);
-    attributeOptionsValues.splice(idx, 1);
-    this.setState({ attributes, attributeOptionsValues });
+    this.setState({ attributes, activePanel: "general" },()=>{
+      this.setState({activePanel: "attributes"})
+    });
   };
   handleAddRowOption = () => {
     const {options} = this.state
@@ -1251,15 +1243,13 @@ class CreateProduct extends React.Component {
                             value={this.state.attributes[idx].attributeId}
                             onChange={(e) => {
                               const {
-                                attributes,
-                                attributeOptionsValues,
+                                attributes
                               } = this.state;
                               const arr = e.target.options[
                                 e.target.selectedIndex
                               ].dataset.values.split(",");
 
                               attributes[idx].attributeId = e.target.value;
-                              this.setState({ attributes });
                               let tmparr = [];
                               arr.map((val) => {
                                 let tmp = {
@@ -1268,8 +1258,9 @@ class CreateProduct extends React.Component {
                                 };
                                 tmparr.push(tmp);
                               });
-                              attributeOptionsValues[idx] = tmparr;
-                              this.setState({ attributeOptionsValues });
+                              attributes[idx].value = []
+                              attributes[idx].options = tmparr
+                              this.setState({ attributes });
                             }}
                           >
                             <option value="">Please Select</option>
@@ -1293,8 +1284,9 @@ class CreateProduct extends React.Component {
                       </td>
                       <td>
                         <div className="form-group">
+                          
                           <MultiSelect
-                            options={this.state.attributeOptionsValues[idx]}
+                            options={this.state.attributes[idx].options}
                             onChange={(val) => {
                               const { attributes } = this.state;
                               attributes[idx].value = val.split(",");
