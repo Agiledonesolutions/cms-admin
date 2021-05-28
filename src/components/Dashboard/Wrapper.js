@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
-import { removeAuthToken, removeUserDetails } from "../../utils/local";
-import {removeUSer, removeUserSession} from '../../utils/session'
+import { getName, removeAuthToken, removeUserDetails } from "../../utils/local";
+import {getUserName, removeUSer, removeUserSession} from '../../utils/session'
 import { Link } from "react-router-dom";
 
 
@@ -24,7 +24,7 @@ const Wrapper = (props) => {
           <nav className="navbar navbar-static-top clearfix">
             <ul className="nav navbar-nav clearfix">
               <li className="visit-store hidden-sm hidden-xs">
-                <a href="http://ecommerce.coddedbrain.com">
+                <a href="#">
                   <i className="fa fa-desktop" />
                   Visit Store
                 </a>
@@ -37,7 +37,7 @@ const Wrapper = (props) => {
                   onClick={dropdownToggle}
                 >
                   <i className="fa fa-user-circle-o" />
-                  <span>CoddedBrain</span>
+                  <span>{getUserName() || getName()}</span>
                 </a>
                 <ul className="dropdown-menu" ref={dropdownref}>
                   <li>

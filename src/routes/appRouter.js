@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import Coupons from '../components/Coupons/Coupons';
 import Dashboard from '../components/Dashboard/Dashboard';
 import Home from '../components/Dashboard/Home';

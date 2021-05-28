@@ -6,7 +6,15 @@ export const getUser = () => {
 export const setUser = (id) =>{
   return sessionStorage.setItem('user', id)
 }
+export const getUserName = () => {
+  return sessionStorage.getItem('userName')
+}
+
+export const setUserName = (name) =>{
+  return sessionStorage.setItem('userName', name)
+}
 export const removeUSer = () =>{
+  sessionStorage.removeItem('user')
   sessionStorage.removeItem('user')
 }
 // return the token from the session storage

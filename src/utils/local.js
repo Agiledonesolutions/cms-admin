@@ -5,9 +5,17 @@
   export const removeUserDetails=()=>
   {
     localStorage.removeItem('userId')
+    localStorage.removeItem('userName')
   }
   export const getUSerDetails = () =>{
     return localStorage.getItem('userId')
+  }
+
+  export const setName = (name) =>{
+    localStorage.setItem('userName',name)
+  }
+  export const getName = () =>{
+    return localStorage.getItem('userName')
   }
 
    export const setAuthToken= (token) => {

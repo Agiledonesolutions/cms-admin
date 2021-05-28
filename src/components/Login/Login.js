@@ -3,9 +3,9 @@ import "./login.css";
 import { Link, Redirect } from "react-router-dom";
 import api from '../../apis/api';
 import Validate from '../../utils/validation'
-import {setUser, setUserSession} from '../../utils/session'
+import {setUser, setUserName, setUserSession} from '../../utils/session'
 import Loading from "../Loading";
-import { setAuthToken, setUserDetails } from "../../utils/local";
+import { setAuthToken, setUserDetails, setName } from "../../utils/local";
 
 
 class Login extends React.Component {
@@ -64,13 +64,15 @@ class Login extends React.Component {
 
     if(!Validate.validateNotEmpty(this.state.errors)){
       const {data} = this.state
-      api.post('/users/login', {data: data}).then(async(res)=>{
+      api.post('/users/login', {data: data}).then((res)=>{
         console.log(res.data.data)
-        await setUserSession(res.data.data.token)
-        await setUser(res.data.data._id)
+        setUserSession(res.data.data.token)
+        setUser(res.data.data._id)
+        setUserName(res.data.data["First Name"])
         if(this.state.rememberMe){
-          await setAuthToken(res.data.data.token)
-          await setUserDetails(res.data.data._id)
+           setAuthToken(res.data.data.token)
+           setUserDetails(res.data.data._id)
+           setName(res.data.data["First Name"])
         }
         window.location.href="/dashboard"
 
