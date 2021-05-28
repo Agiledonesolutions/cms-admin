@@ -4,7 +4,7 @@ import api from "../../apis/api";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import Validate from "../../utils/validation";
-import Loading from '../Loading'
+import Loading from "../Loading";
 
 class CreateFlashSale extends React.Component {
   state = {
@@ -23,49 +23,51 @@ class CreateFlashSale extends React.Component {
       ],
     },
     errors: [],
+    toast: "",
   };
-  
 
   componentDidMount() {
-    api.get('/product/get').then(res=>{
-      const {productOptions} = this.state
-      res.data.data.map(val => {
-        let tmp ={}
-        tmp.value = val._id
-        tmp.label = val.name
-        productOptions.push(tmp)
-      });
-      this.setState({productOptions})
-    }).catch(err=>{
-      console.log("error fetching products")
-    })
-    if (this.props.edit == "true") {
-      this.setState({submitting: true})
-      const url = "/flashsale/get/" + this.props.match.params.id;
-      api.get(url).then(res=>{
-        const {data} = this.state
-        data.products = []
-        data.campaignName = res.data.data.campaignName
-        res.data.data.products.map(val=>{
-          console.log(val)
-          let tmp = {}
-          tmp.productId = val.product._id
-          tmp.price = val.price
-          tmp.endDate = val.endDate.substr(0,10)
-          tmp.quantity = val.quantity
-          
-          data.products.push(tmp);
-        })
-        this.setState({data})
-        this.setState({submitting: false})
-
-      }).catch(err=>{
-        console.log("error fetching flash sale")
+    api
+      .post("/product/get")
+      .then((res) => {
+        const { productOptions } = this.state;
+        res.data.data.map((val) => {
+          let tmp = {};
+          tmp.value = val._id;
+          tmp.label = val.name;
+          productOptions.push(tmp);
+        });
+        this.setState({ productOptions });
       })
+      .catch((err) => {
+        console.log("error fetching products");
+      });
+    if (this.props.edit == "true") {
+      this.setState({ submitting: true });
+      const url = "/flashsale/get/" + this.props.match.params.id;
+      api
+        .get(url)
+        .then((res) => {
+          const { data } = this.state;
+          data.products = [];
+          data.campaignName = res.data.data.campaignName;
+          res.data.data.products.map((val) => {
+            console.log(val);
+            let tmp = {};
+            tmp.productId = val.product._id;
+            tmp.price = val.price;
+            tmp.endDate = val.endDate.substr(0, 10);
+            tmp.quantity = val.quantity;
+
+            data.products.push(tmp);
+          });
+          this.setState({ data });
+          this.setState({ submitting: false });
+        })
+        .catch((err) => {
+          console.log("error fetching flash sale");
+        });
     }
-
-
-
   }
 
   setValues = (name, val, idx) => {
@@ -97,7 +99,10 @@ class CreateFlashSale extends React.Component {
   handleSubmit = () => {
     const { errors } = this.state;
     const { data } = this.state;
-    if (!errors.includes("campaignName") && !Validate.validateNotEmpty(data["campaignName"])) {
+    if (
+      !errors.includes("campaignName") &&
+      !Validate.validateNotEmpty(data["campaignName"])
+    ) {
       errors.push("campaignName");
       this.setState({ errors });
     } else if (
@@ -108,9 +113,12 @@ class CreateFlashSale extends React.Component {
       this.setState({ errors });
     }
 
-    data.products.forEach((val, idx)=>{
-      for(var elem in val){
-        if (!errors.includes(elem) && !Validate.validateNotEmpty(data["products"][idx][elem])) {
+    data.products.forEach((val, idx) => {
+      for (var elem in val) {
+        if (
+          !errors.includes(elem) &&
+          !Validate.validateNotEmpty(data["products"][idx][elem])
+        ) {
           errors.push(elem);
           this.setState({ errors });
         } else if (
@@ -121,34 +129,80 @@ class CreateFlashSale extends React.Component {
           this.setState({ errors });
         }
       }
-    })
-    console.log(this.state)
+    });
+    console.log(this.state);
     if (!Validate.validateNotEmpty(this.state.errors)) {
-      this.setState({submitting: true})
+      this.setState({ submitting: true });
 
       if (this.props.edit == "true") {
-
-        api.put('/flashsale', {data: data, requiredPermission: "Edit Flash Sales", _id: this.props.match.params.id}).then(res=>{
-          console.log(res)
-          this.setState({submitting: false})
-        }).catch(err=>{
-          console.log("error updating flashsale")
-          this.setState({submitting: false})
-        })
+        api
+          .put("/flashsale", {
+            data: data,
+            requiredPermission: "Edit Flash Sales",
+            _id: this.props.match.params.id,
+          })
+          .then((res) => {
+            console.log(res);
+            this.setState({ submitting: false });
+          })
+          .catch((err) => {
+            console.log("error updating flashsale");
+            this.setState({ submitting: false });
+          });
       } else {
-        
-        api.post('/flashsale', {data: data, requiredPermission: "Create Flash Sales"}).then(res=>{
-          console.log(res)
-          this.setState({submitting: false})
-
-        }).catch(err=>{
-          console.log("error adding flash sale")
-          this.setState({submitting: false})
-
-        })
+        api
+          .post("/flashsale", {
+            data: data,
+            requiredPermission: "Create Flash Sales",
+          })
+          .then((res) => {
+            console.log(res);
+            this.setState({ submitting: false });
+          })
+          .catch((err) => {
+            console.log("error adding flash sale");
+            this.setState({ submitting: false });
+          });
       }
     } else {
       console.log(errors);
+    }
+  };
+  getToast = () => {
+    if (this.state.toast == "success") {
+      return (
+        <div className="alert alert-success fade in alert-dismissable clearfix">
+          <button
+            type="button"
+            className="close"
+            data-dismiss="alert"
+            aria-hidden="true"
+          >
+            ×
+          </button>
+          <div className="alert-icon">
+            <i className="fa fa-check" aria-hidden="true" />
+          </div>
+          <span className="alert-text">Tag has been saved.</span>
+        </div>
+      );
+    } else if (this.state.toast == "fail") {
+      return (
+        <div className="alert alert-danger fade in alert-dismissable clearfix">
+          <button
+            type="button"
+            className="close"
+            data-dismiss="alert"
+            aria-hidden="true"
+          >
+            ×
+          </button>
+          <div className="alert-icon">
+            <i className="fa fa-exclamation" aria-hidden="true" />
+          </div>
+          <span className="alert-text">This action is disabled in demo.</span>
+        </div>
+      );
     }
   };
   tabContentToggle = () => {
@@ -159,9 +213,7 @@ class CreateFlashSale extends React.Component {
           <div className="row">
             <div className="col-md-8">
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Campaign Name<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
@@ -215,14 +267,14 @@ class CreateFlashSale extends React.Component {
                         </label>
 
                         <MultiSelect
-                    onChange={(val)=>{
-                      this.setValues("productId", val, idx)
-                    }}
-                    singleSelect={true}
-                    largeData={true}
-                    options={this.state.productOptions}
-                    defaultValue={this.state.data.products[idx].productId}
-                  />
+                          onChange={(val) => {
+                            this.setValues("productId", val, idx);
+                          }}
+                          singleSelect={true}
+                          largeData={true}
+                          options={this.state.productOptions}
+                          defaultValue={this.state.data.products[idx].productId}
+                        />
                       </div>
                     </div>
                   </div>
@@ -309,14 +361,15 @@ class CreateFlashSale extends React.Component {
             <li>
               <Link to="/flashsales">Flash Sales</Link>
             </li>
-             {this.props.edit == "true" ? (
-            <li className="active">Edit Flash Sale</li>
-          ) : (
-            <li className="active">Create Flash Sale</li>
-          )}
+            {this.props.edit == "true" ? (
+              <li className="active">Edit Flash Sale</li>
+            ) : (
+              <li className="active">Create Flash Sale</li>
+            )}
           </ol>
         </section>
         <section className="content">
+          {this.getToast()}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
@@ -370,7 +423,10 @@ class CreateFlashSale extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-2 col-md-10" style={{display: "flex"}}>
+                      <div
+                        className="col-md-2 col-md-10"
+                        style={{ display: "flex" }}
+                      >
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -381,7 +437,7 @@ class CreateFlashSale extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting}/>
+                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

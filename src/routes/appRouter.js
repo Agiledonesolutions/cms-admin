@@ -46,6 +46,7 @@ import Profile from '../components/Profile/Profile';
 import Menu from '../components/Menu/Menu'
 import CreateMenu from '../components/Menu/CreateMenu';
 import CreateMenuItem from '../components/Menu/CreateMenuItem';
+import Reports from '../components/Reports/Reports';
 
 
 const routes = (
@@ -129,6 +130,8 @@ const routes = (
         <PrivateRoute exact path='/storefront' component={()=><Dashboard abc={ <StoreFront />} />} />
 
         <PrivateRoute exact path='/importer' component={()=><Dashboard abc={ <Importer />} />} />
+
+        <PrivateRoute exact path='/reports' component={()=><Dashboard abc={ <Reports />} />} />
 
         <PrivateRoute exact path='/settings' component={()=><Dashboard abc={ <Settings />} />} />
 

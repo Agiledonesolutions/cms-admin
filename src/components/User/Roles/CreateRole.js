@@ -11,7 +11,340 @@ class CreateRole extends React.Component {
     activePanel: "general",
     data: {
       Name: "",
-      Permissions: []
+      Permissions: [
+        {
+          "name": "Index Attributes",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Attributes",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Attributes",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Attributes",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Attribute Set",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Attribute Set",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Attribute Set",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Attribute Set",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Brand",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Brand",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Brand",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Brand",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Categories",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Categories",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Categories",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Categories",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Coupons",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Coupons",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Coupons",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Coupons",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Currency Rates",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Currency Rates",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Flash Sales",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Flash Sales",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Flash Sales",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Flash Sales",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Import",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Import",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Media",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Media",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Media",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Menus",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Menus",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Menus",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Menus",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Menu Items",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Menu Items",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Menu Items",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Menu Items",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Options",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Options",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Options",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Options",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Order",
+          "value": "Inherit"
+      },
+      {
+          "name": "Show Order",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Order",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Pages",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Pages",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Pages",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Pages",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Products",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Products",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Products",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Products",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Report",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Review",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Review",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Review",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Settings",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Slider",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Slider",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Slider",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Slider",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Tag",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Tag",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Tag",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Tag",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Tax",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Tax",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Tax",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Tax",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Transaction",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Translation",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Translation",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Users",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Users",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Users",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Users",
+          "value": "Inherit"
+      },
+      {
+          "name": "Index Roles",
+          "value": "Inherit"
+      },
+      {
+          "name": "Create Roles",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Roles",
+          "value": "Inherit"
+      },
+      {
+          "name": "Delete Roles",
+          "value": "Inherit"
+      },
+      {
+          "name": "Edit Storefront",
+          "value": "Inherit"
+      }
+      ]
     },
     errors: [],
   };
@@ -108,14 +441,14 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Attributes"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
               />
               <PermissionGroup
                 heading="admin.attribute_sets"
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Attribute Set"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -135,7 +468,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Brand"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -155,7 +488,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Categories"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -175,7 +508,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Coupons"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -195,7 +528,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Edit"]}
                 suffix="Currency Rates"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -215,7 +548,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Flash Sales"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -235,7 +568,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create"]}
                 suffix="Import"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -255,7 +588,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Delete"]}
                 suffix="Media"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -275,7 +608,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Menus"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
               <PermissionGroup
@@ -283,7 +616,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Menu Items"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -303,7 +636,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Options"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -323,7 +656,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Show", "Edit"]}
                 suffix="Order"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -343,7 +676,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Pages"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -363,7 +696,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Products"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -383,7 +716,7 @@ class CreateRole extends React.Component {
                 attributes={["Index"]}
                 suffix="Report"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -403,7 +736,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Edit", "Delete"]}
                 suffix="Review"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -423,7 +756,7 @@ class CreateRole extends React.Component {
                 attributes={["Edit"]}
                 suffix="Settings"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -443,7 +776,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Slider"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -463,7 +796,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Tag"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -483,7 +816,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Tax"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -503,7 +836,7 @@ class CreateRole extends React.Component {
                 attributes={["Index"]}
                 suffix="Transaction"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -523,7 +856,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Edit"]}
                 suffix="Translation"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
@@ -543,7 +876,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Users"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
               <PermissionGroup
@@ -551,7 +884,7 @@ class CreateRole extends React.Component {
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Roles"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
 
               />
@@ -572,7 +905,7 @@ class CreateRole extends React.Component {
                 attributes={["Edit"]}
                 suffix="Storefront"
                 setVal = {this.setVal}
-                editPermissions = {this.props.edit =="true"?this.state.data.Permissions: false}
+                editPermissions = {this.state.data.Permissions}
 
               />
             </div>
