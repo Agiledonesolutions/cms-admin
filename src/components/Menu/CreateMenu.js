@@ -1,9 +1,6 @@
 import React from "react";
 import "./menu.css";
 import { Link, Redirect, withRouter } from "react-router-dom";
-import SortableTree, { toggleExpandedForAll } from "react-sortable-tree";
-import FileExplorerTheme from "react-sortable-tree-theme-full-node-drag";
-import "react-sortable-tree/style.css";
 import Loading from "../Loading";
 import Validate from "../../utils/validation";
 import api from "../../apis/api";
@@ -42,18 +39,7 @@ class CreateMenu extends React.Component {
         })
     }
   }
-  handleTreeOnChange = (treeData) => {
-    this.setState({ treeData }, () => console.log(this.state.treeData));
-  };
 
-  toggleNodeExpansion = (expanded) => {
-    this.setState((prevState) => ({
-      treeData: toggleExpandedForAll({
-        treeData: prevState.treeData,
-        expanded,
-      }),
-    }));
-  };
 
   setVal = (name, val) => {
     const { data } = this.state;
@@ -142,62 +128,7 @@ class CreateMenu extends React.Component {
                       <div className="box-body">
                         <div className="dd">
                           <ol className="dd-list">
-                            ignore this now
-                            {/* <SortableTree
-                              treeData={this.state.treeData}
-                              onChange={this.handleTreeOnChange}
-                              onMoveNode={({ node, treeIndex, path }) =>
-                                global.console.debug(
-                                  "node:",
-                                  node,
-                                  "treeIndex:",
-                                  treeIndex,
-                                  "path:",
-                                  path
-                                )
-                              }
-                              canDrag={({ node }) => !node.noDragging}
-                              canDrop={({ nextParent }) =>
-                                !nextParent || !nextParent.noChildren
-                              }
-                              isVirtualized={false}
-                              theme={FileExplorerTheme}
-                              generateNodeProps={(rowInfo) => ({
-                                icons: !rowInfo.node.noChildren
-                                  ? [
-                                      <div
-                                        style={{
-                                          borderLeft: "solid 8px gray",
-                                          borderBottom: "solid 10px gray",
-                                          marginRight: 10,
-                                          boxSizing: "border-box",
-                                          width: 16,
-                                          height: 12,
-                                          filter: rowInfo.node.expanded
-                                            ? "drop-shadow(1px 0 0 gray) drop-shadow(0 1px 0 gray) drop-shadow(0 -1px 0 gray) drop-shadow(-1px 0 0 gray)"
-                                            : "none",
-                                          borderColor: rowInfo.node.expanded
-                                            ? "white"
-                                            : "gray",
-                                        }}
-                                      />,
-                                    ]
-                                  : [
-                                      <div
-                                        style={{
-                                          border: "solid 1px black",
-                                          fontSize: 8,
-                                          textAlign: "center",
-                                          marginRight: 10,
-                                          width: 12,
-                                          height: 16,
-                                        }}
-                                      >
-                                        F
-                                      </div>,
-                                    ],
-                              })}
-                            /> */}
+                            
                             {/* <li className="dd-item" data-id={35}>
                           <div className="dd-handle-root">root</div>
                           <ol className="dd-list">

@@ -45,7 +45,7 @@ class Menu extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/menu/get")
+      .post("/menu/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;

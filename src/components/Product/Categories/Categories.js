@@ -1,29 +1,25 @@
 import React from "react";
-import { Link, withRouter, Redirect } from "react-router-dom";
-import SortableTree, { toggleExpandedForAll } from "react-sortable-tree";
-import FileExplorerTheme from "react-sortable-tree-theme-file-explorer";
-import "react-sortable-tree/style.css";
-import "react-responsive-modal/styles.css";
+import { Link, withRouter } from "react-router-dom";
 import { Modal } from "react-responsive-modal";
-import treeData from "./treeData";
-import FileManager from '../../Media/FileManager'
-import Validate from '../../../utils/validation'
-import api from '../../../apis/api'
+import "react-responsive-modal/styles.css";
+import FileManager from "../../Media/FileManager";
+import Validate from "../../../utils/validation";
+import api from "../../../apis/api";
 import { siteUrl } from "../../../utils/utils";
+import Tree from "rc-tree";
+import "./styles.css";
 
-const alertNodeInfo = ({ node, path, treeIndex }) => {
-  const objectString = Object.keys(node)
-    .map((k) => (k === "children" ? "children: Array" : `${k}: '${node[k]}'`))
-    .join(",\n   ");
-
-  global.alert(
-    "Info passed to the button generator:\n\n" +
-      `node: {\n   ${objectString}\n},\n` +
-      `path: [${path.join(", ")}],\n` +
-      `treeIndex: ${treeIndex}`
-  );
+const motion = {
+  motionName: 'node-motion',
+  motionAppear: false,
+  onAppearStart: node => {
+    console.log('Start Motion:', node);
+    return { height: 0 };
+  },
+  onAppearActive: node => ({ height: node.scrollHeight }),
+  onLeaveStart: node => ({ height: node.offsetHeight }),
+  onLeaveActive: () => ({ height: 0 }),
 };
-
 class Categories extends React.Component {
   state = {
     showModal: false,
@@ -36,41 +32,36 @@ class Categories extends React.Component {
     data: {
       name: "",
       searchable: false,
-      status: false
+      status: false,
     },
     logoId: "",
     bannerId: "",
     parentId: "",
     errors: [],
-    treeData,
+    treeData: [
+      { title: '0-0', key: '0-0', children:[{title: '0-0-0', key: '0-0-0'}] },
+      { title: '0-1', key: '0-1' },
+      { title: '0-2', key: '0-2', children: [{ title: '0-2-0', key: '0-2-0' }] },
+    ],
+    autoExpandParent: true,
+    expandedKeys: ['0-0-key'],
+
   };
 
-  handleTreeOnChange = (treeData) => {
-    this.setState({ treeData });
-  };
-
-  toggleNodeExpansion = (expanded) => {
-    this.setState((prevState) => ({
-      treeData: toggleExpandedForAll({
-        treeData: prevState.treeData,
-        expanded,
-      }),
-    }));
-  };
-  setImageId = (id, multiple, image) =>{
-    if(this.state.imageType == "logo"){
-      this.setState({logoId: id, logoImage: image})
-    }else if(this.state.imageType == "banner"){
-      this.setState({bannerId: id, bannerImage: image})
+  setImageId = (id, multiple, image) => {
+    if (this.state.imageType == "logo") {
+      this.setState({ logoId: id, logoImage: image });
+    } else if (this.state.imageType == "banner") {
+      this.setState({ bannerId: id, bannerImage: image });
     }
-  }
-  setVal =(key, val) =>{
-    const {data} = this.state
-    data[key] = val
-    this.setState({data})
-  }
-  handleSubmit =() =>{
-    const {data, errors} = this.state
+  };
+  setVal = (key, val) => {
+    const { data } = this.state;
+    data[key] = val;
+    this.setState({ data });
+  };
+  handleSubmit = () => {
+    const { data, errors } = this.state;
     if (!errors.includes("name") && !Validate.validateNotEmpty(data["name"])) {
       errors.push("name");
       this.setState({ errors });
@@ -82,45 +73,53 @@ class Categories extends React.Component {
       this.setState({ errors });
     }
     if (!Validate.validateNotEmpty(this.state.errors)) {
-    if(this.state.parentId == ""){
-      api.post('/category/root', {data: data, logoId: this.state.logoId, bannerId: this.state.bannerId, requiredPermission: "Create Categories"}).then(res=>{
-        console.log(res)
-      }).catch(err=>{
-        console.log("error adding root category")
-      })
+      if (this.state.parentId == "") {
+        api
+          .post("/category/root", {
+            data: data,
+            logoId: this.state.logoId,
+            bannerId: this.state.bannerId,
+            requiredPermission: "Create Categories",
+          })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log("error adding root category");
+          });
+      }
     }
-  }
-  }
+  };
   ToggleActivePanel = () => {
     if (this.state.activePanel == "general") {
       return (
         <div className="tab-pane fade in active">
           <div className="row">
             <div className="col-md-8">
-              {this.state.selectedCategory != "none"? 
-              <div id="id-field">
-                <div className="form-group">
-                  <label
-                    htmlFor="id"
-                    className="col-md-3 control-label text-left"
-                  >
-                    ID
-                  </label>
-                  <div className="col-md-9">
-                    <input
-                      name="id"
-                      className="form-control "
-                      id="id"
-                      type="text"
-                    />
+              {this.state.selectedCategory != "none" ? (
+                <div id="id-field">
+                  <div className="form-group">
+                    <label
+                      htmlFor="id"
+                      className="col-md-3 control-label text-left"
+                    >
+                      ID
+                    </label>
+                    <div className="col-md-9">
+                      <input
+                        name="id"
+                        className="form-control "
+                        id="id"
+                        type="text"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              :""}
+              ) : (
+                ""
+              )}
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Name<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
@@ -129,8 +128,8 @@ class Categories extends React.Component {
                     className="form-control "
                     type="text"
                     value={this.state.data.name}
-                    onChange={(e)=>{
-                      this.setVal(e.target.name, e.target.value)
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
                     }}
                   />
                 </div>
@@ -149,8 +148,8 @@ class Categories extends React.Component {
                       name="searchable"
                       id="is_searchable"
                       checked={this.state.data.searchable}
-                      onChange={(e)=>{
-                        this.setVal(e.target.name, !this.state.data.searchable)
+                      onChange={(e) => {
+                        this.setVal(e.target.name, !this.state.data.searchable);
                       }}
                     />
                     <label htmlFor="is_searchable">
@@ -173,8 +172,8 @@ class Categories extends React.Component {
                       name="status"
                       id="is_active"
                       checked={this.state.data.status}
-                      onChange={(e)=>{
-                        this.setVal(e.target.name, !this.state.data.status)
+                      onChange={(e) => {
+                        this.setVal(e.target.name, !this.state.data.status);
                       }}
                     />
                     <label htmlFor="is_active">Enable the category</label>
@@ -195,7 +194,11 @@ class Categories extends React.Component {
                 type="button"
                 className="image-picker btn btn-default"
                 onClick={() =>
-                  this.setState({ multiple: false, showModal: true, imageType: "logo" })
+                  this.setState({
+                    multiple: false,
+                    showModal: true,
+                    imageType: "logo",
+                  })
                 }
               >
                 <i className="fa fa-folder-open m-r-5" />
@@ -203,9 +206,19 @@ class Categories extends React.Component {
               </button>
               <div className="clearfix" />
               <div className="single-image image-holder-wrapper clearfix">
-              {this.state.logoImage? <div className="image-holder"><img src={siteUrl+this.state.logoImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
-                <i className="fa fa-picture-o" />
-              </div>}
+                {this.state.logoImage ? (
+                  <div className="image-holder">
+                    <img
+                      src={siteUrl + this.state.logoImage}
+                      height={120}
+                      width={120}
+                    />
+                  </div>
+                ) : (
+                  <div className="image-holder placeholder">
+                    <i className="fa fa-picture-o" />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -216,7 +229,11 @@ class Categories extends React.Component {
                 type="button"
                 className="image-picker btn btn-default"
                 onClick={() =>
-                  this.setState({ multiple: false, showModal: true, imageType: "banner" })
+                  this.setState({
+                    multiple: false,
+                    showModal: true,
+                    imageType: "banner",
+                  })
                 }
               >
                 <i className="fa fa-folder-open m-r-5" />
@@ -224,9 +241,19 @@ class Categories extends React.Component {
               </button>
               <div className="clearfix" />
               <div className="single-image image-holder-wrapper clearfix">
-              {this.state.bannerImage? <div className="image-holder"><img src={siteUrl+this.state.bannerImage} height={120} width={120}/></div>: <div className="image-holder placeholder">
-                <i className="fa fa-picture-o" />
-              </div>}
+                {this.state.bannerImage ? (
+                  <div className="image-holder">
+                    <img
+                      src={siteUrl + this.state.bannerImage}
+                      height={120}
+                      width={120}
+                    />
+                  </div>
+                ) : (
+                  <div className="image-holder placeholder">
+                    <i className="fa fa-picture-o" />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -261,10 +288,85 @@ class Categories extends React.Component {
       );
     }
   };
+
+  onDragStart = info => {
+    console.log('start', info);
+  };
+
+  onDragEnter = () => {
+    console.log('enter');
+  };
+
+  onDrop = info => {
+    console.log('drop', info);
+    const dropKey = info.node.key;
+    const dragKey = info.dragNode.key;
+    const dropPos = info.node.pos.split('-');
+    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+
+    const loop = (data, key, callback) => {
+      data.forEach((item, index, arr) => {
+        if (item.key === key) {
+          callback(item, index, arr);
+          return;
+        }
+        if (item.children) {
+          loop(item.children, key, callback);
+        }
+      });
+    };
+    const data = [...this.state.treeData];
+
+    // Find dragObject
+    let dragObj;
+    loop(data, dragKey, (item, index, arr) => {
+      arr.splice(index, 1);
+      dragObj = item;
+    });
+
+    if (dropPosition === 0) {
+      // Drop on the content
+      loop(data, dropKey, item => {
+        // eslint-disable-next-line no-param-reassign
+        item.children = item.children || [];
+        // where to insert 示例添加到尾部，可以是随意位置
+        item.children.unshift(dragObj);
+      });
+    } else {
+      // Drop on the gap (insert before or insert after)
+      let ar;
+      let i;
+      loop(data, dropKey, (item, index, arr) => {
+        ar = arr;
+        i = index;
+      });
+      if (dropPosition === -1) {
+        ar.splice(i, 0, dragObj);
+      } else {
+        ar.splice(i + 1, 0, dragObj);
+      }
+    }
+
+    this.setState({
+      treeData: data,
+    });
+  };
+
+  onExpand = expandedKeys => {
+    console.log('onExpand', expandedKeys);
+    this.setState({
+      expandedKeys,
+      autoExpandParent: false,
+    });
+  };
+  onSelect = (selected,info) =>{
+    console.log(info.node)
+  }
   render() {
+
     return (
       <React.Fragment>
-              <Modal
+        <Modal
           open={this.state.showModal}
           onClose={() => {
             document.querySelector("html").style.overflowY = "auto";
@@ -323,81 +425,29 @@ class Categories extends React.Component {
                     Add Subcategory
                   </button>
                   <div className="m-b-10">
-                    <a
-                      className="collapse-all"
-                      onClick={this.toggleNodeExpansion.bind(this, false)}
-                    >
-                      Collapse All
-                    </a>
+                    <a className="collapse-all">Collapse All</a>
                     <span style={{ paddingLeft: "3px", paddingRight: "3px" }}>
                       |
                     </span>
-                    <a
-                      className="expand-all"
-                      onClick={this.toggleNodeExpansion.bind(this, true)}
-                    >
-                      Expand All
-                    </a>
+                    <a className="expand-all">Expand All</a>
                   </div>
-                  <div className="category-tree">
-                    <div className="tree-wrapper">
-                      Later
-                      {/* <SortableTree
-                        treeData={this.state.treeData}
-                        onChange={this.handleTreeOnChange}
-                        onMoveNode={({ node, treeIndex, path }) =>
-                          global.console.debug(
-                            "node:",
-                            node,
-                            "treeIndex:",
-                            treeIndex,
-                            "path:",
-                            path
-                          )
-                        }
-                        theme={FileExplorerTheme}
-                        canDrag={({ node }) => !node.noDragging}
-                        canDrop={({ nextParent }) =>
-                          !nextParent || !nextParent.noChildren
-                        }
-                        isVirtualized={false}
-                        generateNodeProps={rowInfo => ({
-                            icons: !rowInfo.node.noChildren
-                              ? [
-                                  <div
-                                    style={{
-                                      borderLeft: 'solid 8px gray',
-                                      borderBottom: 'solid 10px gray',
-                                      marginRight: 10,
-                                      boxSizing: 'border-box',
-                                      width: 16,
-                                      height: 12,
-                                      filter: rowInfo.node.expanded
-                                        ? 'drop-shadow(1px 0 0 gray) drop-shadow(0 1px 0 gray) drop-shadow(0 -1px 0 gray) drop-shadow(-1px 0 0 gray)'
-                                        : 'none',
-                                      borderColor: rowInfo.node.expanded ? 'white' : 'gray',
-                                    }}
-                                  />,
-                                ]
-                              : [
-                                  <div
-                                    style={{
-                                      border: 'solid 1px black',
-                                      fontSize: 8,
-                                      textAlign: 'center',
-                                      marginRight: 10,
-                                      width: 12,
-                                      height: 16,
-                                    }}
-                                  >
-                                    F
-                                  </div>,
-                                ],
-                          
-                          })}
-                      /> */}
-                    </div>
-                  </div>
+                  <div className="draggable-demo">
+        <div className="draggable-container">
+          <Tree
+            expandedKeys={this.state.expandedKeys}
+            onExpand={this.onExpand}
+            autoExpandParent={this.state.autoExpandParent}
+            onSelect={this.onSelect}
+            showLine
+            draggable
+            onDragStart={this.onDragStart}
+            onDragEnter={this.onDragEnter}
+            onDrop={this.onDrop}
+            treeData={this.state.treeData}
+          />
+        </div>
+      </div>
+
                 </div>
               </div>
               <div className="col-lg-10 col-md-9">
@@ -450,28 +500,31 @@ class Categories extends React.Component {
                     </div>
                     <div className="form-group" style={{ marginTop: "10px" }}>
                       <div className="col-md-10">
-                        <button type="submit" className="btn btn-primary" onClick={(e)=>{
-                          e.preventDefault()
-                          this.handleSubmit()
-                        }}>
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            this.handleSubmit();
+                          }}
+                        >
                           Save
                         </button>
-                        {this.state.selectedCategory != "none"? 
-                        <button
-                          type="button"
-                          className="btn btn-link text-red btn-delete p-l-0 "
-                        >
-                          Delete
-                        </button>
-                        :""}
+                        {this.state.selectedCategory != "none" ? (
+                          <button
+                            type="button"
+                            className="btn btn-link text-red btn-delete p-l-0 "
+                          >
+                            Delete
+                          </button>
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
                   </form>
                 </div>
               </div>
-            </div>
-            <div className="overlay loader hide">
-              <i className="fa fa-refresh fa-spin" />
             </div>
           </div>
         </section>
@@ -480,4 +533,4 @@ class Categories extends React.Component {
   }
 }
 
-export default Categories;
+export default withRouter(Categories);
