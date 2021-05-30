@@ -54,7 +54,7 @@ class Categories extends React.Component {
     var data = []
     var j = 0;
     const addToCategories = (x, sub) => {
-              console.log(x.name)
+              // console.log(x.name)
       if(sub.length == 0){
         // console.log(x.name)
         // console.log("0-"+j)
@@ -67,7 +67,7 @@ class Categories extends React.Component {
         j++;
       }else{
         let key = "0-"+(j-1)
-        console.log(key+"-"+(sub.length-1))
+        // console.log(key+"-"+(sub.length-1))
       }
       // for(var i = 0; i < sub.length; i++){
       //   console.log("0-"+j+"-"+i+"  "+x.name)
@@ -127,12 +127,22 @@ class Categories extends React.Component {
       errors.splice(errors.indexOf("name"), 1);
       this.setState({ errors });
     }
+
     if (!Validate.validateNotEmpty(this.state.errors)) {
       if(this.state.selectedCategory != "none" && this.state.parentId == ""){
-        console.log("Edit")
+        api.put('/category', {data: this.state.data, logoId: this.state.logoId, bannerId: this.state.bannerId, _id: this.state.selectedCategory, requiredPermission: "Edit Categories"}).then(res=>{
+          console.log(res)
+          this.componentDidMount()
+        }).catch(err=>{
+          console.log(err.response.data)
+        })
       }
-      if(this.state.selectedCategory != "none" && this.state.parentId != ""){
-        console.log("add subcategory")
+      if(this.state.selectedCategory != "none" && this.state.parentId == this.state.selectedCategory){
+        api.post('/category/sub', {data: this.state.data, logoId: this.state.logoId, bannerId: this.state.bannerId, parentId: this.state.parentId, requiredPermission: "Create Categories"}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log(err.response.data)
+        })
       }
       if (this.state.selectedCategory == "none" && this.state.parentId == "") {
         api
@@ -144,6 +154,7 @@ class Categories extends React.Component {
           })
           .then((res) => {
             console.log(res);
+            this.componentDidMount()
           })
           .catch((err) => {
             console.log("error adding root category");
@@ -152,10 +163,15 @@ class Categories extends React.Component {
     }
   };
   handleDelete = () =>{
-    api.delete('/category', {id: this.state.selectedCategory, requiredPermission: "Delete Categories"}).then(res=>{
+    var data ={
+      id: this.state.selectedCategory,
+      requiredPermission: "Delete Categories"
+    }
+    api.delete('/category', {data}).then(res=>{
       console.log(res)
+      this.componentDidMount()
     }).catch(err=>{
-      console.log("error deleting category")
+      console.log(err.response.data)
     })
   }
   resetData = () => {
@@ -212,7 +228,6 @@ class Categories extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="is_searchable"
                   className="col-md-3 control-label text-left"
                 >
                   Searchable
@@ -236,7 +251,6 @@ class Categories extends React.Component {
               </div>
               <div className="form-group">
                 <label
-                  htmlFor="is_active"
                   className="col-md-3 control-label text-left"
                 >
                   Status
@@ -447,7 +461,7 @@ class Categories extends React.Component {
       console.log(res.data.data)
       data.name = res.data.data.name
       data.searchable = res.data.data.searchable
-      data.status = res.data.data.searchable
+      data.status = res.data.data.status
       data.url = res.data.data.url
       this.setState({data, logoId: res.data.data.logo?res.data.data.logo._id: "", logoImage: res.data.data.logo?res.data.data.logo.image:"", bannerId: res.data.data.banner?res.data.data.banner._id:"", bannerImage: res.data.data.banner?res.data.data.banner.image:""})
     }).catch(err=>{
