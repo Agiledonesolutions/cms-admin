@@ -6,33 +6,184 @@ import "./report.css";
 
 class Reports extends React.Component {
   state = {
-    selectedReport: "tagged_products",
+    selectedReport: "coupons_report",
     tableHeads: [],
     tableTitle: "",
     tableData: [],
+    searchWord: "",
+    sku: "",
+    startDate: "",
+    EndDate: "",
+    orderStatus: "",
+    GroupBy: "",
+    searchTitle: "",
+    dates: false
+  };
+
+  componentDidMount() {
+    this.setTable();
   }
 
-  componentDidMount(){
-    this.setTable()
+  getDate = (date) =>{
+    let newDate = new Date(date)
+    let month = newDate.toLocaleString('en-us', {month: 'short'})
+    let year = date.substr(0,4)
+    let day = date.substr(5,2)
+    return (month+" "+day+", "+year).toString()
   }
 
-  setTable = () =>{
-    if(this.state.selectedReport == "tagged_products"){
-      this.setState({tableTitle: "Tagged Products Report", tableHeads: ["Tag",  "Products Count"]})
-    }else if(this.state.selectedReport == "branded_products"){
-      this.setState({tableTitle: "Branded Products Report", tableHeads: ["Brand",  "Products Count"]})
+  setTable = () => {
+    const url = "/report/" + this.state.selectedReport;
+    const tableData = [];
+    if (this.state.selectedReport == "tagged_products") {
+      api
+        .post(url, { searchWord: this.state.searchWord })
+        .then((res) => {
+          res.data.data.forEach((val) => {
+            let temp = [];
+            temp.push(val.name, val.totalProducts);
+            tableData.push(temp);
+          });
+          this.setState({ tableData });
+        })
+        .catch((err) => {
+          console.log(err.response.data);
+        });
+      this.setState({
+        tableTitle: "Tagged Products Report",
+        tableHeads: ["Tag", "Products Count"],
+        searchTitle: "Tag",
+      });
+    } else if (this.state.selectedReport == "branded_products") {
+      // api.post(url, {searchWord: this.state.searchWord}).then(res=>{
+      //   console.log(res)
+      //   res.data.data.forEach(val=>{
+      //     let temp = []
+      //     temp.push(val.name, val.totalProducts)
+      //     tableData.push(temp)
+      //   })
+      //   this.setState({tableData})
+      // }).catch(err=>{
+      //   console.log(err.response.data)
+      // })
+      this.setState({
+        tableTitle: "Branded Products Report",
+        tableHeads: ["Brand", "Products Count"],
+        searchTitle: "Brand",
+      });
+    } else if (this.state.selectedReport == "categorized_products") {
+      api
+        .post(url, { searchWord: this.state.searchWord })
+        .then((res) => {
+          res.data.data.forEach((val) => {
+            let temp = [];
+            temp.push(val.name, val.totalProducts);
+            tableData.push(temp);
+          });
+          this.setState({ tableData });
+        })
+        .catch((err) => {
+          console.log(err.response.data);
+        });
+      this.setState({
+        tableTitle: "Categorized Products Report",
+        tableHeads: ["Category", "Products Count"],
+        searchTitle: "Category",
+      });
+    } else if (this.state.selectedReport == "products_purchase") {
+      api
+        .post(url, {
+          searchWord: this.state.searchWord,
+          SKU: this.state.sku,
+          StartDate: this.state.startDate,
+          EndDate: this.state.EndDate,
+          status: this.state.orderStatus,
+          groupby: this.state.GroupBy,
+        })
+        .then((res) => {
+          res.data.data.forEach((val) => {
+            let temp = [];
+            var start = this.getDate(val.startDate)
+            var end = this.getDate(val.endDate)
+            temp.push(start + "-" + end, val.product.name, val.totalQty, val.total);
+            tableData.push(temp);
+          });
+          this.setState({ tableData });
+        })
+        .catch((err) => {
+          console.log(err.response.data);
+        });
+      this.setState({
+        tableTitle: "Products Purchase Report",
+        tableHeads: ["Date", "Product", "Qty", "Total  "],
+        searchTitle: "Product",
+        dates: true
+      });
+    } else if (this.state.selectedReport == "customer_order") {
+      this.setState({
+        tableTitle: "Customers Order Report",
+        tableHeads: [
+          "Date",
+          "Customer Name",
+          "Customer Email",
+          "Customer Group",
+          "Orders",
+          "Products",
+          "Total",
+        ],
+      });
+    } else if (this.state.selectedReport == "coupons_report") {
+      this.setState({
+        tableTitle: "Coupons Report",
+        tableHeads: ["Date", "Coupon Name", "Coupon Code", "Orders", "Total"],
+      });
+    } else if (this.state.selectedReport == "products_stock") {
+      this.setState({
+        tableTitle: "Products Stock Report",
+        tableHeads: ["Product", "Qty", "Stock Availability"],
+      });
+    } else if (this.state.selectedReport == "products_view") {
+      this.setState({
+        tableTitle: "Products View Report",
+        tableHeads: ["Product", "Views"],
+      });
+    } else if (this.state.selectedReport == "taxed_products") {
+      this.setState({
+        tableTitle: "Taxed Products Report",
+        tableHeads: ["Tax Class", "Products Count"],
+      });
+    } else if (this.state.selectedReport == "sales_report") {
+      this.setState({
+        tableTitle: "Sales Report",
+        tableHeads: [
+          "Date",
+          "Orders",
+          "Products",
+          "Subtotal",
+          "Shipping",
+          "Discount",
+          "Tax",
+          "Total",
+        ],
+      });
+    } else if (this.state.selectedReport == "search_report") {
+      this.setState({
+        tableTitle: "Search Report",
+        tableHeads: ["Keyword", "Results", "Hits"],
+      });
+    } else if (this.state.selectedReport == "shipping_report") {
+      this.setState({
+        tableTitle: "Shipping Report",
+        tableHeads: ["Date", "Shipping Method", "Orders", "Total"],
+      });
+    } else if (this.state.selectedReport == "tax_report") {
+      this.setState({
+        tableTitle: "Tax Report",
+        tableHeads: ["Date", "Tax Name", "Orders", "Total"],
+      });
     }
-  }
+  };
 
-  onSelectedReportChange = () =>{
-    var url = "/report/"+this.state.selectedReport
-    api.post(url, {searchWord: ""}).then(res=>{
-      console.log(res.data.data)
-      this.setTable()
-    }).catch(err=>{
-      console.log(err)
-    })
-  }
   toggleTableContent = () => {
     return (
       <div className="report-result">
@@ -41,18 +192,28 @@ class Reports extends React.Component {
           <table className="table">
             <thead>
               <tr>
-                {this.state.tableHeads.map((val)=>(
-                  <th>{val}</th>
-                ))} 
+                {this.state.tableHeads.map((val, index) => (
+                  <th key={index}>{val}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Feb 2, 2021 - Mar 15, 2021</td>
-                <td>Anniversary</td>
-              </tr>
+              {this.state.tableData.map((val, index) => (
+                <tr key={index}>
+                  {val.map((data, key) => (
+                    <td key={key}>{data}</td>
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
+          {this.state.tableData.length == 0 ? (
+            <div style={{ textAlign: "center", padding: "0.5em" }}>
+              No Data Available
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     );
@@ -82,11 +243,22 @@ class Reports extends React.Component {
                     <form>
                       <div className="form-group">
                         <label htmlFor="report-type">Report Type</label>
-                        <select name="type" className="custom-select-black" value={this.state.selectedReport} onChange={(e=>{
-                          this.setState({selectedReport: e.target.value},()=>{
-                            this.onSelectedReportChange()
-                          })
-                        })}>
+                        <select
+                          name="type"
+                          className="custom-select-black"
+                          value={this.state.selectedReport}
+                          onChange={(e) => {
+                            this.setState(
+                              {
+                                selectedReport: e.target.value,
+                                searchWord: "",
+                              },
+                              () => {
+                                this.setTable();
+                              }
+                            );
+                          }}
+                        >
                           <option value="coupons_report">Coupons Report</option>
                           <option value="customer_order">
                             Customers Order Report
@@ -94,10 +266,10 @@ class Reports extends React.Component {
                           <option value="products_purchase">
                             Products Purchase Report
                           </option>
-                          <option value="products_stock_report">
+                          <option value="products_stock">
                             Products Stock Report
                           </option>
-                          <option value="products_view_report">
+                          <option value="products_view">
                             Products View Report
                           </option>
                           <option value="branded_products">
@@ -106,7 +278,7 @@ class Reports extends React.Component {
                           <option value="categorized_products">
                             Categorized Products Report
                           </option>
-                          <option value="taxed_products_report">
+                          <option value="taxed_products">
                             Taxed Products Report
                           </option>
                           <option value="tagged_products">
@@ -120,6 +292,7 @@ class Reports extends React.Component {
                           <option value="tax_report">Tax Report</option>
                         </select>
                       </div>
+                      {this.state.dates? <React.Fragment>
                       <div className="form-group">
                         <label htmlFor="from">Date Start</label>
                         <input
@@ -136,21 +309,26 @@ class Reports extends React.Component {
                           className="form-control datetime-picker"
                         />
                       </div>
+                      </React.Fragment>
+                      :""}
+                      {this.state.selectedReport == "products_purchase"? 
                       <div className="form-group">
                         <label htmlFor="status">Order Status</label>
                         <select name="status" className="custom-select-black">
-                          <option value>Please Select</option>
-                          <option value="canceled">Canceled</option>
-                          <option value="completed">Completed</option>
-                          <option value="on_hold">On Hold</option>
-                          <option value="pending">Pending</option>
-                          <option value="pending_payment">
+                          <option value="">Please Select</option>
+                          <option value="Canceled">Canceled</option>
+                          <option value="Completed">Completed</option>
+                          <option value={"On Hold"}>On Hold</option>
+                          <option value="Pending">Pending</option>
+                          <option value={"Pending Payment"}>
                             Pending Payment
                           </option>
-                          <option value="processing">Processing</option>
-                          <option value="refunded">Refunded</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Refunded">Refunded</option>
                         </select>
                       </div>
+                      :""}
+                      {this.state.selectedReport == "products_purchase"? 
                       <div className="form-group">
                         <label htmlFor="group">Group By</label>
                         <select
@@ -158,30 +336,42 @@ class Reports extends React.Component {
                           id="group"
                           className="custom-select-black"
                         >
-                          <option value>Please Select</option>
+                          <option value="">Please Select</option>
                           <option value="days">Days</option>
                           <option value="weeks">Weeks</option>
                           <option value="months">Months</option>
                           <option value="years">Years</option>
                         </select>
                       </div>
-                      <div className="form-group">
+                      :""}
+                      {/* <div className="form-group">
                         <label htmlFor="coupon-code">Coupon Code</label>
                         <input
                           type="text"
                           name="coupon_code"
                           className="form-control"
                         />
-                      </div>
+                      </div> */}
                       <div className="form-group">
-                        <label htmlFor="coupon-code">Tag</label>
+                        <label>{this.state.searchTitle}</label>
                         <input
                           type="text"
-                          name="coupon_code"
+                          name="search"
                           className="form-control"
+                          value={this.state.searchWord}
+                          onChange={(e) => {
+                            this.setState({ searchWord: e.target.value });
+                          }}
                         />
                       </div>
-                      <button type="button" className="btn btn-default">
+                      <button
+                        type="submit"
+                        className="btn btn-default"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          this.setTable();
+                        }}
+                      >
                         Filter
                       </button>
                     </form>
