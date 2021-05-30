@@ -33,20 +33,75 @@ class Categories extends React.Component {
       name: "",
       searchable: false,
       status: false,
+      url: ""
     },
     logoId: "",
     bannerId: "",
     parentId: "",
     errors: [],
     treeData: [
-      { title: '0-0', key: '0-0', children:[{title: '0-0-0', key: '0-0-0'}] },
-      { title: '0-1', key: '0-1' },
-      { title: '0-2', key: '0-2', children: [{ title: '0-2-0', key: '0-2-0' }] },
     ],
     autoExpandParent: true,
     expandedKeys: ['0-0-key'],
 
   };
+
+  // { title: '0-0', key: '0-0', children:[{title: '0-0-0', key: '0-0-0'}] },
+  // { title: '0-1', key: '0-1' },
+  // { title: '0-2', key: '0-2', children: [{ title: '0-2-0', key: '0-2-0' }] },
+
+  componentDidMount(){
+    var data = []
+    var j = 0;
+    const addToCategories = (x, sub) => {
+              console.log(x.name)
+      if(sub.length == 0){
+        // console.log(x.name)
+        // console.log("0-"+j)
+        let parent = {
+          key: "0-"+j,
+          title: x.name,
+          _id: x._id
+        }
+        data.push(parent)
+        j++;
+      }else{
+        let key = "0-"+(j-1)
+        console.log(key+"-"+(sub.length-1))
+      }
+      // for(var i = 0; i < sub.length; i++){
+      //   console.log("0-"+j+"-"+i+"  "+x.name)
+      // }
+      let tmp = {
+        children:[]
+      };
+      tmp["title"] = x.name;
+      tmp["_id"] = x._id;
+      // categoryOptions.push(tmp);
+      if (x.childrenCategory.length > 0) {
+        sub.push("sub");
+        x.childrenCategory.forEach((y) => {
+          
+          addToCategories(y, sub);
+        });
+      } else {
+        return;
+      }
+    };
+    api
+      .get("/category/get")
+      .then((res) => {
+        console.log(res.data.data)
+        res.data.data.forEach((val) => {
+          addToCategories(val, []);
+        });
+        console.log(data)
+        this.setState({treeData: data})
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   setImageId = (id, multiple, image) => {
     if (this.state.imageType == "logo") {
@@ -73,7 +128,13 @@ class Categories extends React.Component {
       this.setState({ errors });
     }
     if (!Validate.validateNotEmpty(this.state.errors)) {
-      if (this.state.parentId == "") {
+      if(this.state.selectedCategory != "none" && this.state.parentId == ""){
+        console.log("Edit")
+      }
+      if(this.state.selectedCategory != "none" && this.state.parentId != ""){
+        console.log("add subcategory")
+      }
+      if (this.state.selectedCategory == "none" && this.state.parentId == "") {
         api
           .post("/category/root", {
             data: data,
@@ -90,13 +151,27 @@ class Categories extends React.Component {
       }
     }
   };
+  handleDelete = () =>{
+    api.delete('/category', {id: this.state.selectedCategory, requiredPermission: "Delete Categories"}).then(res=>{
+      console.log(res)
+    }).catch(err=>{
+      console.log("error deleting category")
+    })
+  }
+  resetData = () => {
+    const {data} = this.state
+    data.name = ""
+    data.status = false
+    data.searchable = false
+    this.setState({data, logoId: "", logoImage: "", bannerId: "", bannerImage: ""})
+  }
   ToggleActivePanel = () => {
     if (this.state.activePanel == "general") {
       return (
         <div className="tab-pane fade in active">
           <div className="row">
             <div className="col-md-8">
-              {this.state.selectedCategory != "none" ? (
+              {this.state.selectedCategory != "none" && (this.state.selectedCategory != this.state.parentId) ? (
                 <div id="id-field">
                   <div className="form-group">
                     <label
@@ -109,8 +184,9 @@ class Categories extends React.Component {
                       <input
                         name="id"
                         className="form-control "
-                        id="id"
                         type="text"
+                        value={this.state.selectedCategory}
+                        disabled={true}
                       />
                     </div>
                   </div>
@@ -261,7 +337,7 @@ class Categories extends React.Component {
       );
     } else if (this.state.activePanel == "seo") {
       return (
-        <div id="seo" className="tab-pane fade in active">
+        <div  className="tab-pane fade in active">
           <div className="row">
             <div className="col-md-8">
               <div id="slug-field">
@@ -274,10 +350,13 @@ class Categories extends React.Component {
                   </label>
                   <div className="col-md-9">
                     <input
-                      name="slug"
+                      name="url"
                       className="form-control "
-                      id="slug"
                       type="text"
+                      value={this.state.data.url}
+                      onChange={(e)=>{
+                        this.setVal(e.target.name, e.target.value)
+                      }}
                     />
                   </div>
                 </div>
@@ -361,6 +440,19 @@ class Categories extends React.Component {
   };
   onSelect = (selected,info) =>{
     console.log(info.node)
+    this.setState({selectedCategory: info.node._id, activePanel: "general", parentId: ""})
+    const url = '/category/get/'+info.node._id
+    const {data} = this.state
+    api.get(url).then(res=>{
+      console.log(res.data.data)
+      data.name = res.data.data.name
+      data.searchable = res.data.data.searchable
+      data.status = res.data.data.searchable
+      data.url = res.data.data.url
+      this.setState({data, logoId: res.data.data.logo?res.data.data.logo._id: "", logoImage: res.data.data.logo?res.data.data.logo.image:"", bannerId: res.data.data.banner?res.data.data.banner._id:"", bannerImage: res.data.data.banner?res.data.data.banner.image:""})
+    }).catch(err=>{
+      console.log("error fetching category")
+    })
   }
   render() {
 
@@ -419,7 +511,8 @@ class Categories extends React.Component {
                     }
                     style={{ marginBottom: "5px" }}
                     onClick={() => {
-                      this.setState({ selectedCategory: "someid" });
+                      this.setState({ parentId: this.state.selectedCategory });
+                      this.resetData()
                     }}
                   >
                     Add Subcategory
@@ -477,7 +570,7 @@ class Categories extends React.Component {
                     >
                       <a>Image</a>
                     </li>
-                    {this.state.selectedCategory != "none" ? (
+                    {this.state.selectedCategory != "none" &&(this.state.selectedCategory != this.state.parentId)? (
                       <li
                         className={
                           this.state.activePanel == "seo"
@@ -510,10 +603,14 @@ class Categories extends React.Component {
                         >
                           Save
                         </button>
-                        {this.state.selectedCategory != "none" ? (
+                        {this.state.selectedCategory != "none" && (this.state.selectedCategory != this.state.parentId) ? (
                           <button
                             type="button"
                             className="btn btn-link text-red btn-delete p-l-0 "
+                            onClick={(e)=>{
+                              e.preventDefault()
+                              this.handleDelete()
+                            }}
                           >
                             Delete
                           </button>

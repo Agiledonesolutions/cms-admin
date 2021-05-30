@@ -26,7 +26,7 @@ class Users extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/users/get")
+      .post("/users/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
