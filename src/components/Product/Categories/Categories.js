@@ -69,54 +69,30 @@ class Categories extends React.Component {
 
   componentDidMount() {
     var data = [];
-    var j = 0;
-    var key = "";
-    var k = 0;
-    var parent = {};
-    const addToCategories = (x, sub) => {
-      console.log(x.name);
-      if (sub.length == 0) {
-        key = "0-" + j;
-        parent = {
-          key: key,
-          title: x.name,
-          _id: x._id,
-          children: [],
-        };
-        j++;
-        k = 0;
-      } else {
-        let tempKey = key + "-" + k++;
-        parent.children.push({
-          key: tempKey,
-          title: x.name,
-          _id: x._id,
-          children: [],
-        });
-        console.log(tempKey);
-      }
-      if (x.childrenCategory.length > 0) {
-        sub.push("sub");
-        key = key + "-" + k;
-        k = 0;
-        x.childrenCategory.forEach((y) => {
-          addToCategories(y, sub);
-        });
-      } else {
-        key = key.substr(0, key.length-2)
-        return;
-      }
-    };
-
+    const addKey = (root, parent) =>{
+      var count = 0;
+      root.children = root.childrenCategory
+      var subFolders = root.children
+      const subFolder = subFolders.filter(function(val){
+        return val.childrenCategory
+      })
+      subFolder.forEach(sub=>{
+        sub.key = parent+"-"+count
+        sub.title = sub.name
+        count++;
+        addKey(sub, sub.key)
+      })
+    }
+    
     api
       .get("/category/get")
       .then((res) => {
-        console.log(res.data.data);
-        res.data.data.forEach((val) => {
-          addToCategories(val, []);
-          data.push(parent)
+        res.data.data.forEach((val,index) => {
+          val.key = "0-"+index
+          val.title = val.name
+          addKey(val, val.key)
+          data.push(val)
         });
-        console.log(data);
         this.setState({ treeData: data });
       })
       .catch((err) => {
