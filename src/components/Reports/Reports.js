@@ -17,20 +17,20 @@ class Reports extends React.Component {
     orderStatus: "",
     GroupBy: "",
     searchTitle: "",
-    dates: false
+    dates: false,
   };
 
   componentDidMount() {
     this.setTable();
   }
 
-  getDate = (date) =>{
-    let newDate = new Date(date)
-    let month = newDate.toLocaleString('en-us', {month: 'short'})
-    let year = date.substr(0,4)
-    let day = date.substr(5,2)
-    return (month+" "+day+", "+year).toString()
-  }
+  getDate = (date) => {
+    let newDate = new Date(date);
+    let month = newDate.toLocaleString("en-us", { month: "short" });
+    let year = date.substr(0, 4);
+    let day = date.substr(5, 2);
+    return (month + " " + day + ", " + year).toString();
+  };
 
   setTable = () => {
     const url = "/report/" + this.state.selectedReport;
@@ -64,7 +64,7 @@ class Reports extends React.Component {
       //   })
       //   this.setState({tableData})
       // }).catch(err=>{
-      //   console.log(err.response.data)
+      //   console.log(err)
       // })
       this.setState({
         tableTitle: "Branded Products Report",
@@ -103,9 +103,14 @@ class Reports extends React.Component {
         .then((res) => {
           res.data.data.forEach((val) => {
             let temp = [];
-            var start = this.getDate(val.startDate)
-            var end = this.getDate(val.endDate)
-            temp.push(start + "-" + end, val.product.name, val.totalQty, val.total);
+            var start = this.getDate(val.startDate);
+            var end = this.getDate(val.endDate);
+            temp.push(
+              start + "-" + end,
+              val.product.name,
+              val.totalQty,
+              val.total
+            );
             tableData.push(temp);
           });
           this.setState({ tableData });
@@ -117,9 +122,23 @@ class Reports extends React.Component {
         tableTitle: "Products Purchase Report",
         tableHeads: ["Date", "Product", "Qty", "Total  "],
         searchTitle: "Product",
-        dates: true
+        dates: true,
       });
     } else if (this.state.selectedReport == "customer_order") {
+      api
+      .post(url, { searchWord: this.state.searchWord })
+      .then((res) => {
+        console.log(res.data.data)
+        // res.data.data.forEach((val) => {
+        //   let temp = [];
+        //   temp.push(val.name, val.totalProducts);
+        //   tableData.push(temp);
+        // });
+        this.setState({ tableData });
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+      });
       this.setState({
         tableTitle: "Customers Order Report",
         tableHeads: [
@@ -131,6 +150,7 @@ class Reports extends React.Component {
           "Products",
           "Total",
         ],
+        dates: true
       });
     } else if (this.state.selectedReport == "coupons_report") {
       this.setState({
@@ -292,58 +312,75 @@ class Reports extends React.Component {
                           <option value="tax_report">Tax Report</option>
                         </select>
                       </div>
-                      {this.state.dates? <React.Fragment>
-                      <div className="form-group">
-                        <label htmlFor="from">Date Start</label>
-                        <input
-                          type="date"
-                          name="from"
-                          className="form-control datetime-picker"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="to">Date End</label>
-                        <input
-                          type="date"
-                          name="to"
-                          className="form-control datetime-picker"
-                        />
-                      </div>
-                      </React.Fragment>
-                      :""}
-                      {this.state.selectedReport == "products_purchase"? 
-                      <div className="form-group">
-                        <label htmlFor="status">Order Status</label>
-                        <select name="status" className="custom-select-black">
-                          <option value="">Please Select</option>
-                          <option value="Canceled">Canceled</option>
-                          <option value="Completed">Completed</option>
-                          <option value={"On Hold"}>On Hold</option>
-                          <option value="Pending">Pending</option>
-                          <option value={"Pending Payment"}>
-                            Pending Payment
-                          </option>
-                          <option value="Processing">Processing</option>
-                          <option value="Refunded">Refunded</option>
-                        </select>
-                      </div>
-                      :""}
-                      {this.state.selectedReport == "products_purchase"? 
-                      <div className="form-group">
-                        <label htmlFor="group">Group By</label>
-                        <select
-                          name="group"
-                          id="group"
-                          className="custom-select-black"
-                        >
-                          <option value="">Please Select</option>
-                          <option value="days">Days</option>
-                          <option value="weeks">Weeks</option>
-                          <option value="months">Months</option>
-                          <option value="years">Years</option>
-                        </select>
-                      </div>
-                      :""}
+                      {this.state.dates ? (
+                        <React.Fragment>
+                          <div className="form-group">
+                            <label htmlFor="from">Date Start</label>
+                            <input
+                              type="date"
+                              name="from"
+                              className="form-control datetime-picker"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="to">Date End</label>
+                            <input
+                              type="date"
+                              name="to"
+                              className="form-control datetime-picker"
+                            />
+                          </div>
+                        </React.Fragment>
+                      ) : (
+                        ""
+                      )}
+                      {this.state.selectedReport == "products_purchase" || this.state.selectedReport == "customer_order"? (
+                        <div className="form-group">
+                          <label htmlFor="status">Order Status</label>
+                          <select
+                            name="status"
+                            className="custom-select-black"
+                            value={this.state.orderStatus}
+                            onChange={(e) => {
+                              this.setState({ orderStatus: e.target.value });
+                            }}
+                          >
+                            <option value="">Please Select</option>
+                            <option value="Canceled">Canceled</option>
+                            <option value="Completed">Completed</option>
+                            <option value={"On Hold"}>On Hold</option>
+                            <option value="Pending">Pending</option>
+                            <option value={"Pending Payment"}>
+                              Pending Payment
+                            </option>
+                            <option value="Processing">Processing</option>
+                            <option value="Refunded">Refunded</option>
+                          </select>
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                      {this.state.selectedReport == "products_purchase" || this.state.selectedReport == "customer_order" ? (
+                        <div className="form-group">
+                          <label htmlFor="group">Group By</label>
+                          <select
+                            name="group"
+                            className="custom-select-black"
+                            value={this.state.GroupBy}
+                            onChange={(e) => {
+                              this.setState({ GroupBy: e.target.value });
+                            }}
+                          >
+                            <option value="">Please Select</option>
+                            <option value="days">Days</option>
+                            <option value="weeks">Weeks</option>
+                            <option value="months">Months</option>
+                            <option value="years">Years</option>
+                          </select>
+                        </div>
+                      ) : (
+                        ""
+                      )}
                       {/* <div className="form-group">
                         <label htmlFor="coupon-code">Coupon Code</label>
                         <input
@@ -352,6 +389,7 @@ class Reports extends React.Component {
                           className="form-control"
                         />
                       </div> */}
+                      {this.state.selectedReport != "customer_order"? 
                       <div className="form-group">
                         <label>{this.state.searchTitle}</label>
                         <input
@@ -364,6 +402,23 @@ class Reports extends React.Component {
                           }}
                         />
                       </div>
+                      :""}
+                      {this.state.selectedReport == "products_purchase" ? (
+                        <div className="form-group">
+                          <label>SKU</label>
+                          <input
+                            type="text"
+                            name="sku"
+                            className="form-control"
+                            value={this.state.sku}
+                            onChange={(e) => {
+                              this.setState({ sku: e.target.value });
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        ""
+                      )}
                       <button
                         type="submit"
                         className="btn btn-default"
