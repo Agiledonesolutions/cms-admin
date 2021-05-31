@@ -10,14 +10,14 @@ import Tree from "rc-tree";
 import "./styles.css";
 
 const motion = {
-  motionName: 'node-motion',
+  motionName: "node-motion",
   motionAppear: false,
-  onAppearStart: node => {
-    console.log('Start Motion:', node);
+  onAppearStart: (node) => {
+    console.log("Start Motion:", node);
     return { height: 0 };
   },
-  onAppearActive: node => ({ height: node.scrollHeight }),
-  onLeaveStart: node => ({ height: node.offsetHeight }),
+  onAppearActive: (node) => ({ height: node.scrollHeight }),
+  onLeaveStart: (node) => ({ height: node.offsetHeight }),
   onLeaveActive: () => ({ height: 0 }),
 };
 class Categories extends React.Component {
@@ -33,70 +33,91 @@ class Categories extends React.Component {
       name: "",
       searchable: false,
       status: false,
-      url: ""
+      url: "",
     },
     logoId: "",
     bannerId: "",
     parentId: "",
     errors: [],
-    treeData: [
-    ],
+    treeData: [],
     autoExpandParent: true,
-    expandedKeys: ['0-0-key'],
-
+    expandedKeys: ["0-0-key"],
+    // temp: [
+    //   {
+    //     title: "blah",
+    //     key: "0-0",
+    //     children: [
+    //       {
+    //         title: "whatev",
+    //         key: "0-0-0",
+    //         children: [{ title: "whatever", key: "0-0-0-0" }],
+    //       },
+    //       { title: "whatev", key: "0-0-1" },
+    //     ],
+    //   },
+    //   { title: "blah", key: "0-1" },
+    //   {
+    //     title: "blah",
+    //     key: "0-2",
+    //     children: [
+    //       { title: "balh2", key: "0-2-0" },
+    //       { title: "blah", key: "0-2-1" },
+    //     ],
+    //   },
+    // ],
   };
 
-  // { title: '0-0', key: '0-0', children:[{title: '0-0-0', key: '0-0-0'}] },
-  // { title: '0-1', key: '0-1' },
-  // { title: '0-2', key: '0-2', children: [{ title: '0-2-0', key: '0-2-0' }] },
-
-  componentDidMount(){
-    var data = []
+  componentDidMount() {
+    var data = [];
     var j = 0;
+    var key = "";
+    var k = 0;
+    var parent = {};
     const addToCategories = (x, sub) => {
-              // console.log(x.name)
-      if(sub.length == 0){
-        // console.log(x.name)
-        // console.log("0-"+j)
-        let parent = {
-          key: "0-"+j,
+      console.log(x.name);
+      if (sub.length == 0) {
+        key = "0-" + j;
+        parent = {
+          key: key,
           title: x.name,
-          _id: x._id
-        }
-        data.push(parent)
+          _id: x._id,
+          children: [],
+        };
         j++;
-      }else{
-        let key = "0-"+(j-1)
-        // console.log(key+"-"+(sub.length-1))
+        k = 0;
+      } else {
+        let tempKey = key + "-" + k++;
+        parent.children.push({
+          key: tempKey,
+          title: x.name,
+          _id: x._id,
+          children: [],
+        });
+        console.log(tempKey);
       }
-      // for(var i = 0; i < sub.length; i++){
-      //   console.log("0-"+j+"-"+i+"  "+x.name)
-      // }
-      let tmp = {
-        children:[]
-      };
-      tmp["title"] = x.name;
-      tmp["_id"] = x._id;
-      // categoryOptions.push(tmp);
       if (x.childrenCategory.length > 0) {
         sub.push("sub");
+        key = key + "-" + k;
+        k = 0;
         x.childrenCategory.forEach((y) => {
-          
           addToCategories(y, sub);
         });
       } else {
+        key = key.substr(0, key.length-2)
         return;
       }
     };
+
     api
       .get("/category/get")
       .then((res) => {
-        console.log(res.data.data)
+        console.log(res.data.data);
         res.data.data.forEach((val) => {
           addToCategories(val, []);
+          data.push(parent)
         });
-        console.log(data)
-        this.setState({treeData: data})
+        console.log(data);
+        this.setState({ treeData: data });
       })
       .catch((err) => {
         console.log(err);
@@ -129,20 +150,41 @@ class Categories extends React.Component {
     }
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
-      if(this.state.selectedCategory != "none" && this.state.parentId == ""){
-        api.put('/category', {data: this.state.data, logoId: this.state.logoId, bannerId: this.state.bannerId, _id: this.state.selectedCategory, requiredPermission: "Edit Categories"}).then(res=>{
-          console.log(res)
-          this.componentDidMount()
-        }).catch(err=>{
-          console.log(err.response.data)
-        })
+      if (this.state.selectedCategory != "none" && this.state.parentId == "") {
+        api
+          .put("/category", {
+            data: this.state.data,
+            logoId: this.state.logoId,
+            bannerId: this.state.bannerId,
+            _id: this.state.selectedCategory,
+            requiredPermission: "Edit Categories",
+          })
+          .then((res) => {
+            console.log(res);
+            this.componentDidMount();
+          })
+          .catch((err) => {
+            console.log(err.response.data);
+          });
       }
-      if(this.state.selectedCategory != "none" && this.state.parentId == this.state.selectedCategory){
-        api.post('/category/sub', {data: this.state.data, logoId: this.state.logoId, bannerId: this.state.bannerId, parentId: this.state.parentId, requiredPermission: "Create Categories"}).then(res=>{
-          console.log(res)
-        }).catch(err=>{
-          console.log(err.response.data)
-        })
+      if (
+        this.state.selectedCategory != "none" &&
+        this.state.parentId == this.state.selectedCategory
+      ) {
+        api
+          .post("/category/sub", {
+            data: this.state.data,
+            logoId: this.state.logoId,
+            bannerId: this.state.bannerId,
+            parentId: this.state.parentId,
+            requiredPermission: "Create Categories",
+          })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err.response.data);
+          });
       }
       if (this.state.selectedCategory == "none" && this.state.parentId == "") {
         api
@@ -154,7 +196,7 @@ class Categories extends React.Component {
           })
           .then((res) => {
             console.log(res);
-            this.componentDidMount()
+            this.componentDidMount();
           })
           .catch((err) => {
             console.log("error adding root category");
@@ -162,32 +204,42 @@ class Categories extends React.Component {
       }
     }
   };
-  handleDelete = () =>{
-    var data ={
+  handleDelete = () => {
+    var data = {
       id: this.state.selectedCategory,
-      requiredPermission: "Delete Categories"
-    }
-    api.delete('/category', {data}).then(res=>{
-      console.log(res)
-      this.componentDidMount()
-    }).catch(err=>{
-      console.log(err.response.data)
-    })
-  }
+      requiredPermission: "Delete Categories",
+    };
+    api
+      .delete("/category", { data })
+      .then((res) => {
+        console.log(res);
+        this.componentDidMount();
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+      });
+  };
   resetData = () => {
-    const {data} = this.state
-    data.name = ""
-    data.status = false
-    data.searchable = false
-    this.setState({data, logoId: "", logoImage: "", bannerId: "", bannerImage: ""})
-  }
+    const { data } = this.state;
+    data.name = "";
+    data.status = false;
+    data.searchable = false;
+    this.setState({
+      data,
+      logoId: "",
+      logoImage: "",
+      bannerId: "",
+      bannerImage: "",
+    });
+  };
   ToggleActivePanel = () => {
     if (this.state.activePanel == "general") {
       return (
         <div className="tab-pane fade in active">
           <div className="row">
             <div className="col-md-8">
-              {this.state.selectedCategory != "none" && (this.state.selectedCategory != this.state.parentId) ? (
+              {this.state.selectedCategory != "none" &&
+              this.state.selectedCategory != this.state.parentId ? (
                 <div id="id-field">
                   <div className="form-group">
                     <label
@@ -227,9 +279,7 @@ class Categories extends React.Component {
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Searchable
                 </label>
                 <div className="col-md-9">
@@ -250,9 +300,7 @@ class Categories extends React.Component {
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Status
                 </label>
                 <div className="col-md-9">
@@ -351,7 +399,7 @@ class Categories extends React.Component {
       );
     } else if (this.state.activePanel == "seo") {
       return (
-        <div  className="tab-pane fade in active">
+        <div className="tab-pane fade in active">
           <div className="row">
             <div className="col-md-8">
               <div id="slug-field">
@@ -368,8 +416,8 @@ class Categories extends React.Component {
                       className="form-control "
                       type="text"
                       value={this.state.data.url}
-                      onChange={(e)=>{
-                        this.setVal(e.target.name, e.target.value)
+                      onChange={(e) => {
+                        this.setVal(e.target.name, e.target.value);
                       }}
                     />
                   </div>
@@ -382,20 +430,21 @@ class Categories extends React.Component {
     }
   };
 
-  onDragStart = info => {
-    console.log('start', info);
+  onDragStart = (info) => {
+    console.log("start", info);
   };
 
   onDragEnter = () => {
-    console.log('enter');
+    console.log("enter");
   };
 
-  onDrop = info => {
-    console.log('drop', info);
+  onDrop = (info) => {
+    console.log("drop", info);
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
-    const dropPos = info.node.pos.split('-');
-    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+    const dropPos = info.node.pos.split("-");
+    const dropPosition =
+      info.dropPosition - Number(dropPos[dropPos.length - 1]);
 
     const loop = (data, key, callback) => {
       data.forEach((item, index, arr) => {
@@ -419,7 +468,7 @@ class Categories extends React.Component {
 
     if (dropPosition === 0) {
       // Drop on the content
-      loop(data, dropKey, item => {
+      loop(data, dropKey, (item) => {
         // eslint-disable-next-line no-param-reassign
         item.children = item.children || [];
         // where to insert 示例添加到尾部，可以是随意位置
@@ -445,31 +494,43 @@ class Categories extends React.Component {
     });
   };
 
-  onExpand = expandedKeys => {
-    console.log('onExpand', expandedKeys);
+  onExpand = (expandedKeys) => {
+    console.log("onExpand", expandedKeys);
     this.setState({
       expandedKeys,
       autoExpandParent: false,
     });
   };
-  onSelect = (selected,info) =>{
-    console.log(info.node)
-    this.setState({selectedCategory: info.node._id, activePanel: "general", parentId: ""})
-    const url = '/category/get/'+info.node._id
-    const {data} = this.state
-    api.get(url).then(res=>{
-      console.log(res.data.data)
-      data.name = res.data.data.name
-      data.searchable = res.data.data.searchable
-      data.status = res.data.data.status
-      data.url = res.data.data.url
-      this.setState({data, logoId: res.data.data.logo?res.data.data.logo._id: "", logoImage: res.data.data.logo?res.data.data.logo.image:"", bannerId: res.data.data.banner?res.data.data.banner._id:"", bannerImage: res.data.data.banner?res.data.data.banner.image:""})
-    }).catch(err=>{
-      console.log("error fetching category")
-    })
-  }
+  onSelect = (selected, info) => {
+    console.log(info.node);
+    this.setState({
+      selectedCategory: info.node._id,
+      activePanel: "general",
+      parentId: "",
+    });
+    const url = "/category/get/" + info.node._id;
+    const { data } = this.state;
+    api
+      .get(url)
+      .then((res) => {
+        console.log(res.data.data);
+        data.name = res.data.data.name;
+        data.searchable = res.data.data.searchable;
+        data.status = res.data.data.status;
+        data.url = res.data.data.url;
+        this.setState({
+          data,
+          logoId: res.data.data.logo ? res.data.data.logo._id : "",
+          logoImage: res.data.data.logo ? res.data.data.logo.image : "",
+          bannerId: res.data.data.banner ? res.data.data.banner._id : "",
+          bannerImage: res.data.data.banner ? res.data.data.banner.image : "",
+        });
+      })
+      .catch((err) => {
+        console.log("error fetching category");
+      });
+  };
   render() {
-
     return (
       <React.Fragment>
         <Modal
@@ -526,7 +587,7 @@ class Categories extends React.Component {
                     style={{ marginBottom: "5px" }}
                     onClick={() => {
                       this.setState({ parentId: this.state.selectedCategory });
-                      this.resetData()
+                      this.resetData();
                     }}
                   >
                     Add Subcategory
@@ -539,22 +600,21 @@ class Categories extends React.Component {
                     <a className="expand-all">Expand All</a>
                   </div>
                   <div className="draggable-demo">
-        <div className="draggable-container">
-          <Tree
-            expandedKeys={this.state.expandedKeys}
-            onExpand={this.onExpand}
-            autoExpandParent={this.state.autoExpandParent}
-            onSelect={this.onSelect}
-            showLine
-            draggable
-            onDragStart={this.onDragStart}
-            onDragEnter={this.onDragEnter}
-            onDrop={this.onDrop}
-            treeData={this.state.treeData}
-          />
-        </div>
-      </div>
-
+                    <div className="draggable-container">
+                      <Tree
+                        expandedKeys={this.state.expandedKeys}
+                        onExpand={this.onExpand}
+                        autoExpandParent={this.state.autoExpandParent}
+                        onSelect={this.onSelect}
+                        showLine
+                        draggable
+                        onDragStart={this.onDragStart}
+                        onDragEnter={this.onDragEnter}
+                        onDrop={this.onDrop}
+                        treeData={this.state.treeData}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="col-lg-10 col-md-9">
@@ -584,7 +644,8 @@ class Categories extends React.Component {
                     >
                       <a>Image</a>
                     </li>
-                    {this.state.selectedCategory != "none" &&(this.state.selectedCategory != this.state.parentId)? (
+                    {this.state.selectedCategory != "none" &&
+                    this.state.selectedCategory != this.state.parentId ? (
                       <li
                         className={
                           this.state.activePanel == "seo"
@@ -617,13 +678,14 @@ class Categories extends React.Component {
                         >
                           Save
                         </button>
-                        {this.state.selectedCategory != "none" && (this.state.selectedCategory != this.state.parentId) ? (
+                        {this.state.selectedCategory != "none" &&
+                        this.state.selectedCategory != this.state.parentId ? (
                           <button
                             type="button"
                             className="btn btn-link text-red btn-delete p-l-0 "
-                            onClick={(e)=>{
-                              e.preventDefault()
-                              this.handleDelete()
+                            onClick={(e) => {
+                              e.preventDefault();
+                              this.handleDelete();
                             }}
                           >
                             Delete
