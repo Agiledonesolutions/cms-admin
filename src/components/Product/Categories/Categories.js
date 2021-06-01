@@ -9,17 +9,6 @@ import { siteUrl } from "../../../utils/utils";
 import Tree from "rc-tree";
 import "./styles.css";
 
-const motion = {
-  motionName: "node-motion",
-  motionAppear: false,
-  onAppearStart: (node) => {
-    console.log("Start Motion:", node);
-    return { height: 0 };
-  },
-  onAppearActive: (node) => ({ height: node.scrollHeight }),
-  onLeaveStart: (node) => ({ height: node.offsetHeight }),
-  onLeaveActive: () => ({ height: 0 }),
-};
 class Categories extends React.Component {
   state = {
     showModal: false,
@@ -41,34 +30,14 @@ class Categories extends React.Component {
     errors: [],
     treeData: [],
     autoExpandParent: true,
-    expandedKeys: ["0-0-key"],
-    // temp: [
-    //   {
-    //     title: "blah",
-    //     key: "0-0",
-    //     children: [
-    //       {
-    //         title: "whatev",
-    //         key: "0-0-0",
-    //         children: [{ title: "whatever", key: "0-0-0-0" }],
-    //       },
-    //       { title: "whatev", key: "0-0-1" },
-    //     ],
-    //   },
-    //   { title: "blah", key: "0-1" },
-    //   {
-    //     title: "blah",
-    //     key: "0-2",
-    //     children: [
-    //       { title: "balh2", key: "0-2-0" },
-    //       { title: "blah", key: "0-2-1" },
-    //     ],
-    //   },
-    // ],
+    expandedKeys: [],
+    allKeys: []
+ 
   };
 
   componentDidMount() {
     var data = [];
+    const {allKeys} = this.state
     const addKey = (root, parent) =>{
       var count = 0;
       root.children = root.childrenCategory
@@ -79,6 +48,7 @@ class Categories extends React.Component {
       subFolder.forEach(sub=>{
         sub.key = parent+"-"+count
         sub.title = sub.name
+        allKeys.push(sub.key)
         count++;
         addKey(sub, sub.key)
       })
@@ -90,10 +60,11 @@ class Categories extends React.Component {
         res.data.data.forEach((val,index) => {
           val.key = "0-"+index
           val.title = val.name
+          allKeys.push(val.key)
           addKey(val, val.key)
           data.push(val)
         });
-        this.setState({ treeData: data });
+        this.setState({ treeData: data, allKeys });
       })
       .catch((err) => {
         console.log(err);
@@ -569,11 +540,15 @@ class Categories extends React.Component {
                     Add Subcategory
                   </button>
                   <div className="m-b-10">
-                    <a className="collapse-all">Collapse All</a>
+                    <a className="collapse-all" onClick={()=>{
+                      this.setState({expandedKeys: []})
+                    }}>Collapse All</a>
                     <span style={{ paddingLeft: "3px", paddingRight: "3px" }}>
                       |
                     </span>
-                    <a className="expand-all">Expand All</a>
+                    <a className="expand-all" onClick={()=>{
+                      this.setState({expandedKeys: this.state.allKeys})
+                    }}>Expand All</a>
                   </div>
                   <div className="draggable-demo">
                     <div className="draggable-container">
