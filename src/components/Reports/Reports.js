@@ -20,6 +20,9 @@ class Reports extends React.Component {
     searchTitle: "",
     name: "",
     email: "",
+    above: "",
+    below: "",
+    stockAvailability: "",
     dates: false,
   };
 
@@ -169,10 +172,25 @@ class Reports extends React.Component {
         tableTitle: "Coupons Report",
         tableHeads: ["Date", "Coupon Name", "Coupon Code", "Orders", "Total"],
       });
-    } else if (this.state.selectedReport == "products_stock") {
+    } else if (this.state.selectedReport == "product_stock") {
+      api
+      .post(url, { above: this.state.above, below: this.state.below, stockAvailability: this.state.stockAvailability })
+      .then((res) => {
+        res.data.data.forEach((val) => {
+          let temp = [];
+          temp.push(<Link to={'/products/'+val._id+"/edit"}>{val.name}</Link>, val.Qty? val.Qty: "--", val.stockAvailability != ""? val.stockAvailability: "--");
+          tableData.push(temp);
+        });
+        this.setState({ tableData });
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+      });
+
       this.setState({
         tableTitle: "Products Stock Report",
         tableHeads: ["Product", "Qty", "Stock Availability"],
+        dates: false
       });
     } else if (this.state.selectedReport == "products_view") {
       this.setState({
@@ -208,16 +226,18 @@ class Reports extends React.Component {
       .post(url, { OrderStatus: this.state.orderStatus, StartDate: this.state.startDate, EndDate: this.state.EndDate, ShippingMethod: this.state.shippingMethod })
       .then((res) => {
         console.log(res.data.data)
-        // res.data.data.forEach((val) => {
-        //   let temp = [];
-        //   var start = this.getDate(val.startDate);
-        //   var end = this.getDate(val.endDate);
-        //   temp.push(
-        //     start + "-" + end,
-            
-        //   )
-        //   tableData.push(temp);
-        // });
+        res.data.data.forEach((val) => {
+          let temp = [];
+          var start = this.getDate(val.startDate);
+          var end = this.getDate(val.endDate);
+          temp.push(
+            start + "-" + end,
+            val._id,
+            val.totalOrders,
+            val.total
+          )
+          tableData.push(temp);
+        });
         this.setState({ tableData });
       })
       .catch((err) => {
@@ -323,7 +343,7 @@ class Reports extends React.Component {
                           <option value="products_purchase">
                             Products Purchase Report
                           </option>
-                          <option value="products_stock">
+                          <option value="product_stock">
                             Products Stock Report
                           </option>
                           <option value="products_view">
@@ -474,7 +494,50 @@ class Reports extends React.Component {
                       </div>
                       </React.Fragment>
                       :""}
-                      {this.state.selectedReport != "customer_order" && this.state.selectedReport != "shipping"? 
+                      {this.state.selectedReport == "product_stock"? 
+                      <React.Fragment>
+                        <div className="form-group">
+                        <label>Quantity Above</label>
+                        <input
+                          type="number"
+                          name="above"
+                          className="form-control"
+                          value={this.state.above}
+                          onChange={(e) => {
+                            this.setState({ above: e.target.value });
+                          }}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Quantity Below</label>
+                        <input
+                          type="number"
+                          name="below"
+                          className="form-control"
+                          value={this.state.below}
+                          onChange={(e) => {
+                            this.setState({ below: e.target.value });
+                          }}
+                        />
+                      </div>
+                      <div className="form-group">
+                          <label htmlFor="group">Stock Availability</label>
+                          <select
+                            name="group"
+                            className="custom-select-black"
+                            value={this.state.stockAvailability}
+                            onChange={(e) => {
+                              this.setState({ stockAvailability: e.target.value });
+                            }}
+                          >
+                            <option value="">Please Select</option>
+                            <option value={"In Stock"}>In Stock</option>
+                            <option value={"Out of Stock"}>Out of Stock</option>
+                          </select>
+                        </div>
+                      </React.Fragment>
+                      :""}
+                      {this.state.selectedReport != "customer_order" && this.state.selectedReport != "shipping" && this.state.selectedReport != "product_stock"? 
                       <div className="form-group">
                         <label>{this.state.searchTitle}</label>
                         <input

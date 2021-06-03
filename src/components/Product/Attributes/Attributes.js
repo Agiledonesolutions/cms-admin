@@ -53,7 +53,7 @@ class Attributes extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/attribute/get")
+      .post("/attribute/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;

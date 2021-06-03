@@ -1080,8 +1080,9 @@ class CreateProduct extends React.Component {
                       this.setVal(e.target.name, e.target.value);
                     }}
                   >
-                    <option value="In Stock">In Stock</option>
-                    <option value="Out of Stock">Out of Stock</option>
+                    <option value="">Please Select</option>
+                    <option value={"In Stock"}>In Stock</option>
+                    <option value={"Out of Stock"}>Out of Stock</option>
                   </select>
                 </div>
               </div>

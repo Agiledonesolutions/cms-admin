@@ -45,7 +45,7 @@ class CreateAttribute extends React.Component {
     }
     const { attributesSets } = this.state;
      api
-      .get("/attributeset/get")
+      .post("/attributeset/get")
       .then((res) => {
         res.data.data.map((val) => {
           attributesSets.push(val);
@@ -282,7 +282,7 @@ class CreateAttribute extends React.Component {
           <h3 className="tab-content-title">Values</h3>
           <div id="attribute-values-wrapper">
             <div className="table-responsive">
-              <table className="options table table-bordered">
+              <table className="options table table-bordered" >
                 <thead>
                   <tr>
                     <th />
@@ -292,8 +292,8 @@ class CreateAttribute extends React.Component {
                 </thead>
                 <tbody id="attribute-values">
                   {this.state.data.value.map((item, idx) => (
-                    <tr key={idx}>
-                      <td className="text-center">
+                    <tr key={idx} draggable="true" >
+                      <td className="text-center" >
                         <span className="drag-icon">
                           <i className="fa">&#xf142;</i>
                           <i className="fa">&#xf142;</i>

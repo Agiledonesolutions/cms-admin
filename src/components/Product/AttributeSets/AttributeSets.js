@@ -42,7 +42,7 @@ class AttributeSets extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/attributeset/get")
+      .post("/attributeset/get")
       .then((res) => {
           // console.log(res.data.data)
         res.data.data.map((val) => {
