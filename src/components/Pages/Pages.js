@@ -45,7 +45,7 @@ class Pages extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/page/get")
+      .post("/page/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;

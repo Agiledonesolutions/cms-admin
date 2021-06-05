@@ -4,10 +4,12 @@ import Validate from "../../utils/validation";
 import api from "../../apis/api";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
+import Loading from '../Loading'
 
 class CreateCoupon extends React.Component {
   state = {
     activePanel: "general",
+    submitting: false,
     rolesArray: [],
     rolesArray2: [],
     categoryOptions: [],
@@ -34,6 +36,8 @@ class CreateCoupon extends React.Component {
   };
   componentDidMount() {
     if (this.props.edit == "true") {
+      this.setState({ submitting: true });
+
       const url = "/coupon/get/" + this.props.match.params.id;
       api.get(url).then(res=>{
         const {data} = this.state
@@ -53,10 +57,9 @@ class CreateCoupon extends React.Component {
         data.usageLimitPerCustomer = res.data.data.usageLimitPerCustomer
         rolesArray.push(res.data.data.categories.toString()) 
         rolesArray2.push(res.data.data.excludedCategories.toString())
-        this.setState({data})
-        this.setState({rolesArray})
-        this.setState({rolesArray2})
+        this.setState({data, rolesArray, rolesArray2, submitting: false})
       }).catch(err=>{
+        this.setState({ submitting: false });
         console.log("error fetching coupon")
       })
      
@@ -139,23 +142,26 @@ class CreateCoupon extends React.Component {
     }
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({ submitting: true });
       if (this.props.edit == "true") {
         api
           .put("/coupon", { data: data, _id: this.props.match.params.id, productIds: this.state.productIds, excludedProductIds: this.state.excludedProductIds, categoryIds: this.state.categoryIds, excludedCategoryIds: this.state.excludedCategoryIds,  requiredPermission: "Edit Coupons" })
           .then((res) => {
-            console.log(res);
+            this.setState({ submitting: false });
           })
           .catch((err) => {
+            this.setState({ submitting: false });
             console.log("error updating brand");
           });
       } else {
         api
           .post("/coupon", { data: data, productIds: this.state.productIds, excludedProductIds: this.state.excludedProductIds, categoryIds: this.state.categoryIds, excludedCategoryIds: this.state.excludedCategoryIds,  requiredPermission: "Create Coupons" })
           .then((res) => {
-            console.log(res);
+            this.setState({ submitting: false });
           })
           .catch((err) => {
             console.log("error posting coupon");
+            this.setState({ submitting: false });
           });
       }
     } else {
@@ -486,6 +492,7 @@ class CreateCoupon extends React.Component {
             {this.props.edit == "true"? <li className="active">Edit Coupon</li>: <li className="active">Create Coupon</li>}
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <form className="form-horizontal">
             <div className="accordion-content clearfix">

@@ -1,6 +1,7 @@
 import React from "react";
 import api from "../../apis/api";
 import {  Redirect } from "react-router-dom";
+import Loading from '../Loading'
 
 class Home extends React.Component {
   state = {
@@ -8,43 +9,53 @@ class Home extends React.Component {
     totalProducts: 0,
     latestOrders: [],
     latestReviews: [],
-    url: ""
+    url: "",
+    submitting: false
   };
   componentDidMount() {
+    this.setState({submitting: true})
+
     api
       .get("/dashboard/orders")
       .then((res) => {
-        this.setState({ totalOrders: res.data.data });
+        this.setState({ totalOrders: res.data.data, submitting: false });
+        
       })
       .catch((err) => {
         console.log("error");
+        this.setState({submitting: false})
       });
     api
       .get("/dashboard/products")
       .then((res) => {
-        this.setState({ totalProducts: res.data.data });
+        this.setState({ totalProducts: res.data.data, submitting: false });
       })
       .catch((err) => {
         console.log("error");
+        this.setState({submitting: false})
+
       });
     api
       .get("/dashboard/latest/reviews")
       .then((res) => {
-        console.log(res.data.data)
-        this.setState({ latestReviews: res.data.data });
+        this.setState({ latestReviews: res.data.data, submitting: false });
       })
       .catch((err) => {
         console.log("error");
+        this.setState({submitting: false})
+
       });
     api
       .get("/dashboard/latest/orders")
       .then((res) => {
-        // console.log(res.data.data)
-        this.setState({ latestOrders: res.data.data });
+        this.setState({ latestOrders: res.data.data, submitting: false });
       })
       .catch((err) => {
         console.log("error");
+        this.setState({submitting: false})
+
       });
+
   }
   render() {
     if (this.state.url != "") {
@@ -55,6 +66,7 @@ class Home extends React.Component {
         <section className="content-header clearfix">
           <h2 className="pull-left">Dashboard</h2>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="grid clearfix">
             <div className="row">

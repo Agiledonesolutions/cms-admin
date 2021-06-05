@@ -38,6 +38,8 @@ class FlashSales extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
+
     const datalist = [];
     var i = 0;
     api
@@ -55,9 +57,10 @@ class FlashSales extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
+        this.setState({submitting: false})
         console.log(err);
       });
   }

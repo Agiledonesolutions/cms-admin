@@ -7,7 +7,7 @@
 .rc-tree-focused:not(.rc-tree-active-focused) {
     border-color: cyan;
 }
-.rc-tree .rc-tree-treenode {
+.dd-list .rc-tree .rc-tree-treenode {
     margin: 0;
     padding: 0;
     line-height: 24px;
@@ -18,7 +18,7 @@
     display: block;
     
 }
-.rc-tree .rc-tree-treenode .draggable {
+.dd-list .rc-tree .rc-tree-treenode .draggable {
     color: #333;
     -moz-user-select: none;
     -khtml-user-select: none;

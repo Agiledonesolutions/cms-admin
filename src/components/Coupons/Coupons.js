@@ -7,10 +7,12 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../apis/api";
 import { format } from "timeago.js";
+import Loading from '../Loading'
 
 class Coupons extends React.Component {
   state = {
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -52,16 +54,16 @@ class Coupons extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({ submitting: true });
     const datalist = [];
     var i = 0;
     api
-      .get("/coupon/get")
+      .post("/coupon/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
-            logo: "https://via.placeholder.com/50",
             name: val["name"],
             code : val["code"],
             discount: val["value"],
@@ -73,24 +75,27 @@ class Coupons extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
+        this.setState({ submitting: false });
         console.log(err);
       });
   }
 
   deleteSelectedItems = () => {
+    this.setState({ submitting: true });
     const { selectedRows } = this.state;
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
       .delete("/coupon", { data })
       .then((res) => {
-        console.log(res);
+        this.setState({ submitting: false });
         this.componentDidMount();
       })
       .catch((err) => {
+        this.setState({ submitting: false });
         console.log("delete error");
       });
   };
@@ -121,6 +126,7 @@ class Coupons extends React.Component {
               </Link>
             </div>
           </div>
+          <Loading show={this.state.submitting}/>
           <div className="box box-primary">
             <div className="box-body index-table" id="attributes-table">
               <div className="table-delete-button">

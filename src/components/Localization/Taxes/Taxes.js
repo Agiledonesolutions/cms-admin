@@ -41,7 +41,6 @@ class Taxes extends React.Component {
     api
       .get("/tax/get")
       .then((res) => {
-        console.log(res.data.data)
         res.data.data.map((val) => {
           i++;
           var tmp = {

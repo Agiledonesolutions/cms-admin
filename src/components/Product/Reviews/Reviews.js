@@ -55,16 +55,15 @@ class Reviews extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
-    var i = 0;
     api
-      .get("/review/get")
+      .post("/review/get")
       .then((res) => {
         res.data.data.map((val) => {
-          i++;
-          console.log(res.data.data)
+          
           var tmp = {
-            id: i,
+            id: val.ID,
             product: val["product"]["name"],
             reviewername: val["reviewerName"],
             rating: val.rating,
@@ -76,9 +75,10 @@ class Reviews extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
+        this.setState({submitting: false})
         console.log(err);
       });
   }

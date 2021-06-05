@@ -69,7 +69,6 @@ class CreateMenu extends React.Component {
       api
         .get(url)
         .then((res) => {
-          // console.log(res.data.data);
           data.name = res.data.data.name;
           data.status = res.data.data.status;
           allKeys.push("0-0")

@@ -460,7 +460,7 @@ class CreateUser extends React.Component {
 
    componentDidMount(){
     const {options} = this.state
-      api.get('/roles/get').then(res=>{
+      api.post('/roles/get').then(res=>{
       res.data.data.forEach(x=>{
         let tmp = {}
         tmp['label'] = x.Name

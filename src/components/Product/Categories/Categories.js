@@ -8,6 +8,7 @@ import api from "../../../apis/api";
 import { siteUrl } from "../../../utils/utils";
 import Tree from "rc-tree";
 import "./styles.css";
+import Loading from "../../Loading";
 
 class Categories extends React.Component {
   state = {
@@ -31,11 +32,13 @@ class Categories extends React.Component {
     treeData: [],
     autoExpandParent: true,
     expandedKeys: [],
-    allKeys: []
+    allKeys: [], 
+    submitting: false
  
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     var data = [];
     const {allKeys} = this.state
     const addKey = (root, parent) =>{
@@ -64,10 +67,11 @@ class Categories extends React.Component {
           addKey(val, val.key)
           data.push(val)
         });
-        this.setState({ treeData: data, allKeys });
+        this.setState({ treeData: data, allKeys, submitting: false });
       })
       .catch((err) => {
         console.log(err);
+        this.setState({submitting: false})
       });
   }
 
@@ -386,7 +390,7 @@ class Categories extends React.Component {
   };
 
   onDrop = (info) => {
-    console.log("drop", info);
+    // console.log("drop", info);
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
     const dropPos = info.node.pos.split("-");
@@ -442,25 +446,25 @@ class Categories extends React.Component {
   };
 
   onExpand = (expandedKeys) => {
-    console.log("onExpand", expandedKeys);
+    // console.log("onExpand", expandedKeys);
     this.setState({
       expandedKeys,
       autoExpandParent: false,
     });
   };
   onSelect = (selected, info) => {
-    console.log(info.node);
     this.setState({
       selectedCategory: info.node._id,
       activePanel: "general",
       parentId: "",
+      submitting: true
     });
     const url = "/category/get/" + info.node._id;
     const { data } = this.state;
     api
       .get(url)
       .then((res) => {
-        console.log(res.data.data);
+        // console.log(res.data.data);
         data.name = res.data.data.name;
         data.searchable = res.data.data.searchable;
         data.status = res.data.data.status;
@@ -471,6 +475,7 @@ class Categories extends React.Component {
           logoImage: res.data.data.logo ? res.data.data.logo.image : "",
           bannerId: res.data.data.banner ? res.data.data.banner._id : "",
           bannerImage: res.data.data.banner ? res.data.data.banner.image : "",
+          submitting: false
         });
       })
       .catch((err) => {
@@ -510,6 +515,7 @@ class Categories extends React.Component {
             <li className="active">Categories</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="box box-default">
             <div className="box-body clearfix">

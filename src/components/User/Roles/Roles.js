@@ -49,7 +49,7 @@ class Roles extends React.Component {
   componentDidMount(){
     const datalist = []
     var i=0
-    api.get('/roles/get').then(res=>{
+    api.post('/roles/get').then(res=>{
         // console.log(res.data.data)
         res.data.data.map(val=>{
             i++;

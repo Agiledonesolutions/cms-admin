@@ -40,7 +40,7 @@ class Sliders extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/slides/get")
+      .post("/slides/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;

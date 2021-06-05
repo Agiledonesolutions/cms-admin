@@ -180,7 +180,7 @@ class Settings extends React.Component {
   };
   componentDidMount() {
     api
-      .get("/roles/get")
+      .post("/roles/get")
       .then((res) => {
         const { customerRoles } = this.state;
         res.data.data.forEach((role) => {
@@ -198,7 +198,6 @@ class Settings extends React.Component {
     api
       .get("/settings/get")
       .then((res) => {
-        console.log(res.data.data)
         const { data } = this.state;
         for (const [key, value] of Object.entries(res.data.data[0])) {
           if (key != "_id" && key != "__v") {

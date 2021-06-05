@@ -17,6 +17,7 @@ class CreateReview extends React.Component {
     errors: [],
   };
   componentDidMount() {
+    this.setState({submitting: true})
     if (this.props.edit == "true") {
       const url = "/review/get/" + this.props.match.params.id;
       const { data } = this.state;
@@ -28,13 +29,12 @@ class CreateReview extends React.Component {
           data.comment = res.data.data.comment
           data.rating = res.data.data.rating
           
-          this.setState({data})
-          this.setState({productId: res.data.data.product["_id"]})
+          this.setState({data, productId: res.data.data.product["_id"], submitting: false})
         })
         .catch((err) => {
+          this.setState({submitting: false})
           console.log("error fetching");
         });
-      this.setState({ data });
     }
   }
   setVal = (key, val) => {
@@ -83,7 +83,6 @@ class CreateReview extends React.Component {
         api
           .put("/review", { data, _id, productId: this.state.productId, requiredPermission: "Edit Review" })
           .then((res) => {
-            console.log(res);
             this.setState({submitting: false})
 
           })
@@ -114,6 +113,7 @@ class CreateReview extends React.Component {
             <li className="active">Edit Review</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting} />
         <section className="content">
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
@@ -252,7 +252,6 @@ class CreateReview extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

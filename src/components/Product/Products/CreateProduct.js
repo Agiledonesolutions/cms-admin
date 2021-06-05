@@ -19,6 +19,7 @@ import CrossSells from "./CrossSells";
 import Validate from '../../../utils/validation'
 import Loading from '../../Loading'
 import { siteUrl } from "../../../utils/utils";
+import {getMessage} from '../../AlertMessage'
 
 const options = {
   defaultColumns: 3,
@@ -148,6 +149,9 @@ class CreateProduct extends React.Component {
     edit: "",
     errors: [],
     editorState: BraftEditor.createEditorState(),
+    alertType: "",
+    alertMessage: "",
+    redirect: ""
   };
 
   componentDidMount() {
@@ -315,7 +319,6 @@ class CreateProduct extends React.Component {
       if(this.props.edit == "true"){
         const url = "/product/get/" + this.props.match.params.id;
         api.get(url).then(res=>{
-          console.log(res.data.data)
           let tmp= {
             name: res.data.data.name,
             taxClass: res.data.data.taxClass,
@@ -451,8 +454,7 @@ class CreateProduct extends React.Component {
       })
       if(this.props.edit == "true"){
         api.put('/product',{data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Edit Products", _id: this.props.match.params.id}).then(res=>{
-          console.log(res)
-          this.setState({submitting: false})
+          this.setState({submitting: false, alertType: "success", alertMessage: "Changes have been saved"})
         }).catch(err=>{
           console.log("error updating product")
           this.setState({submitting: false})
@@ -460,8 +462,7 @@ class CreateProduct extends React.Component {
         })
       }else{
         api.post('/product', {data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Create Products"}).then(res=>{
-          console.log(res)
-          this.setState({submitting: false})
+          this.setState({submitting: false, redirect: "success"})
         }).catch(err=>{
           console.log(err.response.data.message)
           this.setState({submitting: false})
@@ -469,7 +470,7 @@ class CreateProduct extends React.Component {
         })
       }   
     }else{
-      console.log(this.state.errors)
+      this.setState({alertType: "fail", alertMessage: this.state.errors + " are required fields."})
     }
 
   };
@@ -1696,9 +1697,15 @@ class CreateProduct extends React.Component {
       );
     }
   };
+  closeAlert = () => {this.setState({alertType: ""})}
   render() {
     if (this.state.edit != "") {
       return <Redirect to={"/products/" + this.state.edit + "/edit"} />;
+    } else if (this.state.redirect != "") {
+      return <Redirect to={{
+        pathname: "/products",
+        alert: {type: "success", message: "Product added succesfully."}
+      }} />;
     }
     return (
       <React.Fragment>
@@ -1749,6 +1756,7 @@ class CreateProduct extends React.Component {
             </ol>
           </section>
           <section className="content">
+          {getMessage(this.state.alertType, this.state.alertMessage, this.closeAlert)}
             <form className="form-horizontal">
               <div className="accordion-content clearfix">
                 <div className="col-lg-3 col-md-4">

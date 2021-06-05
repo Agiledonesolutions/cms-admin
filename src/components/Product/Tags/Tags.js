@@ -42,7 +42,7 @@ class Tags extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/tag/get")
+      .post("/tag/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;

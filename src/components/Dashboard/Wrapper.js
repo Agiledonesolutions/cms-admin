@@ -1,22 +1,29 @@
 import React, { useRef } from "react";
 import { getName, removeAuthToken, removeUserDetails } from "../../utils/local";
-import {getUserName, removeUSer, removeUserSession} from '../../utils/session'
+import {
+  getUserName,
+  removeUSer,
+  removeUserSession,
+} from "../../utils/session";
 import { Link } from "react-router-dom";
-
 
 const Wrapper = (props) => {
   const dropdownref = useRef(null);
+  const langRef = useRef(null);
 
   const dropdownToggle = () => {
     dropdownref.current.classList.toggle("show");
   };
-  const handleLogout = () =>{
-    removeUserSession()
-    removeAuthToken()
-    removeUserDetails()
-    removeUSer()
-    window.location.href ='/'
-  }
+  const langToggle = () => {
+    langRef.current.classList.toggle("show");
+  };
+  const handleLogout = () => {
+    removeUserSession();
+    removeAuthToken();
+    removeUserDetails();
+    removeUSer();
+    window.location.href = "/";
+  };
   return (
     <React.Fragment>
       <div className="wrapper" style={{ minHeight: 731 }}>
@@ -41,13 +48,31 @@ const Wrapper = (props) => {
                 </a>
                 <ul className="dropdown-menu" ref={dropdownref}>
                   <li>
-                    <Link to='/profile'>
-                      Profile
-                    </Link>
+                    <Link to="/profile">Profile</Link>
                   </li>
                   <li>
-                    <a onClick={handleLogout}>
-                      Logout
+                    <a onClick={handleLogout}>Logout</a>
+                  </li>
+                </ul>
+              </li>
+              <li className="language dropdown top-nav-menu pull-right">
+                <a
+                  style={{ cursor: "pointer" }}
+                  className="dropdown-toggle"
+                  data-toggle="dropdown"
+                  onClick={langToggle}
+                >
+                  <span>EN</span>
+                </a>
+                <ul className="dropdown-menu" ref={langRef}>
+                  <li className="">
+                    <a href="#">
+                      Arabic
+                    </a>
+                  </li>
+                  <li className="active">
+                    <a href="#">
+                      English
                     </a>
                   </li>
                 </ul>

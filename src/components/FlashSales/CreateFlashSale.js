@@ -37,9 +37,10 @@ class CreateFlashSale extends React.Component {
           tmp.label = val.name;
           productOptions.push(tmp);
         });
-        this.setState({ productOptions });
+        this.setState({ productOptions, submitting: false });
       })
       .catch((err) => {
+        this.setState({ submitting: false });
         console.log("error fetching products");
       });
     if (this.props.edit == "true") {
@@ -52,19 +53,18 @@ class CreateFlashSale extends React.Component {
           data.products = [];
           data.campaignName = res.data.data.campaignName;
           res.data.data.products.map((val) => {
-            console.log(val);
             let tmp = {};
-            tmp.productId = val.product._id;
+            tmp.productId = val.product?val.product._id:"";
             tmp.price = val.price;
             tmp.endDate = val.endDate.substr(0, 10);
             tmp.quantity = val.quantity;
 
             data.products.push(tmp);
           });
-          this.setState({ data });
-          this.setState({ submitting: false });
+          this.setState({ data, submitting: false, activePanel: "settings" });
         })
         .catch((err) => {
+          this.setState({ submitting: false });
           console.log("error fetching flash sale");
         });
     }
@@ -130,7 +130,6 @@ class CreateFlashSale extends React.Component {
         }
       }
     });
-    console.log(this.state);
     if (!Validate.validateNotEmpty(this.state.errors)) {
       this.setState({ submitting: true });
 
@@ -168,43 +167,7 @@ class CreateFlashSale extends React.Component {
       console.log(errors);
     }
   };
-  getToast = () => {
-    if (this.state.toast == "success") {
-      return (
-        <div className="alert alert-success fade in alert-dismissable clearfix">
-          <button
-            type="button"
-            className="close"
-            data-dismiss="alert"
-            aria-hidden="true"
-          >
-            ×
-          </button>
-          <div className="alert-icon">
-            <i className="fa fa-check" aria-hidden="true" />
-          </div>
-          <span className="alert-text">Tag has been saved.</span>
-        </div>
-      );
-    } else if (this.state.toast == "fail") {
-      return (
-        <div className="alert alert-danger fade in alert-dismissable clearfix">
-          <button
-            type="button"
-            className="close"
-            data-dismiss="alert"
-            aria-hidden="true"
-          >
-            ×
-          </button>
-          <div className="alert-icon">
-            <i className="fa fa-exclamation" aria-hidden="true" />
-          </div>
-          <span className="alert-text">This action is disabled in demo.</span>
-        </div>
-      );
-    }
-  };
+
   tabContentToggle = () => {
     if (this.state.activePanel == "settings") {
       return (
@@ -368,13 +331,13 @@ class CreateFlashSale extends React.Component {
             )}
           </ol>
         </section>
+        <Loading show={this.state.submitting} />
         <section className="content">
-          {this.getToast()}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
                 <div className="accordion-box">
-                  <div className="panel-group" id="BrandTabs">
+                  <div className="panel-group" >
                     <div className="panel panel-default">
                       <div className="panel-heading">
                         <h4 className="panel-title">
@@ -382,7 +345,6 @@ class CreateFlashSale extends React.Component {
                         </h4>
                       </div>
                       <div
-                        id="brand_information"
                         className="panel-collapse collapse in"
                       >
                         <div className="panel-body">
@@ -437,7 +399,6 @@ class CreateFlashSale extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

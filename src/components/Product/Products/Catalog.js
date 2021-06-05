@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, withRouter } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -9,6 +9,8 @@ import api from "../../../apis/api";
 import { format } from "timeago.js";
 import Loading from '../../Loading'
 import { siteUrl } from "../../../utils/utils";
+import {getMessage} from '../../AlertMessage'
+
 
 class Catalog extends React.Component {
   state = {
@@ -61,12 +63,17 @@ class Catalog extends React.Component {
     },
     requiredPermission: "Delete Products",
     edit: "",
+    alertType: "",
+    alertMessage: "",
   };
 
   componentDidMount() {
+    if(this.props.location.alert){
+      this.setState({alertType: this.props.location.alert.type, alertMessage: this.props.location.alert.message})
+    }
     this.setState({submitting: true})
     const datalist = [];
-    var i = 0;
+    var i =0
     api
       .post("/product/get")
       .then((res) => {
@@ -86,12 +93,12 @@ class Catalog extends React.Component {
         const { tableData } = this.state;
         tableData["data"] = datalist;
         this.setState({ tableData, submitting: false });
-        
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err)
         this.setState({submitting: false})
       });
+      
   }
 
   deleteSelectedItems = () => {
@@ -102,8 +109,7 @@ class Catalog extends React.Component {
     api
       .delete("/product", { data })
       .then((res) => {
-        console.log(res);
-        this.setState({submitting: false})
+        this.setState({submitting: false, alertType: ""})
         this.componentDidMount();
       })
       .catch((err) => {
@@ -112,6 +118,7 @@ class Catalog extends React.Component {
 
       });
   };
+  closeAlert = () => {this.setState({alertType: ""})}
 
   render() {
     if (this.state.edit != "") {
@@ -139,6 +146,7 @@ class Catalog extends React.Component {
               </Link>
             </div>
           </div>
+          {getMessage(this.state.alertType, this.state.alertMessage, this.closeAlert)}
           <Loading show={this.state.submitting}/>
           <div className="box box-primary">
           <div className="table-delete-button">
@@ -167,7 +175,6 @@ class Catalog extends React.Component {
                     selected["selectedRows"].forEach((row) => {
                       arr.push(row._id);
                     });
-                    console.log(arr);
                     this.setState({ selectedRows: arr });
                   }}
                   responsive
@@ -187,4 +194,4 @@ class Catalog extends React.Component {
     );
   }
 }
-export default Catalog;
+export default withRouter(Catalog);

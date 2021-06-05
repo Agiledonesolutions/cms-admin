@@ -397,7 +397,7 @@ class StoreFront extends React.Component {
         console.log("error fetching pages");
       });
     api
-      .get("/slides/get")
+      .post("/slides/get")
       .then((res) => {
         const { sliderOptions } = this.state;
         res.data.data.forEach((val) => {

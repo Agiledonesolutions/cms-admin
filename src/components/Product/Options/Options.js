@@ -48,7 +48,7 @@ class Options extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/option/get")
+      .post("/option/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
