@@ -4,6 +4,7 @@ import { Link, Redirect, withRouter } from "react-router-dom";
 import Loading from "../Loading";
 import Validate from "../../utils/validation";
 import api from "../../apis/api";
+import Tree from "rc-tree";
 
 class CreateMenu extends React.Component {
   state = {
@@ -25,21 +26,93 @@ class CreateMenu extends React.Component {
     },
     edit: "",
     errors: [],
+    treeData: [],
+    autoExpandParent: true,
+    expandedKeys: ["0-0"],
+    allKeys: [],
   };
-  componentDidMount = () =>{
-    if(this.props.edit == "true"){
-        const url = "menu/get/" + this.props.match.params.id
-        const {data} = this.state
-        api.get(url).then(res=>{
-            data.name = res.data.data.name
-            data.status = res.data.data.status
-            this.setState({data})
-        }).catch(err=>{
-            console.log("error fetching details")
-        })
-    }
-  }
+  componentDidMount = () => {
+    var dataTemp = [];
+    const { allKeys } = this.state;
+    const addKey = (root, parent) => {
+      var count = 0;
+      root.children = root.childrenMenu;
+      var subFolders = root.children;
+      const subFolder = subFolders.filter(function (val) {
+        return val.childrenMenu;
+      });
+      subFolder.forEach((sub) => {
+        sub.key = parent + "-" + count;
+        sub.title = (
+          <li className="dd-item">
+            <div className="">{sub.name}</div>
+            <div className=" btn-group" role="group">
+              <a className="btn edit-menu-item "  onClick={()=>{
+                this.setState({edit: sub._id})
+              }}>
+                <i className="fa fa-pencil" />
+              </a>
+              <button type="button" className="btn delete-menu-item">
+                <i className="fa fa-times" />
+              </button>
+            </div>
+          </li>
+        );
+        allKeys.push(sub.key);
+        count++;
+        addKey(sub, sub.key);
+      });
+    };
+    if (this.props.edit == "true") {
+      const url = "menu/get/" + this.props.match.params.id;
+      const { data } = this.state;
+      api
+        .get(url)
+        .then((res) => {
+          // console.log(res.data.data);
+          data.name = res.data.data.name;
+          data.status = res.data.data.status;
+          allKeys.push("0-0")
+          res.data.data.menuItems.forEach((item, index) => {
+            item.key = "0-0-" + index;
+            item.title = (
+              <li className="dd-item">
+                <div className="">{item.name}</div>
+                <div className=" btn-group" role="group">
+                  <a className="btn edit-menu-item "  onClick={()=>{
+                this.setState({edit: item._id})
+              }}>
+                    <i className="fa fa-pencil" />
+                  </a>
+                  <button type="button" className="btn delete-menu-item">
+                    <i className="fa fa-times" />
+                  </button>
+                </div>
+              </li>
+            );
+            allKeys.push(item.key);
+            addKey(item, item.key);
+            dataTemp.push(item);
+          });
+          console.log(allKeys)
 
+          this.setState({ data, allKeys, treeData: [{title: (<li className="dd-item">
+          <div className="">Root</div>
+          <div className=" btn-group" role="group">
+            <a className="btn edit-menu-item ">
+              <i className="fa fa-pencil" />
+            </a>
+            <button type="button" className="btn delete-menu-item">
+              <i className="fa fa-times" />
+            </button>
+          </div>
+        </li>), key:"0-0", children:[...dataTemp]}] });
+        })
+        .catch((err) => {
+          console.log("error fetching details");
+        });
+    }
+  };
 
   setVal = (name, val) => {
     const { data } = this.state;
@@ -64,10 +137,17 @@ class CreateMenu extends React.Component {
     if (!Validate.validateNotEmpty(this.state.errors)) {
       this.setState({ submitting: true });
       if (this.props.edit == "true") {
-          api.put('/menu', {data: this.state.data, _id: this.props.match.params.id, requiredPermission: "Edit Menus"}).then(res=>{
-              console.log(res)
-              this.setState({submitting: false})
-          }).catch((err) => {
+        api
+          .put("/menu", {
+            data: this.state.data,
+            _id: this.props.match.params.id,
+            requiredPermission: "Edit Menus",
+          })
+          .then((res) => {
+            console.log(res);
+            this.setState({ submitting: false });
+          })
+          .catch((err) => {
             console.log("error editing menu");
             this.setState({ submitting: false });
           });
@@ -90,10 +170,81 @@ class CreateMenu extends React.Component {
       console.log(errors);
     }
   };
+  onDragStart = (info) => {
+    console.log("start", info);
+  };
+
+  onDragEnter = () => {
+    console.log("enter");
+  };
+
+  onDrop = (info) => {
+    console.log("drop", info);
+    const dropKey = info.node.key;
+    const dragKey = info.dragNode.key;
+    const dropPos = info.node.pos.split("-");
+    const dropPosition =
+      info.dropPosition - Number(dropPos[dropPos.length - 1]);
+
+    const loop = (data, key, callback) => {
+      data.forEach((item, index, arr) => {
+        if (item.key === key) {
+          callback(item, index, arr);
+          return;
+        }
+        if (item.children) {
+          loop(item.children, key, callback);
+        }
+      });
+    };
+    const data = [...this.state.treeData];
+
+    // Find dragObject
+    let dragObj;
+    loop(data, dragKey, (item, index, arr) => {
+      arr.splice(index, 1);
+      dragObj = item;
+    });
+
+    if (dropPosition === 0) {
+      // Drop on the content
+      loop(data, dropKey, (item) => {
+        // eslint-disable-next-line no-param-reassign
+        item.children = item.children || [];
+        // where to insert 示例添加到尾部，可以是随意位置
+        item.children.unshift(dragObj);
+      });
+    } else {
+      // Drop on the gap (insert before or insert after)
+      let ar;
+      let i;
+      loop(data, dropKey, (item, index, arr) => {
+        ar = arr;
+        i = index;
+      });
+      if (dropPosition === -1) {
+        ar.splice(i, 0, dragObj);
+      } else {
+        ar.splice(i + 1, 0, dragObj);
+      }
+    }
+
+    this.setState({
+      treeData: data,
+    });
+  };
+
+  onExpand = (expandedKeys) => {
+    // console.log("onExpand", expandedKeys);
+    this.setState({
+      expandedKeys,
+      autoExpandParent: false,
+    });
+  };
 
   render() {
     if (this.state.edit != "") {
-      return <Redirect to={"/menus/" + this.state.edit + "/edit"} />;
+      return <Redirect to={"/menus/" + this.props.match.params.id + "/items/"+this.state.edit+"/edit"} />;
     }
     return (
       <React.Fragment>
@@ -117,7 +268,11 @@ class CreateMenu extends React.Component {
                   <React.Fragment>
                     <div className="btn-group pull-right m-b-15">
                       <Link
-                        to={"/menus/"+this.props.match.params.id +"/items/create"}
+                        to={
+                          "/menus/" +
+                          this.props.match.params.id +
+                          "/items/create"
+                        }
                         className="btn btn-primary"
                       >
                         Create Menu Item
@@ -128,33 +283,19 @@ class CreateMenu extends React.Component {
                       <div className="box-body">
                         <div className="dd">
                           <ol className="dd-list">
-                            
-                            {/* <li className="dd-item" data-id={35}>
-                          <div className="dd-handle-root">root</div>
-                          <ol className="dd-list">
-                            <li
-                              className="dd-item"
-                              data-id={38}
-                              draggable={true}
-                            >
-                              <div
-                                className="menu-item-actions btn-group"
-                                role="group"
-                              >
-                                <a
-                                  className="btn edit-menu-item "
-                                >
-                                  <i className="fa fa-pencil" />
-                                </a>
-                                <button
-                                  type="button"
-                                  className="btn delete-menu-item"
-                                >
-                                  <i className="fa fa-times" />
-                                </button>
-                              </div>
-                              <div className="dd-handle">New Arrivals</div>
-                            </li> */}
+                            <Tree
+                              expandedKeys={this.state.expandedKeys}
+                              onExpand={this.onExpand}
+                              selectable={false}
+                              autoExpandParent={this.state.autoExpandParent}
+                              showLine
+                              draggable
+                              onDragStart={this.onDragStart}
+                              onDragEnter={this.onDragEnter}
+                              onDrop={this.onDrop}
+                              treeData={this.state.treeData}
+                              showIcon={false}
+                            />
                           </ol>
                         </div>
                       </div>
