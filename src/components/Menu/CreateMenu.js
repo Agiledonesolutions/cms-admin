@@ -52,9 +52,9 @@ class CreateMenu extends React.Component {
               }}>
                 <i className="fa fa-pencil" />
               </a>
-              <button type="button" className="btn delete-menu-item">
+              {/* <button type="button" className="btn delete-menu-item">
                 <i className="fa fa-times" />
-              </button>
+              </button> */}
             </div>
           </li>
         );
@@ -83,9 +83,9 @@ class CreateMenu extends React.Component {
               }}>
                     <i className="fa fa-pencil" />
                   </a>
-                  <button type="button" className="btn delete-menu-item">
+                  {/* <button type="button" className="btn delete-menu-item">
                     <i className="fa fa-times" />
-                  </button>
+                  </button> */}
                 </div>
               </li>
             );
@@ -97,8 +97,8 @@ class CreateMenu extends React.Component {
 
           this.setState({ data, allKeys, treeData: [{title: (<li className="dd-item">
           <div className="">Root</div>
-          <div className=" btn-group" role="group">
-            <a className="btn edit-menu-item ">
+          <div className=" btn-group" role="group" style={{opacity: 0}}>
+            <a className="btn edit-menu-item " >
               <i className="fa fa-pencil" />
             </a>
             <button type="button" className="btn delete-menu-item">
@@ -112,6 +112,9 @@ class CreateMenu extends React.Component {
         });
     }
   };
+  handleDelete = (id) =>{
+
+  }
 
   setVal = (name, val) => {
     const { data } = this.state;

@@ -68,8 +68,10 @@ class Catalog extends React.Component {
   };
 
   componentDidMount() {
+    console.log(this.props.location)
     if(this.props.location.alert){
       this.setState({alertType: this.props.location.alert.type, alertMessage: this.props.location.alert.message})
+      this.props.location.alert = {}
     }
     this.setState({submitting: true})
     const datalist = [];
@@ -109,7 +111,7 @@ class Catalog extends React.Component {
     api
       .delete("/product", { data })
       .then((res) => {
-        this.setState({submitting: false, alertType: ""})
+        this.setState({submitting: false, alertType: "success", alertMessage: "Deleted successfully."})
         this.componentDidMount();
       })
       .catch((err) => {
@@ -118,7 +120,7 @@ class Catalog extends React.Component {
 
       });
   };
-  closeAlert = () => {this.setState({alertType: ""})}
+  closeAlert = () => {this.setState({alertType: "", alertMessage: ""})}
 
   render() {
     if (this.state.edit != "") {
