@@ -142,7 +142,7 @@ class Home extends React.Component {
                           
                         </td>
                         <td>
-                            Demo 
+                            {val.User?val.User['First Name']: "User Deleted"} 
                         </td>
                         <td>
                             {val.Status}

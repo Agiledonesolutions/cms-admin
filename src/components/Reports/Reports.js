@@ -6,7 +6,8 @@ import "./report.css";
 
 class Reports extends React.Component {
   state = {
-    selectedReport: "coupons_report",
+    selectedReport: "customer_order",
+    submitting: false,
     tableHeads: [],
     tableTitle: "",
     tableData: [],
@@ -41,6 +42,7 @@ class Reports extends React.Component {
   setTable = () => {
     const url = "/report/" + this.state.selectedReport;
     const tableData = [];
+    this.setState({submitting: true})
     if (this.state.selectedReport == "tagged_products") {
       api
         .post(url, { searchWord: this.state.searchWord })
@@ -50,9 +52,10 @@ class Reports extends React.Component {
             temp.push(val.name, val.totalProducts);
             tableData.push(temp);
           });
-          this.setState({ tableData });
+          this.setState({ tableData, submitting: false });
         })
         .catch((err) => {
+          this.setState({submitting: false})
           console.log(err.response.data);
         });
       this.setState({
@@ -68,8 +71,9 @@ class Reports extends React.Component {
           temp.push(val.name, val.totalProducts)
           tableData.push(temp)
         })
-        this.setState({tableData})
+        this.setState({tableData, submitting: false})
       }).catch(err=>{
+        this.setState({submitting: false})
         console.log(err)
       })
       this.setState({
@@ -86,9 +90,10 @@ class Reports extends React.Component {
             temp.push(val.name, val.totalProducts);
             tableData.push(temp);
           });
-          this.setState({ tableData });
+          this.setState({ tableData, submitting: false });
         })
         .catch((err) => {
+          this.setState({submitting: false})
           console.log(err.response.data);
         });
       this.setState({
@@ -119,9 +124,10 @@ class Reports extends React.Component {
             );
             tableData.push(temp);
           });
-          this.setState({ tableData });
+          this.setState({ tableData, submitting: false });
         })
         .catch((err) => {
+          this.setState({submitting: false})
           console.log(err.response.data);
         });
       this.setState({
@@ -149,9 +155,10 @@ class Reports extends React.Component {
           )
           tableData.push(temp);
         });
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
+        this.setState({submitting: false})
         console.log(err.response.data);
       });
       this.setState({
@@ -181,9 +188,10 @@ class Reports extends React.Component {
           temp.push(<Link to={'/products/'+val._id+"/edit"}>{val.name}</Link>, val.Qty? val.Qty: "--", val.stockAvailability != ""? val.stockAvailability: "--");
           tableData.push(temp);
         });
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
+        this.setState({submitting: false})
         console.log(err.response.data);
       });
 
@@ -238,9 +246,10 @@ class Reports extends React.Component {
           )
           tableData.push(temp);
         });
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
+        this.setState({submitting: false})
         console.log(err);
       });
       this.setState({
@@ -302,6 +311,7 @@ class Reports extends React.Component {
             <li className="active">Reports</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="box box-primary report-wrapper">
             <div className="box-body">
@@ -336,7 +346,7 @@ class Reports extends React.Component {
                             );
                           }}
                         >
-                          <option value="coupons_report">Coupons Report</option>
+                          {/* <option value="coupons_report">Coupons Report</option> */}
                           <option value="customer_order">
                             Customers Order Report
                           </option>
@@ -346,27 +356,27 @@ class Reports extends React.Component {
                           <option value="product_stock">
                             Products Stock Report
                           </option>
-                          <option value="products_view">
+                          {/* <option value="products_view">
                             Products View Report
-                          </option>
+                          </option> */}
                           <option value="branded_products">
                             Branded Products Report
                           </option>
                           <option value="categorized_products">
                             Categorized Products Report
                           </option>
-                          <option value="taxed_products">
+                          {/* <option value="taxed_products">
                             Taxed Products Report
-                          </option>
+                          </option> */}
                           <option value="tagged_products">
                             Tagged Products Report
                           </option>
-                          <option value="sales_report">Sales Report</option>
-                          <option value="search_report">Search Report</option>
+                          {/* <option value="sales_report">Sales Report</option>
+                          <option value="search_report">Search Report</option> */}
                           <option value="shipping">
                             Shipping Report
                           </option>
-                          <option value="tax_report">Tax Report</option>
+                          {/* <option value="tax_report">Tax Report</option> */}
                         </select>
                       </div>
                       {this.state.dates ? (

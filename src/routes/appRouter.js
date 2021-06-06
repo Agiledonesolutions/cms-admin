@@ -47,6 +47,8 @@ import Menu from '../components/Menu/Menu'
 import CreateMenu from '../components/Menu/CreateMenu';
 import CreateMenuItem from '../components/Menu/CreateMenuItem';
 import Reports from '../components/Reports/Reports';
+import Translations from '../components/Localization/Translations/Translations';
+import CurrencyRates from '../components/Localization/CurrencyRates/CurrencyRates';
 
 
 const routes = (
@@ -118,6 +120,10 @@ const routes = (
         <PrivateRoute exact path='/menus/:id/edit' component={()=><Dashboard abc={ <CreateMenu edit="true"/>} />} />
         <PrivateRoute exact path='/menus/:id/items/create' component={()=><Dashboard abc={ <CreateMenuItem />} />} />
         <PrivateRoute exact path='/menus/:id/items/:id2/edit' component={()=><Dashboard abc={ <CreateMenuItem edit="true"/>} />} />
+
+        <PrivateRoute exact path='/translations' component={()=><Dashboard abc={ <Translations />} />} />
+
+        <PrivateRoute exact path='/currency-rates' component={()=><Dashboard abc={ <CurrencyRates />} />} />
 
         <PrivateRoute exact path='/taxes' component={()=><Dashboard abc={ <Taxes />} />} />
         <PrivateRoute exact path='/taxes/create' component={()=><Dashboard abc={ <CreateTax />} />} />
