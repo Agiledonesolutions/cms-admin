@@ -28,7 +28,7 @@ class CreateMenu extends React.Component {
     errors: [],
     treeData: [],
     autoExpandParent: true,
-    expandedKeys: ["0-0"],
+    expandedKeys: [],
     allKeys: [],
   };
   componentDidMount = () => {
@@ -52,9 +52,12 @@ class CreateMenu extends React.Component {
               }}>
                 <i className="fa fa-pencil" />
               </a>
-              {/* <button type="button" className="btn delete-menu-item">
+              <button type="button" className="btn delete-menu-item" onClick={(e)=>{
+                    e.preventDefault()
+                    this.handleDelete(sub._id)
+                  }}>
                 <i className="fa fa-times" />
-              </button> */}
+              </button>
             </div>
           </li>
         );
@@ -83,9 +86,12 @@ class CreateMenu extends React.Component {
               }}>
                     <i className="fa fa-pencil" />
                   </a>
-                  {/* <button type="button" className="btn delete-menu-item">
+                  <button type="button" className="btn delete-menu-item" onClick={(e)=>{
+                    e.preventDefault()
+                    this.handleDelete(item._id)
+                  }}>
                     <i className="fa fa-times" />
-                  </button> */}
+                  </button>
                 </div>
               </li>
             );
@@ -93,19 +99,16 @@ class CreateMenu extends React.Component {
             addKey(item, item.key);
             dataTemp.push(item);
           });
-          console.log(allKeys)
 
-          this.setState({ data, allKeys, treeData: [{title: (<li className="dd-item">
+          this.setState({ data, allKeys, expandedKeys: allKeys, treeData: [{title: (<li className="dd-item">
           <div className="">Root</div>
           <div className=" btn-group" role="group" style={{opacity: 0}}>
-            <a className="btn edit-menu-item " >
-              <i className="fa fa-pencil" />
-            </a>
+        
             <button type="button" className="btn delete-menu-item">
               <i className="fa fa-times" />
             </button>
           </div>
-        </li>), key:"0-0", children:[...dataTemp]}] });
+        </li>), key:"0-0",draggable:"false", children:[...dataTemp]}] });
         })
         .catch((err) => {
           console.log("error fetching details");
@@ -113,7 +116,12 @@ class CreateMenu extends React.Component {
     }
   };
   handleDelete = (id) =>{
-
+    console.log(id)
+    api.delete('/menu/menuitem', {data: {_id: id, requiredPermission: "Delete Menu Items"}}).then(res=>{
+      console.log(res.data.data)
+    }).catch(err=>{
+      console.log(err.response.data)
+    })
   }
 
   setVal = (name, val) => {
@@ -173,11 +181,7 @@ class CreateMenu extends React.Component {
     }
   };
   onDragStart = (info) => {
-    console.log("start", info);
-  };
-
-  onDragEnter = () => {
-    console.log("enter");
+    console.log("start", info.node);
   };
 
   onDrop = (info) => {
@@ -293,7 +297,6 @@ class CreateMenu extends React.Component {
                               showLine
                               draggable
                               onDragStart={this.onDragStart}
-                              onDragEnter={this.onDragEnter}
                               onDrop={this.onDrop}
                               treeData={this.state.treeData}
                               showIcon={false}

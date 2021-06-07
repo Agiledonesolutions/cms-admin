@@ -68,7 +68,7 @@ class Catalog extends React.Component {
   };
 
   componentDidMount() {
-    console.log(this.props.location)
+    // console.log(this.props.location)
     if(this.props.location.alert){
       this.setState({alertType: this.props.location.alert.type, alertMessage: this.props.location.alert.message})
       this.props.location.alert = {}

@@ -69,7 +69,7 @@ class CreateMenuItem extends React.Component {
     })
     this.setState({categoryOptions})
 
-    api.get('page/get').then(res=>{
+    api.post('page/get').then(res=>{
       const {pageOptions} = this.state
       res.data.data.forEach(val=>{
         let tmp = {
