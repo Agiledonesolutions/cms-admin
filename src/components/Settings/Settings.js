@@ -977,6 +977,11 @@ class Settings extends React.Component {
                     className="form-control custom-select-black "
                     value={this.state.data.Currency.ExchangeRateService.name}
                     onChange={(e) => {
+                      this.setVal("Currency",
+                      "ExchangeRateService",
+                      "APIKey",
+                      ""
+                      )
                       this.setVal(
                         "Currency",
                         "ExchangeRateService",

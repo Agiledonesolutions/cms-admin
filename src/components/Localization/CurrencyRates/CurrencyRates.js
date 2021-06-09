@@ -34,25 +34,44 @@ class CurrencyRates extends React.Component {
             sortable: true,
         }
       ],
-      data: [{
-          currency: 'Indian Rupee',
-          code: 'INR',
-          rate: '73.15',
-          lastUpdated: '4months ago'
-      }]
+      data: []
     },
+    edit: ""
   };
 
   componentDidMount() {
- 
+    const datalist = [];
+    api.get('/currency').then(res=>{
+      res.data.data.map((val) => {
+        var tmp = {
+          currency: val.Name,
+          code: val.Code,
+          rate: val.Rate,
+          created: format(val["createdAt"]),
+          _id: val["_id"],
+        };
+        datalist.push(tmp);
+      });
+      const { tableData } = this.state;
+      tableData["data"] = datalist;
+      this.setState({ tableData });
+    }).catch(err=>{
+      console.log(err)
+    })
+  }
+
+  refreshRates = () =>{
+
   }
 
   render() {
-    
+    if (this.state.edit != "") {
+      return <Redirect to={"/currency-rates/" + this.state.edit + "/edit"} />;
+    }
     return (
       <React.Fragment>
         <section className="content-header clearfix">
-          <h3>Currency Rates (UI ONLY)</h3>
+          <h3>Currency Rates</h3>
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
@@ -65,7 +84,7 @@ class CurrencyRates extends React.Component {
         <div className="row">
             <div className="btn-group pull-right">
               <a onClick={(e)=>{
-
+                this.refreshRates()
               }}
                 className="btn btn-primary btn-actions btn-create"
               >
@@ -87,6 +106,10 @@ class CurrencyRates extends React.Component {
                   print={false}
                   responsive
                   pagination
+                  onRowClicked={(index) => {
+                    this.setState({ edit: index._id });
+                  }}
+                  pointerOnHover
                   highlightOnHover
                 />
               </DataTableExtensions>

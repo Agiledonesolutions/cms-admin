@@ -60,11 +60,6 @@ class Home extends React.Component {
       }).catch(err=>{
         console.log(err)
       })
-      api.get('/currency').then(res=>{
-        console.log(res)
-      }).catch(err=>{
-        console.log(err)
-      })
 
   }
   render() {
