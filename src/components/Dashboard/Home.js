@@ -55,6 +55,16 @@ class Home extends React.Component {
         this.setState({submitting: false})
 
       });
+      api.post('/dashboard/customers').then(res=>{
+        console.log(res.data)
+      }).catch(err=>{
+        console.log(err)
+      })
+      api.get('/currency').then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log(err)
+      })
 
   }
   render() {

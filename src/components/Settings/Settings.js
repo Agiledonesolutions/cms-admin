@@ -200,6 +200,7 @@ class Settings extends React.Component {
       .then((res) => {
         const { data } = this.state;
         for (const [key, value] of Object.entries(res.data.data[0])) {
+          
           if (key != "_id" && key != "__v") {
             data[key] = value;
           }

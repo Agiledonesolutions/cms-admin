@@ -4907,681 +4907,681 @@ export const timezone = [{
 export const currencies = [{
   code: "AED",
   label: "United Arab Emirates Dirham",
-  value: "United Arab Emirates Dirham"
+  value: "AED"
 }, {
   code: "AFN",
   label: "Afghan Afghani",
-  value: "Afghan Afghani"
+  value: "AFN"
 }, {
   code: "ALL",
   label: "Albanian Lek",
-  value: "Albanian Lek"
+  value: "ALL"
 }, {
   code: "AMD",
   label: "Armenian Dram",
-  value: "Armenian Dram"
+  value: "AMD"
 }, {
   code: "ANG",
   label: "Netherlands Antillean Guilder",
-  value: "Netherlands Antillean Guilder"
+  value: "ANG"
 }, {
   code: "AOA",
   label: "Angolan Kwanza",
-  value: "Angolan Kwanza"
+  value: "AOA"
 }, {
   code: "ARS",
   label: "Argentine Peso",
-  value: "Argentine Peso"
+  value: "ARS"
 }, {
   code: "AUD",
   label: "Australian Dollar",
-  value: "Australian Dollar"
+  value: "AUD"
 }, {
   code: "AWG",
   label: "Aruban Florin",
-  value: "Aruban Florin"
+  value: "AWG"
 }, {
   code: "AZN",
   label: "Azerbaijani Manat",
-  value: "Azerbaijani Manat"
+  value: "AZN"
 }, {
   code: "BAM",
   label: "Bosnia-Herzegovina Convertible Mark",
-  value: "Bosnia-Herzegovina Convertible Mark"
+  value: "BAM"
 }, {
   code: "BBD",
   label: "Barbadian Dollar",
-  value: "Barbadian Dollar"
+  value: "BBD"
 }, {
   code: "BDT",
   label: "Bangladeshi Taka",
-  value: "Bangladeshi Taka"
+  value: "BDT"
 }, {
   code: "BGN",
   label: "Bulgarian Lev",
-  value: "Bulgarian Lev"
+  value: "BGN"
 }, {
   code: "BHD",
   label: "Bahraini Dinar",
-  value: "Bahraini Dinar"
+  value: "BHD"
 }, {
   code: "BIF",
   label: "Burundian Franc",
-  value: "Burundian Franc"
+  value: "BIF"
 }, {
   code: "BMD",
   label: "Bermudan Dollar",
-  value: "Bermudan Dollar"
+  value: "BMD"
 }, {
   code: "BND",
   label: "Brunei Dollar",
-  value: "Brunei Dollar"
+  value: "BND"
 }, {
   code: "BOB",
   label: "Bolivian Boliviano",
-  value: "Bolivian Boliviano"
+  value: "BOB"
 }, {
   code: "BRL",
   label: "Brazilian Real",
-  value: "Brazilian Real"
+  value: "BRL"
 }, {
   code: "BSD",
   label: "Bahamian Dollar",
-  value: "Bahamian Dollar"
+  value: "BSD"
 }, {
   code: "BTC",
   label: "Bitcoin",
-  value: "Bitcoin"
+  value: "BTC"
 }, {
   code: "BTN",
   label: "Bhutanese Ngultrum",
-  value: "Bhutanese Ngultrum"
+  value: "BTN"
 }, {
   code: "BWP",
   label: "Botswanan Pula",
-  value: "Botswanan Pula"
+  value: "BWP"
 }, {
   code: "BYN",
   label: "Belarusian Ruble",
-  value: "Belarusian Ruble"
+  value: "BYN"
 }, {
   code: "BZD",
   label: "Belize Dollar",
-  value: "Belize Dollar"
+  value: "BZD"
 }, {
   code: "CAD",
   label: "Canadian Dollar",
-  value: "Canadian Dollar"
+  value: "CAD"
 }, {
   code: "CDF",
   label: "Congolese Franc",
-  value: "Congolese Franc"
+  value: "CDF"
 }, {
   code: "CHF",
   label: "Swiss Franc",
-  value: "Swiss Franc"
+  value: "CHF"
 }, {
   code: "CLF",
   label: "Chilean Unit of Account (UF)",
-  value: "Chilean Unit of Account (UF)"
+  value: "CLF"
 }, {
   code: "CLP",
   label: "Chilean Peso",
-  value: "Chilean Peso"
+  value: "CLP"
 }, {
   code: "CNH",
   label: "Chinese Yuan (Offshore)",
-  value: "Chinese Yuan (Offshore)"
+  value: "CNH"
 }, {
   code: "CNY",
   label: "Chinese Yuan",
-  value: "Chinese Yuan"
+  value: "CNY"
 }, {
   code: "COP",
   label: "Colombian Peso",
-  value: "Colombian Peso"
+  value: "COP"
 }, {
   code: "CRC",
   label: "Costa Rican Colón",
-  value: "Costa Rican Colón"
+  value: "CRC"
 }, {
   code: "CUC",
   label: "Cuban Convertible Peso",
-  value: "Cuban Convertible Peso"
+  value: "CUC"
 }, {
   code: "CUP",
   label: "Cuban Peso",
-  value: "Cuban Peso"
+  value: "CUP"
 }, {
   code: "CVE",
   label: "Cape Verdean Escudo",
-  value: "Cape Verdean Escudo"
+  value: "CVE"
 }, {
   code: "CZK",
   label: "Czech Republic Koruna",
-  value: "Czech Republic Koruna"
+  value: "CZK"
 }, {
   code: "DJF",
   label: "Djiboutian Franc",
-  value: "Djiboutian Franc"
+  value: "DJF"
 }, {
   code: "DKK",
   label: "Danish Krone",
-  value: "Danish Krone"
+  value: "DKK"
 }, {
   code: "DOP",
   label: "Dominican Peso",
-  value: "Dominican Peso"
+  value: "DOP"
 }, {
   code: "DZD",
   label: "Algerian Dinar",
-  value: "Algerian Dinar"
+  value: "DZD"
 }, {
   code: "EGP",
   label: "Egyptian Pound",
-  value: "Egyptian Pound"
+  value: "EGP"
 }, {
   code: "ERN",
   label: "Eritrean Nakfa",
-  value: "Eritrean Nakfa"
+  value: "ERN"
 }, {
   code: "ETB",
   label: "Ethiopian Birr",
-  value: "Ethiopian Birr"
+  value: "ETB"
 }, {
   code: "EUR",
   label: "Euro",
-  value: "Euro"
+  value: "EUR"
 }, {
   code: "FJD",
   label: "Fijian Dollar",
-  value: "Fijian Dollar"
+  value: "FJD"
 }, {
   code: "FKP",
   label: "Falkland Islands Pound",
-  value: "Falkland Islands Pound"
+  value: "FKP"
 }, {
   code: "GBP",
   label: "British Pound Sterling",
-  value: "British Pound Sterling"
+  value: "GBP"
 }, {
   code: "GEL",
   label: "Georgian Lari",
-  value: "Georgian Lari"
+  value: "GEL"
 }, {
   code: "GGP",
   label: "Guernsey Pound",
-  value: "Guernsey Pound"
+  value: "GGP"
 }, {
   code: "GHS",
   label: "Ghanaian Cedi",
-  value: "Ghanaian Cedi"
+  value: "GHS"
 }, {
   code: "GIP",
   label: "Gibraltar Pound",
-  value: "Gibraltar Pound"
+  value: "GIP"
 }, {
   code: "GMD",
   label: "Gambian Dalasi",
-  value: "Gambian Dalasi"
+  value: "GMD"
 }, {
   code: "GNF",
   label: "Guinean Franc",
-  value: "Guinean Franc"
+  value: "GNF"
 }, {
   code: "GTQ",
   label: "Guatemalan Quetzal",
-  value: "Guatemalan Quetzal"
+  value: "GTQ"
 }, {
   code: "GYD",
   label: "Guyanaese Dollar",
-  value: "Guyanaese Dollar"
+  value: "GYD"
 }, {
   code: "HKD",
   label: "Hong Kong Dollar",
-  value: "Hong Kong Dollar"
+  value: "HKD"
 }, {
   code: "HNL",
   label: "Honduran Lempira",
-  value: "Honduran Lempira"
+  value: "HNL"
 }, {
   code: "HRK",
   label: "Croatian Kuna",
-  value: "Croatian Kuna"
+  value: "HRK"
 }, {
   code: "HTG",
   label: "Haitian Gourde",
-  value: "Haitian Gourde"
+  value: "HTG"
 }, {
   code: "HUF",
   label: "Hungarian Forint",
-  value: "Hungarian Forint"
+  value: "HUF"
 }, {
   code: "IDR",
   label: "Indonesian Rupiah",
-  value: "Indonesian Rupiah"
+  value: "IDR"
 }, {
   code: "ILS",
   label: "Israeli New Sheqel",
-  value: "Israeli New Sheqel"
+  value: "ILS"
 }, {
   code: "IMP",
   label: "Manx pound",
-  value: "Manx pound"
+  value: "IMP"
 }, {
   code: "INR",
   label: "Indian Rupee",
-  value: "Indian Rupee"
+  value: "INR"
 }, {
   code: "IQD",
   label: "Iraqi Dinar",
-  value: "Iraqi Dinar"
+  value: "IQD"
 }, {
   code: "IRR",
   label: "Iranian Rial",
-  value: "Iranian Rial"
+  value: "IRR"
 }, {
   code: "ISK",
   label: "Icelandic Króna",
-  value: "Icelandic Króna"
+  value: "ISK"
 }, {
   code: "JEP",
   label: "Jersey Pound",
-  value: "Jersey Pound"
+  value: "JEP"
 }, {
   code: "JMD",
   label: "Jamaican Dollar",
-  value: "Jamaican Dollar"
+  value: "JMD"
 }, {
   code: "JOD",
   label: "Jordanian Dinar",
-  value: "Jordanian Dinar"
+  value: "JOD"
 }, {
   code: "JPY",
   label: "Japanese Yen",
-  value: "Japanese Yen"
+  value: "JPY"
 }, {
   code: "KES",
   label: "Kenyan Shilling",
-  value: "Kenyan Shilling"
+  value: "KES"
 }, {
   code: "KGS",
   label: "Kyrgystani Som",
-  value: "Kyrgystani Som"
+  value: "KGS"
 }, {
   code: "KHR",
   label: "Cambodian Riel",
-  value: "Cambodian Riel"
+  value: "KHR"
 }, {
   code: "KMF",
   label: "Comorian Franc",
-  value: "Comorian Franc"
+  value: "KMF"
 }, {
   code: "KPW",
   label: "North Korean Won",
-  value: "North Korean Won"
+  value: "KPW"
 }, {
   code: "KRW",
   label: "South Korean Won",
-  value: "South Korean Won"
+  value: "KRW"
 }, {
   code: "KWD",
   label: "Kuwaiti Dinar",
-  value: "Kuwaiti Dinar"
+  value: "KWD"
 }, {
   code: "KYD",
   label: "Cayman Islands Dollar",
-  value: "Cayman Islands Dollar"
+  value: "KYD"
 }, {
   code: "KZT",
   label: "Kazakhstani Tenge",
-  value: "Kazakhstani Tenge"
+  value: "KZT"
 }, {
   code: "LAK",
   label: "Laotian Kip",
-  value: "Laotian Kip"
+  value: "LAK"
 }, {
   code: "LBP",
   label: "Lebanese Pound",
-  value: "Lebanese Pound"
+  value: "LBP"
 }, {
   code: "LKR",
   label: "Sri Lankan Rupee",
-  value: "Sri Lankan Rupee"
+  value: "LKR"
 }, {
   code: "LRD",
   label: "Liberian Dollar",
-  value: "Liberian Dollar"
+  value: "LRD"
 }, {
   code: "LSL",
   label: "Lesotho Loti",
-  value: "Lesotho Loti"
+  value: "LSL"
 }, {
   code: "LYD",
   label: "Libyan Dinar",
-  value: "Libyan Dinar"
+  value: "LYD"
 }, {
   code: "MAD",
   label: "Moroccan Dirham",
-  value: "Moroccan Dirham"
+  value: "MAD"
 }, {
   code: "MDL",
   label: "Moldovan Leu",
-  value: "Moldovan Leu"
+  value: "MDL"
 }, {
   code: "MGA",
   label: "Malagasy Ariary",
-  value: "Malagasy Ariary"
+  value: "MGA"
 }, {
   code: "MKD",
   label: "Macedonian Denar",
-  value: "Macedonian Denar"
+  value: "MKD"
 }, {
   code: "MMK",
   label: "Myanma Kyat",
-  value: "Myanma Kyat"
+  value: "MMK"
 }, {
   code: "MNT",
   label: "Mongolian Tugrik",
-  value: "Mongolian Tugrik"
+  value: "MNT"
 }, {
   code: "MOP",
   label: "Macanese Pataca",
-  value: "Macanese Pataca"
+  value: "MOP"
 }, {
   code: "MRO",
   label: "Mauritanian Ouguiya (pre-2018)",
-  value: "Mauritanian Ouguiya (pre-2018)"
+  value: "MRO"
 }, {
   code: "MRU",
   label: "Mauritanian Ouguiya",
-  value: "Mauritanian Ouguiya"
+  value: "MRU"
 }, {
   code: "MUR",
   label: "Mauritian Rupee",
-  value: "Mauritian Rupee"
+  value: "MUR"
 }, {
   code: "MVR",
   label: "Maldivian Rufiyaa",
-  value: "Maldivian Rufiyaa"
+  value: "MVR"
 }, {
   code: "MWK",
   label: "Malawian Kwacha",
-  value: "Malawian Kwacha"
+  value: "MWK"
 }, {
   code: "MXN",
   label: "Mexican Peso",
-  value: "Mexican Peso"
+  value: "MXN"
 }, {
   code: "MYR",
   label: "Malaysian Ringgit",
-  value: "Malaysian Ringgit"
+  value: "MYR"
 }, {
   code: "MZN",
   label: "Mozambican Metical",
-  value: "Mozambican Metical"
+  value: "MZN"
 }, {
   code: "NAD",
   label: "Namibian Dollar",
-  value: "Namibian Dollar"
+  value: "NAD"
 }, {
   code: "NGN",
   label: "Nigerian Naira",
-  value: "Nigerian Naira"
+  value: "NGN"
 }, {
   code: "NIO",
   label: "Nicaraguan Córdoba",
-  value: "Nicaraguan Córdoba"
+  value: "NIO"
 }, {
   code: "NOK",
   label: "Norwegian Krone",
-  value: "Norwegian Krone"
+  value: "NOK"
 }, {
   code: "NPR",
   label: "Nepalese Rupee",
-  value: "Nepalese Rupee"
+  value: "NPR"
 }, {
   code: "NZD",
   label: "New Zealand Dollar",
-  value: "New Zealand Dollar"
+  value: "NZD"
 }, {
   code: "OMR",
   label: "Omani Rial",
-  value: "Omani Rial"
+  value: "OMR"
 }, {
   code: "PAB",
   label: "Panamanian Balboa",
-  value: "Panamanian Balboa"
+  value: "PAB"
 }, {
   code: "PEN",
   label: "Peruvian Nuevo Sol",
-  value: "Peruvian Nuevo Sol"
+  value: "PEN"
 }, {
   code: "PGK",
   label: "Papua New Guinean Kina",
-  value: "Papua New Guinean Kina"
+  value: "PGK"
 }, {
   code: "PHP",
   label: "Philippine Peso",
-  value: "Philippine Peso"
+  value: "PHP"
 }, {
   code: "PKR",
   label: "Pakistani Rupee",
-  value: "Pakistani Rupee"
+  value: "PKR"
 }, {
   code: "PLN",
   label: "Polish Zloty",
-  value: "Polish Zloty"
+  value: "PLN"
 }, {
   code: "PYG",
   label: "Paraguayan Guarani",
-  value: "Paraguayan Guarani"
+  value: "PYG"
 }, {
   code: "QAR",
   label: "Qatari Rial",
-  value: "Qatari Rial"
+  value: "QAR"
 }, {
   code: "RON",
   label: "Romanian Leu",
-  value: "Romanian Leu"
+  value: "RON"
 }, {
   code: "RSD",
   label: "Serbian Dinar",
-  value: "Serbian Dinar"
+  value: "RSD"
 }, {
   code: "RUB",
   label: "Russian Ruble",
-  value: "Russian Ruble"
+  value: "RUB"
 }, {
   code: "RWF",
   label: "Rwandan Franc",
-  value: "Rwandan Franc"
+  value: "RWF"
 }, {
   code: "SAR",
   label: "Saudi Riyal",
-  value: "Saudi Riyal"
+  value: "SAR"
 }, {
   code: "SBD",
   label: "Solomon Islands Dollar",
-  value: "Solomon Islands Dollar"
+  value: "SBD"
 }, {
   code: "SCR",
   label: "Seychellois Rupee",
-  value: "Seychellois Rupee"
+  value: "SCR"
 }, {
   code: "SDG",
   label: "Sudanese Pound",
-  value: "Sudanese Pound"
+  value: "SDG"
 }, {
   code: "SEK",
   label: "Swedish Krona",
-  value: "Swedish Krona"
+  value: "SEK"
 }, {
   code: "SGD",
   label: "Singapore Dollar",
-  value: "Singapore Dollar"
+  value: "SGD"
 }, {
   code: "SHP",
   label: "Saint Helena Pound",
-  value: "Saint Helena Pound"
+  value: "SHP"
 }, {
   code: "SLL",
   label: "Sierra Leonean Leone",
-  value: "Sierra Leonean Leone"
+  value: "SLL"
 }, {
   code: "SOS",
   label: "Somali Shilling",
-  value: "Somali Shilling"
+  value: "SOS"
 }, {
   code: "SRD",
   label: "Surinamese Dollar",
-  value: "Surinamese Dollar"
+  value: "SRD"
 }, {
   code: "SSP",
   label: "South Sudanese Pound",
-  value: "South Sudanese Pound"
+  value: "SSP"
 }, {
   code: "STD",
   label: "São Tomé and Príncipe Dobra (pre-2018)",
-  value: "São Tomé and Príncipe Dobra (pre-2018)"
+  value: "STD"
 }, {
   code: "STN",
   label: "São Tomé and Príncipe Dobra",
-  value: "São Tomé and Príncipe Dobra"
+  value: "STN"
 }, {
   code: "SVC",
   label: "Salvadoran Colón",
-  value: "Salvadoran Colón"
+  value: "SVC"
 }, {
   code: "SYP",
   label: "Syrian Pound",
-  value: "Syrian Pound"
+  value: "SYP"
 }, {
   code: "SZL",
   label: "Swazi Lilangeni",
-  value: "Swazi Lilangeni"
+  value: "SZL"
 }, {
   code: "THB",
   label: "Thai Baht",
-  value: "Thai Baht"
+  value: "THB"
 }, {
   code: "TJS",
   label: "Tajikistani Somoni",
-  value: "Tajikistani Somoni"
+  value: "TJS"
 }, {
   code: "TMT",
   label: "Turkmenistani Manat",
-  value: "Turkmenistani Manat"
+  value: "TMT"
 }, {
   code: "TND",
   label: "Tunisian Dinar",
-  value: "Tunisian Dinar"
+  value: "TND"
 }, {
   code: "TOP",
   label: "Tongan Pa'anga",
-  value: "Tongan Pa'anga"
+  value: "TOP"
 }, {
   code: "TRY",
   label: "Turkish Lira",
-  value: "Turkish Lira"
+  value: "TRY"
 }, {
   code: "TTD",
   label: "Trinidad and Tobago Dollar",
-  value: "Trinidad and Tobago Dollar"
+  value: "TTD"
 }, {
   code: "TWD",
   label: "New Taiwan Dollar",
-  value: "New Taiwan Dollar"
+  value: "TWD"
 }, {
   code: "TZS",
   label: "Tanzanian Shilling",
-  value: "Tanzanian Shilling"
+  value: "TZS"
 }, {
   code: "UAH",
   label: "Ukrainian Hryvnia",
-  value: "Ukrainian Hryvnia"
+  value: "UAH"
 }, {
   code: "UGX",
   label: "Ugandan Shilling",
-  value: "Ugandan Shilling"
+  value: "UGX"
 }, {
   code: "USD",
   label: "United States Dollar",
-  value: "United States Dollar"
+  value: "USD"
 }, {
   code: "UYU",
   label: "Uruguayan Peso",
-  value: "Uruguayan Peso"
+  value: "UYU"
 }, {
   code: "UZS",
   label: "Uzbekistan Som",
-  value: "Uzbekistan Som"
+  value: "UZS"
 }, {
   code: "VEF",
   label: "Venezuelan Bolívar Fuerte",
-  value: "Venezuelan Bolívar Fuerte"
+  value: "VEF"
 }, {
   code: "VND",
   label: "Vietnamese Dong",
-  value: "Vietnamese Dong"
+  value: "VND"
 }, {
   code: "VUV",
   label: "Vanuatu Vatu",
-  value: "Vanuatu Vatu"
+  value: "VUV"
 }, {
   code: "WST",
   label: "Samoan Tala",
-  value: "Samoan Tala"
+  value: "WST"
 }, {
   code: "XAF",
   label: "CFA Franc BEAC",
-  value: "CFA Franc BEAC"
+  value: "XAF"
 }, {
   code: "XAG",
   label: "Silver Ounce",
-  value: "Silver Ounce"
+  value: "XAG"
 }, {
   code: "XAU",
   label: "Gold Ounce",
-  value: "Gold Ounce"
+  value: "XAU"
 }, {
   code: "XCD",
   label: "East Caribbean Dollar",
-  value: "East Caribbean Dollar"
+  value: "XCD"
 }, {
   code: "XDR",
   label: "Special Drawing Rights",
-  value: "Special Drawing Rights"
+  value: "XDR"
 }, {
   code: "XOF",
   label: "CFA Franc BCEAO",
-  value: "CFA Franc BCEAO"
+  value: "XOF"
 }, {
   code: "XPD",
   label: "Palladium Ounce",
-  value: "Palladium Ounce"
+  value: "XPD"
 }, {
   code: "XPF",
   label: "CFP Franc",
-  value: "CFP Franc"
+  value: "XPF"
 }, {
   code: "XPT",
   label: "Platinum Ounce",
-  value: "Platinum Ounce"
+  value: "XPT"
 }, {
   code: "YER",
   label: "Yemeni Rial",
-  value: "Yemeni Rial"
+  value: "YER"
 }, {
   code: "ZAR",
   label: "South African Rand",
-  value: "South African Rand"
+  value: "ZAR"
 }, {
   code: "ZMW",
   label: "Zambian Kwacha",
-  value: "Zambian Kwacha"
+  value: "ZMW"
 }, {
   code: "ZWL",
   label: "Zimbabwean Dollar",
-  value: "Zimbabwean Dollar"
+  value: "ZWL"
 }]
