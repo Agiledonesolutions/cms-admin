@@ -4,6 +4,10 @@ import api from "../../../apis/api";
 import "./options.css";
 import Validate from "../../../utils/validation";
 import Loading from '../../Loading'
+import SortableContainer from '../../DND/SortableContainer'
+import SortableItem from '../../DND/SortableItem'
+import DragHandle from '../../DND/DragHandle'
+import arrayMove from "array-move";
 
 class CreateOption extends React.Component {
   state = {
@@ -134,6 +138,11 @@ class CreateOption extends React.Component {
       console.log(errors);
     }
   };
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    const {data} = this.state
+    data.values= arrayMove(data.values, oldIndex, newIndex)
+    this.setState({data})
+  };
   typeToggle = () => {
     if (
       this.state.data.type == "Dropdown" ||
@@ -157,15 +166,14 @@ class CreateOption extends React.Component {
                     <th></th>
                   </tr>
                 </thead>
-
+                <SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
                 <tbody id="select-values">
                   {this.state.data.values.map((item, idx) => (
+                    <SortableItem key={idx} index={idx}>
+
                     <tr key={idx} className="option-row">
                       <td className="text-center">
-                        <span className="drag-icon">
-                          <i className="fa">&#xf142;</i>
-                          <i className="fa">&#xf142;</i>
-                        </span>
+                       <DragHandle />
                       </td>
                       <td>
                         <div className="form-group">
@@ -236,8 +244,10 @@ class CreateOption extends React.Component {
                         </button>
                       </td>
                     </tr>
+                    </SortableItem>
                   ))}
                 </tbody>
+                </SortableContainer>
               </table>
             </div>
             <button

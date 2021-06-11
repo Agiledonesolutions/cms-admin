@@ -2,9 +2,11 @@ import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import "./tax.css";
-import MultiSelect from "react-multiple-select-dropdown-lite";
-import "react-multiple-select-dropdown-lite/dist/index.css";
 import Validate from "../../../utils/validation";
+import SortableContainer from '../../DND/SortableContainer'
+import SortableItem from '../../DND/SortableItem'
+import DragHandle from '../../DND/DragHandle'
+import arrayMove from "array-move";
 
 class CreateTax extends React.Component {
   state = {
@@ -130,6 +132,11 @@ class CreateTax extends React.Component {
       console.log(errors);
     }
   };
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    const {data} = this.state
+    data.rates= arrayMove(data.rates, oldIndex, newIndex)
+    this.setState({data})
+  };
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
       return (
@@ -199,14 +206,14 @@ class CreateTax extends React.Component {
                     <th></th>
                   </tr>
                 </thead>
+                <SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
                 <tbody id="tax-rates">
                   {this.state.data.rates.map((item, idx) => (
+                    <SortableItem key={idx} index={idx}>
+
                     <tr className="tax-rate" key={idx}>
                       <td className="text-center">
-                        <span className="drag-icon">
-                          <i className="fa"></i>
-                          <i className="fa"></i>
-                        </span>
+                        <DragHandle />
                       </td>
 
                       <td className="tax-name">
@@ -225,7 +232,6 @@ class CreateTax extends React.Component {
                         <select
                           className="custom-select-black"
                           name="country"
-                          id="rates.0.country"
                           value={this.state.data.rates[idx].country}
                           onChange={(e) => {
                             this.setValues(e.target.name, e.target.value, idx);
@@ -306,8 +312,10 @@ class CreateTax extends React.Component {
                         </button>
                       </td>
                     </tr>
+                    </SortableItem>
                   ))}
                 </tbody>
+                </SortableContainer>
               </table>
             </div>
             <button

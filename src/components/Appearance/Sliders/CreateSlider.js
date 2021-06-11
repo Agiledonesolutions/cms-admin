@@ -7,6 +7,10 @@ import { Modal } from "react-responsive-modal";
 import FileManager from "../../Media/FileManager";
 import {siteUrl} from '../../../utils/utils'
 import "./slider.css";
+import SortableContainer from '../../DND/SortableContainer'
+import SortableItem from '../../DND/SortableItem'
+import DragHandle from '../../DND/DragHandle'
+import arrayMove from "array-move";
 
 class CreateSlide extends React.Component {
   state = {
@@ -187,20 +191,24 @@ class CreateSlide extends React.Component {
       console.log(errors);
     }
   };
-
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    let arr= arrayMove(this.state.slides, oldIndex, newIndex)
+    this.setState({slides: arr})
+  };
   tabContentToggle = () => {
     if (this.state.activePanel == "slides") {
       return (
         <div className="tab-pane fade active in">
           <h3 className="tab-content-title">Slides</h3>
           <div id="slides-wrapper" className="clearfix">
+          <SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
+            <div>
             {this.state.slides.map((slide,idx)=>(
+             <SortableItem key={idx} index={idx}>
+
             <div className="slide" key={idx}>
               <div className="slide-header clearfix">
-                <span className="slide-drag pull-left">
-                  <i className="fa"></i>
-                  <i className="fa"></i>
-                </span>
+                <DragHandle />
                 <span className="pull-left">Image Slide</span>
                 <button type="button" className="delete-slide btn pull-right" onClick={()=>{this.handleRemoveSpecificRow(idx)}}>
                   <i className="fa fa-times" />
@@ -333,13 +341,13 @@ class CreateSlide extends React.Component {
                             <input
                               type="checkbox"
                               name="NewWindow"
-                              id="slides-0-open-in-new-window"
+                              id={"slides-0-open-in-new-window"+idx}
                               checked={this.state.slides[idx].General.NewWindow}
                               onChange={(e)=>{
                                 this.setSlide(!this.state.slides[idx].General.NewWindow, "General", e.target.name, idx)
                               }}
                             />
-                            <label htmlFor="slides-0-open-in-new-window">
+                            <label htmlFor={"slides-0-open-in-new-window"+idx}>
                               Open in new window
                             </label>
                           </div>
@@ -434,7 +442,10 @@ class CreateSlide extends React.Component {
                 </div>
               </div>
             </div>
+            </SortableItem>
             ))}
+            </div>
+            </SortableContainer>
           </div>
           <div className="form-group">
             <button type="button" className="add-slide btn btn-default m-l-15" onClick={()=>{this.handleAddRow()}}>

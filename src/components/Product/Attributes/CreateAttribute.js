@@ -4,8 +4,12 @@ import api from "../../../apis/api";
 import "./attribute.css";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
-import Validate from '../../../utils/validation'
+import Validate from "../../../utils/validation";
 import Loading from "../../Loading";
+import SortableContainer from '../../DND/SortableContainer'
+import SortableItem from '../../DND/SortableItem'
+import DragHandle from '../../DND/DragHandle'
+import arrayMove from "array-move";
 
 class CreateAttribute extends React.Component {
   state = {
@@ -21,30 +25,33 @@ class CreateAttribute extends React.Component {
     },
     CategoryIds: [],
     rolesArray: [],
-    errors:[]
+    errors: [],
   };
 
-   componentDidMount() {
-    if(this.props.edit == "true"){
-      const url = "/attribute/get/" + this.props.match.params.id
-      const {data} = this.state
-      const {rolesArray} = this.state
-      api.get(url).then(res=>{
-        console.log(res.data.data)
-        data.name = res.data.data.name
-        data.attributeSetId = res.data.data.attributeSet
-        data.categoryIds = res.data.data.categories
-        rolesArray.push(res.data.data.categories.toString())
-        data.filterable = res.data.data.filterable
-        data.value = res.data.data.value
-        this.setState({data})
-        this.setState({rolesArray})
-      }).catch(err=>{
-        console.log("error fetching attri")
-      })
+  componentDidMount() {
+    if (this.props.edit == "true") {
+      const url = "/attribute/get/" + this.props.match.params.id;
+      const { data } = this.state;
+      const { rolesArray } = this.state;
+      api
+        .get(url)
+        .then((res) => {
+          console.log(res.data.data);
+          data.name = res.data.data.name;
+          data.attributeSetId = res.data.data.attributeSet;
+          data.categoryIds = res.data.data.categories;
+          rolesArray.push(res.data.data.categories.toString());
+          data.filterable = res.data.data.filterable;
+          data.value = res.data.data.value;
+          this.setState({ data });
+          this.setState({ rolesArray });
+        })
+        .catch((err) => {
+          console.log("error fetching attri");
+        });
     }
     const { attributesSets } = this.state;
-     api
+    api
       .post("/attributeset/get")
       .then((res) => {
         res.data.data.map((val) => {
@@ -56,128 +63,132 @@ class CreateAttribute extends React.Component {
         console.log("error fetching attri sets");
       });
 
-    const {categoryOptions} = this.state
-    const addToCategories = (x, sub) =>{
-      let tmp = {}
-      let name = ""
-      for(var i = 0; i < sub.length; i++){
-        name+="| - - "
+    const { categoryOptions } = this.state;
+    const addToCategories = (x, sub) => {
+      let tmp = {};
+      let name = "";
+      for (var i = 0; i < sub.length; i++) {
+        name += "| - - ";
       }
-      tmp['label'] = name+ x.name
-      tmp['value'] = x._id
-      categoryOptions.push(tmp)
-      if(x.childrenCategory.length > 0){
-        sub.push("sub")
-        x.childrenCategory.forEach(y=>{
-          addToCategories(y, sub)
-        })      
-      }else{
-        return
+      tmp["label"] = name + x.name;
+      tmp["value"] = x._id;
+      categoryOptions.push(tmp);
+      if (x.childrenCategory.length > 0) {
+        sub.push("sub");
+        x.childrenCategory.forEach((y) => {
+          addToCategories(y, sub);
+        });
+      } else {
+        return;
       }
-      
-    }
+    };
 
-     api.get('/category/get').then(res=>{
-      res.data.data.forEach(val=>{
-        addToCategories(val, []) 
+    api
+      .get("/category/get")
+      .then((res) => {
+        res.data.data.forEach((val) => {
+          addToCategories(val, []);
+        });
       })
-    }).catch((err)=>{
-      console.log(err)
-    })
-    this.setState({categoryOptions})
+      .catch((err) => {
+        console.log(err);
+      });
+    this.setState({ categoryOptions });
   }
-  setValues = (idx, val) =>{
-    const {data} = this.state
-    data["value"][idx] = val
-    this.setState({data})
-  }
-  setCategoryArray = (val) => {
-    const { rolesArray } = this.state;
-    rolesArray.push(val);
-    console.log(rolesArray)
-    var n = rolesArray.length;
-    var {CategoryIds} = this.state
-    CategoryIds = rolesArray[n - 1].split(",") 
-    this.setState({ rolesArray });
-    this.setState({ CategoryIds });
+  setValues = (idx, val) => {
+    const { data } = this.state;
+    data["value"][idx] = val;
+    this.setState({ data });
   };
+
   setVal = (key, val) => {
     const { data } = this.state;
-    if(key == "filterable"){
-        data["filterable"] = !this.state.data.filterable
-    }else{
-        data[key] = val;
+    if (key == "filterable") {
+      data["filterable"] = !this.state.data.filterable;
+    } else {
+      data[key] = val;
     }
     this.setState({ data });
-    
   };
   handleAddRow = () => {
-    const {data} =this.state
-    data["value"].push("")
-    this.setState({data})
+    const { data } = this.state;
+    data["value"].push("");
+    this.setState({ data });
   };
-  handleRemoveSpecificRow = (idx)  => {
-    const {data} = this.state
-    data['value'].splice(idx, 1)
-    this.setState({data})
+  handleRemoveSpecificRow = (idx) => {
+    const { data } = this.state;
+    data["value"].splice(idx, 1);
+    this.setState({ data });
   };
   handleSubmit = () => {
-    const {errors} = this.state
-    const {data} = this.state
-    
-    if (
-      !errors.includes("name") &&
-      !Validate.validateNotEmpty(data['name'])
-    ) {
+    const { errors } = this.state;
+    const { data } = this.state;
+
+    if (!errors.includes("name") && !Validate.validateNotEmpty(data["name"])) {
       errors.push("name");
       this.setState({ errors });
     } else if (
       errors.includes("name") &&
-      Validate.validateNotEmpty(data['name'])
+      Validate.validateNotEmpty(data["name"])
     ) {
       errors.splice(errors.indexOf("name"), 1);
       this.setState({ errors });
     }
     if (
       !errors.includes("attributeSetId") &&
-      !Validate.validateNotEmpty(data['attributeSetId'])
+      !Validate.validateNotEmpty(data["attributeSetId"])
     ) {
       errors.push("attributeSetId");
       this.setState({ errors });
     } else if (
       errors.includes("attributeSetId") &&
-      Validate.validateNotEmpty(data['attributeSetId'])
+      Validate.validateNotEmpty(data["attributeSetId"])
     ) {
       errors.splice(errors.indexOf("attributeSetId"), 1);
       this.setState({ errors });
     }
-    if(!Validate.validateNotEmpty(this.state.errors)){
-      this.setState({submitting: true})
-    if(this.props.edit == "true"){
-      api.put('/attribute', {data: this.state.data, _id: this.props.match.params.id, categoryIds: this.state.CategoryIds, requiredPermission: "Edit Attributes"}).then(res=>{
-        console.log(res)
-        this.setState({submitting: false})
-
-      }).catch(err=>{
-        console.log("error updating attri")
-        this.setState({submitting: false})
-
-      })
-    }else{
-      api.post('/attribute', {data: this.state.data, categoryIds: this.state.CategoryIds, requiredPermission: "Create Attributes"}).then(res=>{
-        console.log(res)
-        this.setState({submitting: false})
-
-      }).catch(err=>{
-        console.log("error creating attribute")
-        this.setState({submitting: false})
-
-      })
+    if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({ submitting: true });
+      if (this.props.edit == "true") {
+        api
+          .put("/attribute", {
+            data: this.state.data,
+            _id: this.props.match.params.id,
+            categoryIds: this.state.CategoryIds,
+            requiredPermission: "Edit Attributes",
+          })
+          .then((res) => {
+            console.log(res);
+            this.setState({ submitting: false });
+          })
+          .catch((err) => {
+            console.log("error updating attri");
+            this.setState({ submitting: false });
+          });
+      } else {
+        api
+          .post("/attribute", {
+            data: this.state.data,
+            categoryIds: this.state.CategoryIds,
+            requiredPermission: "Create Attributes",
+          })
+          .then((res) => {
+            console.log(res);
+            this.setState({ submitting: false });
+          })
+          .catch((err) => {
+            console.log("error creating attribute");
+            this.setState({ submitting: false });
+          });
+      }
+    } else {
+      console.log(errors);
     }
-  }else{
-    console.log(errors)
-  }
-
+  };
+   onSortEnd = ({ oldIndex, newIndex }) => {
+    const {data} = this.state
+    data.value= arrayMove(data.value, oldIndex, newIndex)
+    this.setState({data})
   };
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
@@ -240,9 +251,13 @@ class CreateAttribute extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <MultiSelect
-                    onChange={this.setCategoryArray}
+                    onChange={(val)=>{
+                      this.setState({CategoryIds: val.split(',')})
+                    }}
                     options={this.state.categoryOptions}
-                    defaultValue={this.state.rolesArray[this.state.rolesArray.length-1]}
+                    defaultValue={
+                      this.state.CategoryIds.toString()
+                    }
                   />
                 </div>
               </div>
@@ -260,11 +275,11 @@ class CreateAttribute extends React.Component {
                       name="filterable"
                       id="filterable"
                       checked={this.state.data.filterable}
-                      onChange={()=>{
-                        const {data} = this.state
-                        data.filterable = !this.state.data.filterable
-                        this.setState({data})
-                      }}      
+                      onChange={() => {
+                        const { data } = this.state;
+                        data.filterable = !this.state.data.filterable;
+                        this.setState({ data });
+                      }}
                     />
                     <label htmlFor="filterable">
                       Use this attribute for filtering products
@@ -282,7 +297,7 @@ class CreateAttribute extends React.Component {
           <h3 className="tab-content-title">Values</h3>
           <div id="attribute-values-wrapper">
             <div className="table-responsive">
-              <table className="options table table-bordered" >
+              <table className="options table table-bordered">
                 <thead>
                   <tr>
                     <th />
@@ -290,14 +305,17 @@ class CreateAttribute extends React.Component {
                     <th />
                   </tr>
                 </thead>
-                <tbody id="attribute-values">
+                {/* <tbody id="attribute-values" > */}
+                <SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
+                  <tbody id="attribute-values">
                   {this.state.data.value.map((item, idx) => (
-                    <tr key={idx} draggable="true" >
-                      <td className="text-center" >
-                        <span className="drag-icon">
-                          <i className="fa">&#xf142;</i>
-                          <i className="fa">&#xf142;</i>
-                        </span>
+                    <SortableItem key={idx} index={idx}>
+                    <tr
+                      key={idx}
+                   >
+                      <td className="text-center">
+                       
+                        <DragHandle />
                       </td>
                       <td>
                         <div className="form-group">
@@ -306,8 +324,8 @@ class CreateAttribute extends React.Component {
                             name={idx}
                             value={this.state.data.value[idx]}
                             className="form-control"
-                            onChange={(e)=>{
-                              this.setValues(e.target.name, e.target.value)
+                            onChange={(e) => {
+                              this.setValues(e.target.name, e.target.value);
                             }}
                           />
                         </div>
@@ -319,14 +337,19 @@ class CreateAttribute extends React.Component {
                           data-toggle="tooltip"
                           name={idx}
                           data-title="Delete Value"
-                          onClick={(e)=>{this.handleRemoveSpecificRow(idx)}}
+                          onClick={(e) => {
+                            this.handleRemoveSpecificRow(idx);
+                          }}
                         >
                           <i className="fa fa-trash" />
                         </button>
                       </td>
                     </tr>
+                    </SortableItem>
                   ))}
-                </tbody>
+                  </tbody>
+                  </SortableContainer>
+                {/* </tbody> */}
               </table>
             </div>
             <button
@@ -345,7 +368,11 @@ class CreateAttribute extends React.Component {
     return (
       <div>
         <section className="content-header clearfix">
-        {this.props.edit == "true"? <h3>Edit Attribute</h3>: <h3>Create Attribute</h3>}
+          {this.props.edit == "true" ? (
+            <h3>Edit Attribute</h3>
+          ) : (
+            <h3>Create Attribute</h3>
+          )}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
@@ -353,7 +380,11 @@ class CreateAttribute extends React.Component {
             <li>
               <Link to="/attributes">Attributes</Link>
             </li>
-            {this.props.edit == "true"? <li className="active">Edit Attribute</li>: <li className="active">Create Attribute</li>}
+            {this.props.edit == "true" ? (
+              <li className="active">Edit Attribute</li>
+            ) : (
+              <li className="active">Create Attribute</li>
+            )}
           </ol>
         </section>
         <section className="content">
@@ -410,7 +441,10 @@ class CreateAttribute extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-2 col-md-10" style={{display: "flex"}}>
+                      <div
+                        className="col-md-2 col-md-10"
+                        style={{ display: "flex" }}
+                      >
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -421,7 +455,7 @@ class CreateAttribute extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting}/>
+                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

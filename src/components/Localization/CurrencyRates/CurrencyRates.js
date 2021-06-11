@@ -42,6 +42,7 @@ class CurrencyRates extends React.Component {
   componentDidMount() {
     const datalist = [];
     api.get('/currency').then(res=>{
+      console.log(res.data.data)
       res.data.data.map((val) => {
         var tmp = {
           currency: val.Name,

@@ -5,6 +5,10 @@ import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import Validate from "../../utils/validation";
 import Loading from "../Loading";
+import SortableContainer from '../DND/SortableContainer'
+import SortableItem from '../DND/SortableItem'
+import DragHandle from '../DND/DragHandle'
+import arrayMove from "array-move";
 
 class CreateFlashSale extends React.Component {
   state = {
@@ -167,7 +171,11 @@ class CreateFlashSale extends React.Component {
       console.log(errors);
     }
   };
-
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    const {data} = this.state
+    data.products= arrayMove(data.products, oldIndex, newIndex)
+    this.setState({data})
+  };
   tabContentToggle = () => {
     if (this.state.activePanel == "settings") {
       return (
@@ -199,8 +207,11 @@ class CreateFlashSale extends React.Component {
       return (
         <div className="tab-pane fade in active" id="values">
           <h3 className="tab-content-title">Values</h3>
-
+          <SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
+          <div>
           {this.state.data.products.map((item, idx) => (
+            <SortableItem key={idx} index={idx}>
+
             <div
               className="panel-wrap flash-sale"
               id="products-wrapper"
@@ -208,10 +219,7 @@ class CreateFlashSale extends React.Component {
             >
               <div className="panel">
                 <div className="panel-header clearfix">
-                  <span className="drag-icon pull-left">
-                    <i className="fa"></i>
-                    <i className="fa"></i>
-                  </span>
+                  <DragHandle />
                   Flash Sale Product
                   <button
                     type="button"
@@ -295,7 +303,10 @@ class CreateFlashSale extends React.Component {
                 </div>
               </div>
             </div>
+            </SortableItem>
           ))}
+          </div>
+          </SortableContainer>
           <button
             type="button"
             className="btn btn-default "

@@ -12,7 +12,6 @@ import "react-multiple-select-dropdown-lite/dist/index.css";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import FileManager from "../../Media/FileManager";
-import imageCompression from "browser-image-compression";
 import Related from "./Related";
 import UpSells from "./UpSells";
 import CrossSells from "./CrossSells";
@@ -20,6 +19,10 @@ import Validate from '../../../utils/validation'
 import Loading from '../../Loading'
 import { siteUrl } from "../../../utils/utils";
 import {getMessage} from '../../AlertMessage'
+import SortableContainer from '../../DND/SortableContainer'
+import SortableItem from '../../DND/SortableItem'
+import DragHandle from '../../DND/DragHandle'
+import arrayMove from "array-move";
 
 const options = {
   defaultColumns: 3,
@@ -560,6 +563,19 @@ class CreateProduct extends React.Component {
     options[idx].value.splice(idx2,1)
     this.setState({options})
   }
+  onDownloadSortEnd = ({ oldIndex, newIndex }) => {
+    let arr = arrayMove(this.state.downloadsIds, oldIndex, newIndex)
+    let arr2 = arrayMove(this.state.downloadFilenames, oldIndex, newIndex)
+    this.setState({downloadsIds: arr, downloadFilenames: arr2})
+  };
+  onAttributeSortEnd = ({ oldIndex, newIndex }) => {
+    let arr = arrayMove(this.state.attributes, oldIndex, newIndex)
+    this.setState({attributes: arr})
+  };
+  onOptionSortEnd = ({ oldIndex, newIndex }) => {
+    let arr = arrayMove(this.state.options, oldIndex, newIndex)
+    this.setState({options: arr})
+  };
   OptionTypeToggle = (idx) => {
     if (
       this.state.options[idx].type == "Dropdown" ||
@@ -583,15 +599,13 @@ class CreateProduct extends React.Component {
                     <th></th>
                   </tr>
                 </thead>
-
+                {/* <SortableContainer onSortEnd={this.onOptionSortEnd} useDragHandle> */}
                 <tbody id="select-values">
                   {this.state.options[idx].value.map((item, idx2) => (
+                    // <SortableItem key={idx} index={idx}>
                     <tr key={idx} className="option-row">
                       <td className="text-center">
-                        <span className="drag-icon">
-                          <i className="fa">&#xf142;</i>
-                          <i className="fa">&#xf142;</i>
-                        </span>
+                        <DragHandle />
                       </td>
                       <td>
                         <div className="form-group">
@@ -650,8 +664,10 @@ class CreateProduct extends React.Component {
                         </button>
                       </td>
                     </tr>
+                    // </SortableItem>
                   ))}
                 </tbody>
+                {/* </SortableContainer> */}
               </table>
             </div>
             <button
@@ -1226,14 +1242,13 @@ class CreateProduct extends React.Component {
                     <th />
                   </tr>
                 </thead>
+                <SortableContainer onSortEnd={this.onAttributeSortEnd} useDragHandle>
                 <tbody id="product-attributes">
                   {this.state.attributes.map((val, idx) => (
+                    <SortableItem key={idx} index={idx}>
                     <tr key={idx}>
                       <td className="text-center">
-                        <span className="drag-icon">
-                          <i className="fa"></i>
-                          <i className="fa"></i>
-                        </span>
+                        <DragHandle />
                       </td>
                       <td>
                         <div className="form-group">
@@ -1241,7 +1256,6 @@ class CreateProduct extends React.Component {
                           <select
                             name="attributeID"
                             className="form-control attribute custom-select-black"
-                            id="product-attribute-select"
                             value={this.state.attributes[idx].attributeId}
                             onChange={(e) => {
                               const {
@@ -1313,8 +1327,10 @@ class CreateProduct extends React.Component {
                         </button>
                       </td>
                     </tr>
+                    </SortableItem>
                   ))}
                 </tbody>
+                </SortableContainer>
               </table>
             </div>
             <button
@@ -1630,14 +1646,13 @@ class CreateProduct extends React.Component {
                         <th />
                       </tr>
                     </thead>
+                    <SortableContainer onSortEnd={this.onDownloadSortEnd} useDragHandle>
                     <tbody>
                       {this.state.downloadsIds.map((val, idx) => (
+                        <SortableItem key={idx} index={idx}>
                         <tr key={idx}>
                           <td className="text-center">
-                            <span className="drag-icon">
-                              <i className="fa"></i>
-                              <i className="fa"></i>
-                            </span>
+                            <DragHandle />
                           </td>
                           <td>
                             <div className="form-group">
@@ -1677,8 +1692,10 @@ class CreateProduct extends React.Component {
                             </button>
                           </td>
                         </tr>
+                        </SortableItem>
                       ))}
                     </tbody>
+                    </SortableContainer>
                   </table>
                 </div>
                 <button
