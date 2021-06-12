@@ -305,7 +305,6 @@ class CreateAttribute extends React.Component {
                     <th />
                   </tr>
                 </thead>
-                {/* <tbody id="attribute-values" > */}
                 <SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
                   <tbody id="attribute-values">
                   {this.state.data.value.map((item, idx) => (
@@ -349,7 +348,6 @@ class CreateAttribute extends React.Component {
                   ))}
                   </tbody>
                   </SortableContainer>
-                {/* </tbody> */}
               </table>
             </div>
             <button

@@ -41,7 +41,7 @@
     border-left: 2px solid chocolate;
 }
 .rc-tree .rc-tree-treenode.drop-target {
-    background-color: yellowgreen;
+    background-color: none !important;
 }
 .rc-tree .rc-tree-treenode.drop-target ~ .rc-tree-treenode {
     border-left: none;

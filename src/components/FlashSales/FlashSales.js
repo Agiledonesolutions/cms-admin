@@ -9,6 +9,7 @@ import api from "../../apis/api";
 import { format } from "timeago.js";
 import Loading from '../Loading'
 
+
 class FlashSales extends React.Component {
   state = {
     submitting: false,
