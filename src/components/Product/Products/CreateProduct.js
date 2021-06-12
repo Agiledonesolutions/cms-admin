@@ -576,6 +576,11 @@ class CreateProduct extends React.Component {
     let arr = arrayMove(this.state.options, oldIndex, newIndex)
     this.setState({options: arr})
   };
+  onOptionTypeSortEnd = ( oldIndex, newIndex,idx) => {
+    const {options} = this.state
+    options[idx].value = arrayMove(this.state.options[idx].value, oldIndex, newIndex)
+    this.setState({options})
+  };
   OptionTypeToggle = (idx) => {
     if (
       this.state.options[idx].type == "Dropdown" ||
@@ -599,11 +604,11 @@ class CreateProduct extends React.Component {
                     <th></th>
                   </tr>
                 </thead>
-                {/* <SortableContainer onSortEnd={this.onOptionSortEnd} useDragHandle> */}
+                <SortableContainer onSortEnd={({ oldIndex, newIndex })=>{this.onOptionTypeSortEnd(oldIndex,newIndex, idx)}} useDragHandle>
                 <tbody id="select-values">
                   {this.state.options[idx].value.map((item, idx2) => (
-                    // <SortableItem key={idx} index={idx}>
-                    <tr key={idx} className="option-row">
+                    <SortableItem key={idx2} index={idx2}>
+                    <tr key={idx2} className="option-row">
                       <td className="text-center">
                         <DragHandle />
                       </td>
@@ -664,10 +669,10 @@ class CreateProduct extends React.Component {
                         </button>
                       </td>
                     </tr>
-                    // </SortableItem>
+                    </SortableItem>
                   ))}
                 </tbody>
-                {/* </SortableContainer> */}
+                </SortableContainer>
               </table>
             </div>
             <button
@@ -1350,8 +1355,10 @@ class CreateProduct extends React.Component {
       return (
         <div className="tab-pane fade in active">
           <h3 className="tab-content-title">Options</h3>
+          <SortableContainer onSortEnd={this.onOptionSortEnd} useDragHandle>
           <div id="options-group" className="sortable">
             {this.state.options.map((val, idx) => (
+              <SortableItem key={idx} index={idx}>
               <div
                 className="content-accordion panel-group options-group-wrapper"
                 id="option-0"
@@ -1361,14 +1368,9 @@ class CreateProduct extends React.Component {
                   <div className="panel-heading">
                     <h4 className="panel-title">
                       <a
-                        data-toggle="collapse"
-                        data-parent="#option-0"
-                        href="#custom-collapse-0"
+                       
                       >
-                        <span className="drag-icon pull-left">
-                          <i className="fa"></i>
-                          <i className="fa"></i>
-                        </span>
+                        <DragHandle />
                         <span id="option-name" className="pull-left">
                           {this.state.options[idx].name !=""? this.state.options[idx].name: "New Option"}
                         </span>
@@ -1376,7 +1378,6 @@ class CreateProduct extends React.Component {
                     </h4>
                   </div>
                   <div
-                    id="custom-collapse-0"
                     className="panel-collapse collapse in"
                   >
                     <div className="panel-body">
@@ -1448,7 +1449,7 @@ class CreateProduct extends React.Component {
                             type="checkbox"
                             name="required"
                             className="form-control"
-                            id="option-0-is-required"
+                            id={"option-0-is-required"+idx}
                             checked={this.state.options[idx].required}
                             onChange={()=>{
                               const {options} =  this.state
@@ -1456,7 +1457,7 @@ class CreateProduct extends React.Component {
                               this.setState({options})
                             }}
                           />
-                          <label htmlFor="option-0-is-required">Required</label>
+                          <label htmlFor={"option-0-is-required"+idx}>Required</label>
                         </div>
                         <button
                           type="button"
@@ -1474,8 +1475,10 @@ class CreateProduct extends React.Component {
                   </div>
                 </div>
               </div>
+              </SortableItem>
             ))}
           </div>
+          </SortableContainer>
 
           <div className="box-footer no-border p-t-0">
             <div className="form-group pull-left">

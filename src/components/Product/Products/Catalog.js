@@ -77,7 +77,7 @@ class Catalog extends React.Component {
     const datalist = [];
     var i =0
     api
-      .post("/product/get", {limitNumber: "5", skipNumber: "5", sortBy: ""})
+      .post("/product/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;

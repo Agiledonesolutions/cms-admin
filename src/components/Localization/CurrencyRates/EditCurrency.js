@@ -6,7 +6,7 @@ import Validate from "../../../utils/validation";
 class EditCurrency extends React.Component {
   state = {
     activePanel: "general",
-
+    rate: "",
     errors: [],
   };
 
@@ -30,7 +30,11 @@ class EditCurrency extends React.Component {
     }
    
     if (!Validate.validateNotEmpty(this.state.errors)) {
-      
+      api.put('/currency', {Rate: this.state.rate, requiredPermission: "Edit Currency Rates", id: this.props.match.params.id}).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log(err)
+      })
     } else {
       console.log(errors);
     }
@@ -50,10 +54,11 @@ class EditCurrency extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <input
-                    name="taxClass"
+                    name="rate"
                     className="form-control "
                     type="text"
-                    
+                    value={this.state.rate}
+                    onChange={(e)=>{this.setState({rate: e.target.value})}}
                   />
                 </div>
               </div>
