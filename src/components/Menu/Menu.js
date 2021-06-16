@@ -49,7 +49,6 @@ class Menu extends React.Component {
       .then((res) => {
         res.data.data.map((val) => {
           i++;
-          console.log(val)
           var tmp = {
             id: i,
             name: val["name"],

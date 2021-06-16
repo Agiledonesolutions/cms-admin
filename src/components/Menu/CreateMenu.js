@@ -30,6 +30,10 @@ class CreateMenu extends React.Component {
     autoExpandParent: true,
     expandedKeys: [],
     allKeys: [],
+    _id: "",
+    oldIndex: "",
+    newIndex:"",
+    parentMenuId: ""
   };
   componentDidMount = () => {
     var dataTemp = [];
@@ -181,11 +185,24 @@ class CreateMenu extends React.Component {
     }
   };
   onDragStart = (info) => {
-    console.log("start", info.node);
+    //console.log("start", info.node);
+    let oldIndex = parseInt(info.node.pos[info.node.pos.length-1])
+    let _id = info.node._id
+    let parentMenuId = info.node.parentMenuId
+    this.setState({_id, parentMenuId, oldIndex})
+    
   };
-
+  changeMenuOrder = () =>{
+    api.post('/menu/menuitem/changeOrder', {newIndex: this.state.newIndex, oldIndex: this.state.oldIndex, parentMenuId: this.state.parentMenuId, id: this.state._id}).then(res=>{
+      console.log(res)
+    }).then(err=>{
+      console.log(err)
+    })
+  }
   onDrop = (info) => {
     console.log("drop", info);
+    let parentMenuId = info.node._id? info.node._id:this.state.parentMenuId
+    let newIndex;
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
     const dropPos = info.node.pos.split("-");
@@ -213,11 +230,8 @@ class CreateMenu extends React.Component {
     });
 
     if (dropPosition === 0) {
-      // Drop on the content
       loop(data, dropKey, (item) => {
-        // eslint-disable-next-line no-param-reassign
         item.children = item.children || [];
-        // where to insert 示例添加到尾部，可以是随意位置
         item.children.unshift(dragObj);
       });
     } else {
@@ -237,7 +251,10 @@ class CreateMenu extends React.Component {
 
     this.setState({
       treeData: data,
-    });
+      parentMenuId
+    },()=>{{
+      this.changeMenuOrder()
+    }});
   };
 
   onExpand = (expandedKeys) => {
