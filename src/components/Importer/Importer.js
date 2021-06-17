@@ -1,7 +1,29 @@
 import React from "react";
 import { Link, withRouter } from "react-router-dom";
+import api from '../../apis/api'
 
 class Importer extends React.Component {
+  state = {
+    file: ""
+  }
+  handleImport = async() =>{
+    const {file} = this.state
+    let formData = new FormData();
+    await formData.append("csv", file)
+    console.log(file)
+    api
+    .post("/import", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
   render() {
     return (
       <React.Fragment>
@@ -17,7 +39,7 @@ class Importer extends React.Component {
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">
-              <a href="#" className="btn btn-primary btn-actions">
+              <a href="assets/products.csv" className="btn btn-primary btn-actions" download="products.csv">
                 Download CSV
               </a>
             </div>
@@ -48,7 +70,11 @@ class Importer extends React.Component {
                                   name="csv_file"
                                   className="form-control "
                                   id="csv_file"
+                                  accept="text/csv"
                                   type="file"
+                                  onChange={(e)=>{
+                                    this.setState({file: e.target.files[0]})
+                                  }}
                                 />
                               </div>
                             </div>
@@ -64,7 +90,6 @@ class Importer extends React.Component {
                                 <select
                                   name="import_type"
                                   className="form-control custom-select-black "
-                                  id="import_type"
                                 >
                                   <option value="product">Product</option>
                                 </select>
@@ -75,7 +100,10 @@ class Importer extends React.Component {
                                 <button
                                   type="submit"
                                   className="btn btn-primary"
-                                  data-loading
+                                  onClick={(e)=>{
+                                    e.preventDefault()
+                                    this.handleImport()
+                                  }}
                                 >
                                   Run
                                 </button>

@@ -55,9 +55,9 @@ class EditOrder extends React.Component {
           LineTotal: item.LineTotal,
           Qty: item.Quantity,
           Product: {
-            Name: item.Product.name,
-            _id: item.Product._id,
-            price: item.Product.price
+            Name: item.Product?item.Product.name:"",
+            _id: item.Product?item.Product._id:"",
+            price: item.Product?item.Product.price:""
           }
         }
         arr.push(tmp)

@@ -222,7 +222,7 @@ class Home extends React.Component {
                         this.setState({url: "/reviews/"+val._id +"/edit"})
                       }}>
                         <td>
-                            {val.product.name}
+                            {val.product?val.product.name:""}
                           
                         </td>
                         <td>
