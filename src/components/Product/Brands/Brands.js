@@ -9,6 +9,8 @@ import api from "../../../apis/api";
 import { format } from "timeago.js";
 import Loading from "../../Loading";
 import { siteUrl } from "../../../utils/utils";
+import { toast } from 'react-toastify';
+
 
 class Brands extends React.Component {
   state = {
@@ -51,6 +53,8 @@ class Brands extends React.Component {
   };
 
   componentDidMount() {
+
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -69,10 +73,11 @@ class Brands extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
         console.log(err);
+        this.setState({submitting: false})
       });
   }
 
@@ -84,14 +89,28 @@ class Brands extends React.Component {
     api
       .delete("/brand", { data })
       .then((res) => {
-        console.log(res);
+        //console.log(res);
         this.setState({submitting: false})
+        toast.success('Brand(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        //console.log("delete error");
         this.setState({submitting: false})
-
+        toast.error('Something went wrong. Please try again later.', {
+          position: "bottom-right",
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   };
 

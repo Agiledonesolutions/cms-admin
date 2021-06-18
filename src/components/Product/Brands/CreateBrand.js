@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import Validate from '../../../utils/validation'
 import api from '../../../apis/api'
 import "react-responsive-modal/styles.css";
@@ -7,6 +7,7 @@ import { Modal } from "react-responsive-modal";
 import FileManager from "../../Media/FileManager";
 import Loading from '../../Loading'
 import { siteUrl } from "../../../utils/utils";
+import { toast } from 'react-toastify';
 
 class CreateBrand extends React.Component {
   state = {
@@ -26,7 +27,8 @@ class CreateBrand extends React.Component {
     },
     logo: "",
     banner: "",
-    errors: []
+    errors: [],
+    redirect: false
   };
   setImageId = (id, multiple,image) => {  
     if(this.state.imageType == "logo"){
@@ -39,7 +41,7 @@ class CreateBrand extends React.Component {
     if(this.props.edit == "true"){
       const url = "/brand/get/" +  this.props.match.params.id
       api.get(url).then(res=>{
-        console.log(res)
+        //console.log(res)
         const {data} = this.state
         data.name = res.data.data.name
         data.status = res.data.data.status
@@ -47,9 +49,17 @@ class CreateBrand extends React.Component {
         data.metaTitle = res.data.data.metaTitle
         data.metaDescription = res.data.data.metaDescription
         this.setState({data})
-        this.setState({banner: res.data.data.banner._id, bannerImage: res.data.data.banner.image, logo: res.data.data.logo._id, logoImage: res.data.data.logo.image})
+        this.setState({banner: res.data.data.banner?res.data.data.banner._id: "", bannerImage: res.data.data.banner?res.data.data.banner.image:"", logo: res.data.data.logo?res.data.data.logo._id:"", logoImage: res.data.data.logo?res.data.data.logo.image:""})
       }).catch(err=>{
-        // console.log("error fetching brand")
+        console.log(err)
+        toast.error('Something went wrong. Please try again later.', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       })
     }
   }
@@ -86,8 +96,15 @@ class CreateBrand extends React.Component {
         })
       }else{
         api.post('/brand', {data: data, logo: this.state.logo, banner: this.state.banner, requiredPermission: "Create Brand"}).then(res=>{
-          console.log(res)
-          this.setState({submitting: false})
+          //console.log(res)
+          toast.success('Brand added successfully', {
+            position: "bottom-right",
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+          this.setState({submitting: false, redirect: true})
         }).catch(err=>{
           console.log("error posting brand")
           this.setState({submitting: false})
@@ -264,6 +281,9 @@ class CreateBrand extends React.Component {
   };
 
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={ "/brands"} />
+    }
     return (
       <React.Fragment>
          <Modal

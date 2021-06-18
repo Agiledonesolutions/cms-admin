@@ -50,9 +50,12 @@ import Reports from '../components/Reports/Reports';
 import Translations from '../components/Localization/Translations/Translations';
 import CurrencyRates from '../components/Localization/CurrencyRates/CurrencyRates';
 import EditCurrency from '../components/Localization/CurrencyRates/EditCurrency';
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const routes = (
+  <>
   <Router>
     <React.Fragment>
       <Switch>
@@ -148,5 +151,16 @@ const routes = (
       </Switch>
     </React.Fragment>
   </Router>
+     <ToastContainer
+     position="bottom-right"
+     autoClose={3000}
+     hideProgressBar={true}
+     newestOnTop={false}
+     closeOnClick
+     pauseOnFocusLoss
+     draggable
+     pauseOnHover
+   />
+   </>
 );
 export default routes;

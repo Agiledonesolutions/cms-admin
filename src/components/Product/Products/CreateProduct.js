@@ -23,6 +23,8 @@ import SortableContainer from '../../DND/SortableContainer'
 import SortableItem from '../../DND/SortableItem'
 import DragHandle from '../../DND/DragHandle'
 import arrayMove from "array-move";
+import { toast } from 'react-toastify';
+
 
 const options = {
   defaultColumns: 3,
@@ -154,7 +156,7 @@ class CreateProduct extends React.Component {
     editorState: BraftEditor.createEditorState(),
     alertType: "",
     alertMessage: "",
-    redirect: ""
+    redirect: false
   };
 
   componentDidMount() {
@@ -178,7 +180,7 @@ class CreateProduct extends React.Component {
       });
     const { taxes } = this.state;
     api
-      .get("/tax/get")
+      .post("/tax/get")
       .then((res) => {
         res.data.data.map((val) => {
           let tmp = {};
@@ -465,7 +467,14 @@ class CreateProduct extends React.Component {
         })
       }else{
         api.post('/product', {data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Create Products"}).then(res=>{
-          this.setState({submitting: false, redirect: "success"})
+          this.setState({submitting: false, redirect: true})
+          toast.success('Product added successfully.', {
+            position: "bottom-right",
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
         }).catch(err=>{
           console.log(err.response.data.message)
           this.setState({submitting: false})
@@ -1721,11 +1730,8 @@ class CreateProduct extends React.Component {
   render() {
     if (this.state.edit != "") {
       return <Redirect to={"/products/" + this.state.edit + "/edit"} />;
-    } else if (this.state.redirect != "") {
-      return <Redirect to={{
-        pathname: "/products",
-        alert: {type: "success", message: "Product added succesfully."}
-      }} />;
+    } else if (this.state.redirect) {
+      return <Redirect to={"/products"} />;
     }
     return (
       <React.Fragment>

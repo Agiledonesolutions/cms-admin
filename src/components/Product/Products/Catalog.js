@@ -63,16 +63,10 @@ class Catalog extends React.Component {
     },
     requiredPermission: "Delete Products",
     edit: "",
-    alertType: "",
-    alertMessage: "",
+
   };
 
   componentDidMount() {
-    // console.log(this.props.location)
-    if(this.props.location.alert){
-      this.setState({alertType: this.props.location.alert.type, alertMessage: this.props.location.alert.message})
-      this.props.location.alert = {}
-    }
     this.setState({submitting: true})
     const datalist = [];
     var i =0
@@ -120,7 +114,6 @@ class Catalog extends React.Component {
 
       });
   };
-  closeAlert = () => {this.setState({alertType: "", alertMessage: ""})}
 
   render() {
     if (this.state.edit != "") {
@@ -148,7 +141,6 @@ class Catalog extends React.Component {
               </Link>
             </div>
           </div>
-          {getMessage(this.state.alertType, this.state.alertMessage, this.closeAlert)}
           <Loading show={this.state.submitting}/>
           <div className="box box-primary">
           <div className="table-delete-button">
