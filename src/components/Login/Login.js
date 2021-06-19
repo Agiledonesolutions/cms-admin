@@ -96,7 +96,7 @@ class Login extends React.Component {
           <div className="reflection" />
         </div>
         <div className="form-inner clearfix">
-          <h3 className="text-center">FleetCart</h3>
+          <h3 className="text-center">SloKart</h3>
           <form>
             <div className="form-group">
               <label htmlFor="Email">

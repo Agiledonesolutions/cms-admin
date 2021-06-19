@@ -96,7 +96,7 @@ const Wrapper = (props) => {
         <span>
           Copyright © 2021{" "}
           <a href="#" target="_blank">
-            FleetCart
+            SloKart
           </a>
         </span>
       </footer>

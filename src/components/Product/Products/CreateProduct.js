@@ -111,10 +111,10 @@ class CreateProduct extends React.Component {
       specialPriceType: "Fixed",
       speacialPriceStart: "",
       specialPriceEnd: "",
-      inventoryManagement: "Do Not Track Inventory",
+      inventoryManagement: false,
       Qty: "",
       SKU: "",
-      stockAvailability: "In Stock",
+      stockAvailability: true,
       metaTitle: "",
       metaDescription: "",
       shortDescription: "",
@@ -1063,16 +1063,16 @@ class CreateProduct extends React.Component {
                       this.setVal(e.target.name, e.target.value);
                     }}
                   >
-                    <option value="Do Not Track Inventory">
+                    <option value={false}>
                       Don't Track Inventory
                     </option>
-                    <option value="Track Inventory">Track Inventory</option>
+                    <option value={true}>Track Inventory</option>
                   </select>
                 </div>
               </div>
               <div
                 className={
-                  this.state.data.inventoryManagement == "Track Inventory"
+                  this.state.data.inventoryManagement
                     ? ""
                     : "hide"
                 }
@@ -1111,9 +1111,9 @@ class CreateProduct extends React.Component {
                       this.setVal(e.target.name, e.target.value);
                     }}
                   >
-                    <option value="">Please Select</option>
-                    <option value={"In Stock"}>In Stock</option>
-                    <option value={"Out of Stock"}>Out of Stock</option>
+                    <option value={false}>Please Select</option>
+                    <option value={true}>In Stock</option>
+                    <option value={false}>Out of Stock</option>
                   </select>
                 </div>
               </div>

@@ -26,7 +26,7 @@ const SideBar = () => {
         <aside className="main-sidebar">
           <header className="main-header clearfix">
             <Link className="logo" to="/dashboard">
-              <span className="logo-lg">FleetCart</span>
+              <span className="logo-lg">SloKart</span>
             </Link>
             <a
               onClick={NavToggle}
