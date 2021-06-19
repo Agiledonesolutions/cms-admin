@@ -5,7 +5,7 @@ import Loading from "../Loading";
 import Validate from "../../utils/validation";
 import api from "../../apis/api";
 import Tree from "rc-tree";
-
+import { toast } from 'react-toastify';
 class CreateMenu extends React.Component {
   state = {
     submitting: false,
@@ -123,6 +123,7 @@ class CreateMenu extends React.Component {
     console.log(id)
     api.delete('/menu/menuitem', {data: {_id: id, requiredPermission: "Delete Menu Items"}}).then(res=>{
       console.log(res.data.data)
+      this.componentDidMount()
     }).catch(err=>{
       console.log(err.response.data)
     })
@@ -200,9 +201,28 @@ class CreateMenu extends React.Component {
     })
   }
   onDrop = (info) => {
-    console.log("drop", info);
-    let parentMenuId = info.node._id? info.node._id:this.state.parentMenuId
+    //console.log("drop", info);
+    let down = false;
     let newIndex;
+    let dragp = info.dragNode.pos[info.dragNode.pos.length-1]
+    let nodep = info.node.pos[info.node.pos.length-1]
+    if(dragp < nodep){
+      down = true;
+    }else{
+      down = false;
+    }
+    if(info.dropPosition == 0){
+      newIndex = 0;
+    }else if(down){
+      newIndex = info.dropPosition-1;
+    }else if(!down){
+      newIndex = info.dropPosition
+    }
+    console.log(newIndex)
+    let parentMenuId = info.node._id? info.node._id:this.state.parentMenuId
+    if(info.node.key == "0-0"){
+      parentMenuId = null
+    }
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
     const dropPos = info.node.pos.split("-");
@@ -251,7 +271,8 @@ class CreateMenu extends React.Component {
 
     this.setState({
       treeData: data,
-      parentMenuId
+      parentMenuId,
+      newIndex
     },()=>{{
       this.changeMenuOrder()
     }});

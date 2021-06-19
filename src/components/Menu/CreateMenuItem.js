@@ -9,7 +9,7 @@ import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import FileManager from '../Media/FileManager'
 import { siteUrl } from "../../utils/utils";
-
+import { toast } from 'react-toastify';
 class CreateMenuItem extends React.Component {
   state = {
     submitting: false,

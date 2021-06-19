@@ -5,17 +5,48 @@ import SortIcon from "@material-ui/icons/SortRounded";
 import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import { columns } from "./UserData";
 import api from "../../apis/api";
 import { getToken } from "../../utils/session";
 import { format } from 'timeago.js';
-
+import { toast } from 'react-toastify';
 
 class Users extends React.Component {
   state={
     selectedRows: [],
     tableData: {
-      columns,
+      columns: [
+        {
+          name: 'Id',
+          selector: 'id',
+          sortable: true,
+          width: "60px"
+        },
+        {
+          name: 'First Name',
+          selector: 'firstName',
+          sortable: true,
+        },
+        {
+          name: 'Last Name',
+          selector: 'lastName',
+          sortable: true,
+        },
+        {
+          name: 'Email',
+          selector: 'email',
+          sortable: true,
+        },
+        {
+          name: 'Last Login',
+          selector: 'lastLogin',
+          sortable: true,
+        },
+        {
+          name: 'Created',
+          selector: 'created',
+          sortable: true,
+        }
+      ],
       data: [],
     },
     edit: "",

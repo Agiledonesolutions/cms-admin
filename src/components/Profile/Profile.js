@@ -5,7 +5,7 @@ import { getUSerDetails } from "../../utils/local";
 import { getUser } from "../../utils/session";
 import Validate from "../../utils/validation";
 import Loading from "../Loading";
-
+import { toast } from 'react-toastify';
 class Profile extends React.Component {
   state = {
     submitting: false,

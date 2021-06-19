@@ -8,6 +8,7 @@ import "braft-editor/dist/index.css";
 import "braft-extensions/dist/table.css";
 import imageCompression from "browser-image-compression";
 import { siteUrl } from "../../utils/utils";
+import { toast } from 'react-toastify';
 
 const options = {
     defaultColumns: 3,

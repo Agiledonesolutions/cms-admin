@@ -5,7 +5,7 @@ import SortIcon from "@material-ui/icons/SortRounded";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
-
+import { toast } from 'react-toastify';
 class Translations extends React.Component {
   state = {
     tableData: {

@@ -6,7 +6,8 @@ import "react-multiple-select-dropdown-lite/dist/index.css";
 import { countries, locales, timezone, currencies } from "../../utils/data";
 import Validate from "../../utils/validation";
 import Loading from "../Loading";
-
+import { toast } from 'react-toastify';
+import {getMessage} from '../AlertMessage'
 class Settings extends React.Component {
   state = {
     submitting: false,
@@ -177,7 +178,12 @@ class Settings extends React.Component {
     },
     id: "",
     errors: [],
+    alertType: "",
+    alertMessage: "",
   };
+  onClose = ()=>{
+    this.setState({alertMessage: "", alertType: ""})
+  }
   componentDidMount() {
     api
       .post("/roles/get")
@@ -286,23 +292,24 @@ class Settings extends React.Component {
         this.setState({ errors });
       }
     });
-    if (
-      data.Currency.ExchangeRateService.name != "" &&
-      !errors.includes("Currency API Key") &&
-      !Validate.validateNotEmpty(data.Currency.ExchangeRateService.APIKey)
-    ) {
-      errors.push("Currency API Key");
-      this.setState({ errors });
-    } else if (
-      errors.includes("Currency API Key") &&
-      Validate.validateNotEmpty(data.Currency.ExchangeRateService.APIKey)
-    ) {
-      errors.splice(errors.indexOf("Currency API Key"), 1);
-      this.setState({ errors });
-    } else if (data.Currency.ExchangeRateService.name == "") {
-      errors.splice(errors.indexOf("Currency API Key"), 1);
-      this.setState({ errors });
-    }
+    // if (
+    //   data.Currency.ExchangeRateService.name != "" &&
+    //   !errors.includes("Currency API Key") &&
+    //   !Validate.validateNotEmpty(data.Currency.ExchangeRateService.APIKey)
+    // ) {
+    //   errors.push("Currency API Key");
+    //   this.setState({ errors });
+    // }
+    //  else if (
+    //   errors.includes("Currency API Key") &&
+    //   Validate.validateNotEmpty(data.Currency.ExchangeRateService.APIKey)
+    // ) {
+    //   errors.splice(errors.indexOf("Currency API Key"), 1);
+    //   this.setState({ errors });
+    // } else if (data.Currency.ExchangeRateService.name == "") {
+    //   errors.splice(errors.indexOf("Currency API Key"), 1);
+    //   this.setState({ errors });
+    // }
     if (
       data.Currency.AutoRefresh.Enable &&
       !errors.includes("frequency") &&
@@ -455,15 +462,23 @@ class Settings extends React.Component {
       this.setState({submitting: true})
       api.put('/settings', {data: this.state.data, _id: this.state.id, requiredPermission: "Edit Settings"}).then(res=>{
         console.log(res)
-        this.setState({submitting: false})
+        this.setState({submitting: false, alertType: "success", alertMessage: "Settings updated."})
 
       }).catch(err=>{
         console.log(err.response.data.message)
         this.setState({submitting: false})
-
+        toast.success(`${err.response.data.message}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       })
     } else {
       console.log(errors);
+      this.setState({ alertType: "fail", alertMessage: "Please fill the following: " + errors})
     }
   };
   tabContentToggle = () => {
@@ -3210,6 +3225,7 @@ class Settings extends React.Component {
           </ol>
         </section>
         <section className="content">
+        {getMessage(this.state.alertType, this.state.alertMessage, this.onClose)}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">

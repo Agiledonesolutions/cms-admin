@@ -9,7 +9,7 @@ import "react-multiple-select-dropdown-lite/dist/index.css";
 import FileManager from "../../Media/FileManager";
 import Loading from "../../Loading";
 import { siteUrl } from "../../../utils/utils";
-
+import { toast } from 'react-toastify';
 class StoreFront extends React.Component {
   state = {
     showModal: false,

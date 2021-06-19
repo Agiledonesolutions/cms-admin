@@ -10,6 +10,7 @@ import { format } from "timeago.js";
 import Loading from '../../Loading'
 import { siteUrl } from "../../../utils/utils";
 import {getMessage} from '../../AlertMessage'
+import { toast } from 'react-toastify';
 
 
 class Catalog extends React.Component {

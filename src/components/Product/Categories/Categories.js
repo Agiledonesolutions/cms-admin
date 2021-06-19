@@ -9,6 +9,7 @@ import { siteUrl } from "../../../utils/utils";
 import Tree from "rc-tree";
 import "./styles.css";
 import Loading from "../../Loading";
+import { toast } from 'react-toastify';
 
 class Categories extends React.Component {
   state = {

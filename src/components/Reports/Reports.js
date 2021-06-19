@@ -3,7 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import api from "../../apis/api";
 import Loading from "../Loading";
 import "./report.css";
-
+import { toast } from 'react-toastify';
 class Reports extends React.Component {
   state = {
     selectedReport: "customer_order",

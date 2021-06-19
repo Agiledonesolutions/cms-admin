@@ -11,6 +11,7 @@ import DropzoneComponent from "react-dropzone-component";
 import "react-dropzone-component/styles/filepicker.css";
 import "dropzone/dist/min/dropzone.min.css";
 import {siteUrl} from '../../utils/utils'
+import { toast } from 'react-toastify';
 class Media extends React.Component {
   constructor(props) {
     super(props);

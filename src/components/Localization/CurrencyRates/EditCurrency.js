@@ -2,7 +2,7 @@ import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import Validate from "../../../utils/validation";
-
+import { toast } from 'react-toastify';
 class EditCurrency extends React.Component {
   state = {
     activePanel: "general",

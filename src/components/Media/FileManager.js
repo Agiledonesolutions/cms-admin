@@ -12,7 +12,7 @@ import "dropzone/dist/min/dropzone.min.css";
 import {siteUrl} from '../../utils/utils'
 import './media.css'
 import Loading from "../Loading";
-
+import { toast } from 'react-toastify';
 class FileManager extends React.Component {
   constructor(props) {
     super(props);

@@ -3,6 +3,7 @@ import { Link, withRouter } from "react-router-dom";
 import Validate from '../../../utils/validation'
 import api from '../../../apis/api'
 import Loading from "../../Loading";
+import { toast } from 'react-toastify';
 class CreateAttributeSet extends React.Component {
   state = {
     submitting: false,

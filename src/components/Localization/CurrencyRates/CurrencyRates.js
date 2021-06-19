@@ -6,7 +6,7 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
-
+import { toast } from 'react-toastify';
 class CurrencyRates extends React.Component {
   state = {
     tableData: {
