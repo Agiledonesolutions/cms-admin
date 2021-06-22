@@ -41,14 +41,14 @@ class CurrencyRates extends React.Component {
 
   componentDidMount() {
     const datalist = [];
-    api.get('/currency').then(res=>{
-      console.log(res.data.data)
+    api.get('/currency/get').then(res=>{
+      //console.log(res.data.data)
       res.data.data.map((val) => {
         var tmp = {
           currency: val.Name,
           code: val.Code,
           rate: val.Rate,
-          created: format(val["createdAt"]),
+          lastUpdated: format(val["updatedAt"]),
           _id: val["_id"],
         };
         datalist.push(tmp);
@@ -62,7 +62,12 @@ class CurrencyRates extends React.Component {
   }
 
   refreshRates = () =>{
-
+    api.get('/currency').then(res=>{
+      console.log(res)
+      this.componentDidMount()
+    }).catch(err=>{
+      console.log(err)
+    })
   }
 
   render() {

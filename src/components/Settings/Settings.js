@@ -48,7 +48,7 @@ class Settings extends React.Component {
         DefaultCurrency: "",
         ExchangeRateService: {
           name: "",
-          APIKey: "",
+          API_Key: "",
         },
         AutoRefresh: {
           Enable: false,
@@ -205,6 +205,7 @@ class Settings extends React.Component {
     api
       .get("/settings/get")
       .then((res) => {
+        console.log(res.data.data)
         const { data } = this.state;
         for (const [key, value] of Object.entries(res.data.data[0])) {
           
@@ -212,12 +213,12 @@ class Settings extends React.Component {
             data[key] = value;
           }
         }
-        data.General.CustomerRoleId = this.state.data.General.CustomerRole._id
+        //data.General.CustomerRoleId = this.state.data.General.CustomerRole._id
         this.setState({ data, id: res.data.data[0]._id, submitting: false });
       })
       .catch((err) => {
-        this.setState({submitting: true})
-        console.log("error fetching settings");
+        this.setState({submitting: false})
+        console.log(err);
       });
   }
   setVal2 = (key, key2, val) => {
@@ -1024,7 +1025,7 @@ class Settings extends React.Component {
                     </label>
                     <div className="col-md-9">
                       <input
-                        name="APIKey"
+                        name="API_Key"
                         className="form-control "
                         type="password"
                         value={

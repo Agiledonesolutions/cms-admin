@@ -11,21 +11,27 @@ class EditCurrency extends React.Component {
   };
 
   componentDidMount() {
- 
+    let url = "/currency/get/"+this.props.match.params.id
+    api.get(url).then(res=>{
+      console.log(res.data.data)
+      this.setState({rate: res.data.data.Rate})
+    }).catch(err=>{
+      console.log(err)
+    })
   }
 
   handleSubmit = () => {
     const { errors } = this.state;
-    const { data } = this.state;
+    const {rate} = this.state
 
-    if (!errors.includes("taxClass") && !Validate.validateNotEmpty(data["taxClass"])) {
-      errors.push("taxClass");
+    if (!errors.includes("rate") && !Validate.validateNotEmpty(rate)) {
+      errors.push("rate");
       this.setState({ errors });
     } else if (
-      errors.includes("taxClass") &&
-      Validate.validateNotEmpty(data["taxClass"])
+      errors.includes("rate") &&
+      Validate.validateNotEmpty(rate)
     ) {
-      errors.splice(errors.indexOf("taxClass"), 1);
+      errors.splice(errors.indexOf("rate"), 1);
       this.setState({ errors });
     }
    
