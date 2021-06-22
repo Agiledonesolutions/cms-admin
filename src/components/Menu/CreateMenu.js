@@ -112,7 +112,7 @@ class CreateMenu extends React.Component {
               <i className="fa fa-times" />
             </button>
           </div>
-        </li>), key:"0-0",draggable:"false", children:[...dataTemp]}] });
+        </li>), key:"0-0", parentMenu: null, draggable:"false", children:[...dataTemp]}] });
         })
         .catch((err) => {
           console.log("error fetching details");
@@ -218,10 +218,12 @@ class CreateMenu extends React.Component {
     }else if(!down){
       newIndex = info.dropPosition
     }
-    console.log(newIndex)
-    let parentMenuId = info.node._id? info.node._id:this.state.parentMenuId
-    if(info.node.key == "0-0"){
+    // console.log(info)
+    let parentMenuId;
+    if(info.node.parentMenu == null){
       parentMenuId = null
+    }else{
+      parentMenuId = info.node._id
     }
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;

@@ -9,6 +9,7 @@ class Home extends React.Component {
     totalProducts: 0,
     latestOrders: [],
     latestReviews: [],
+    totalCustomers: 0,
     url: "",
     submitting: false
   };
@@ -55,8 +56,8 @@ class Home extends React.Component {
         this.setState({submitting: false})
 
       });
-      api.post('/dashboard/customers').then(res=>{
-        console.log(res.data)
+      api.post('/dashboard/customers', {"RoleId": "60b743903a7c3249d0a5f975"}).then(res=>{
+        this.setState({totalCustomers: res.data.data})
       }).catch(err=>{
         console.log(err)
       })
@@ -103,7 +104,7 @@ class Home extends React.Component {
                 <div className="single-grid total-customers">
                   <h4>Total Customers</h4>
                   <i className="fa fa-users pull-left" aria-hidden="true" />
-                  <span className="pull-right">0</span>
+                  <span className="pull-right">{this.state.totalCustomers}</span>
                 </div>
               </div>
             </div>

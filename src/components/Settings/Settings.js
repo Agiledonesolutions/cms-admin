@@ -185,6 +185,7 @@ class Settings extends React.Component {
     this.setState({alertMessage: "", alertType: ""})
   }
   componentDidMount() {
+    this.setState({submitting: true})
     api
       .post("/roles/get")
       .then((res) => {
@@ -212,9 +213,10 @@ class Settings extends React.Component {
           }
         }
         data.General.CustomerRoleId = this.state.data.General.CustomerRole._id
-        this.setState({ data, id: res.data.data[0]._id });
+        this.setState({ data, id: res.data.data[0]._id, submitting: false });
       })
       .catch((err) => {
+        this.setState({submitting: true})
         console.log("error fetching settings");
       });
   }
@@ -3224,6 +3226,7 @@ class Settings extends React.Component {
             <li className="active">Settings</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting} />
         <section className="content">
         {getMessage(this.state.alertType, this.state.alertMessage, this.onClose)}
           <form className="form-horizontal">
@@ -3625,7 +3628,7 @@ class Settings extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-offset-2 col-md-10" style={{display: "flex"}}>
+                      <div className="col-md-offset-2 col-md-10" >
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -3636,7 +3639,6 @@ class Settings extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>
