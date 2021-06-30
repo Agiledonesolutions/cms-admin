@@ -1,19 +1,19 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import Validate from "../../utils/validation";
 import api from "../../apis/api";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
-import Loading from '../Loading'
-import { toast } from 'react-toastify';
+import Loading from "../Loading";
+import { toast } from "react-toastify";
+import { getMessage } from "../AlertMessage";
 
 class CreateCoupon extends React.Component {
   state = {
     activePanel: "general",
     submitting: false,
-    rolesArray: [],
-    rolesArray2: [],
     categoryOptions: [],
+    productOptions: [],
     data: {
       name: "",
       code: "",
@@ -27,92 +27,100 @@ class CreateCoupon extends React.Component {
       endDate: "",
       minimumSpend: "0",
       maximumSpend: "",
-      
     },
     productIds: [],
     excludedProductIds: [],
     categoryIds: [],
     excludedCategoryIds: [],
     errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false,
   };
   componentDidMount() {
+    api
+      .post("/product/get")
+      .then((res) => {
+        const { productOptions } = this.state;
+        res.data.data.map((val) => {
+          let tmp = {};
+          tmp.value = val._id;
+          tmp.label = val.name;
+          productOptions.push(tmp);
+        });
+        this.setState({ productOptions, submitting: false });
+      })
+      .catch((err) => {
+        this.setState({ submitting: false });
+        console.log("error fetching products");
+      });
     if (this.props.edit == "true") {
       this.setState({ submitting: true });
 
       const url = "/coupon/get/" + this.props.match.params.id;
-      api.get(url).then(res=>{
-        const {data} = this.state
-        const { rolesArray} = this.state
-        const {rolesArray2} = this.state
-        data.name = res.data.data.name
-        data.code = res.data.data.code
-        data.discountType = res.data.data.discountType
-        data.value = res.data.data.value
-        data.freeshipping = res.data.data.freeshipping
-        data.startDate = res.data.data.startDate != null?res.data.data.startDate.substr(0,10): ""
-        data.endDate = res.data.data.endDate !=null? res.data.data.endDate.substr(0,10):""
-        data.status = res.data.data.status
-        data.minimumSpend = res.data.data.minimumSpend
-        data.maximumSpend = res.data.data.maximumSpend
-        data.usageLimitPerCoupon = res.data.data.usageLimitPerCoupon
-        data.usageLimitPerCustomer = res.data.data.usageLimitPerCustomer
-        rolesArray.push(res.data.data.categories.toString()) 
-        rolesArray2.push(res.data.data.excludedCategories.toString())
-        this.setState({data, rolesArray, rolesArray2, submitting: false})
-      }).catch(err=>{
-        this.setState({ submitting: false });
-        console.log("error fetching coupon")
-      })
-     
+      api
+        .get(url)
+        .then((res) => {
+          console.log(res.data.data)
+          const { data } = this.state;
+          data.name = res.data.data.name;
+          data.code = res.data.data.code;
+          data.discountType = res.data.data.discountType;
+          data.value = res.data.data.value;
+          data.freeshipping = res.data.data.freeshipping;
+          data.startDate =
+            res.data.data.startDate != null
+              ? res.data.data.startDate.substr(0, 10)
+              : "";
+          data.endDate =
+            res.data.data.endDate != null
+              ? res.data.data.endDate.substr(0, 10)
+              : "";
+          data.status = res.data.data.status;
+          data.minimumSpend = res.data.data.minimumSpend;
+          data.maximumSpend = res.data.data.maximumSpend;
+          data.usageLimitPerCoupon = res.data.data.usageLimitPerCoupon;
+          data.usageLimitPerCustomer = res.data.data.usageLimitPerCustomer;        
+          this.setState({ data, submitting: false, categoryIds: res.data.data.categories, excludedCategoryIds: res.data.data.excludedCategories, productIds: res.data.data.products, excludedProductIds: res.data.data.excludedProducts });
+        })
+        .catch((err) => {
+          this.setState({ submitting: false });
+          console.log("error fetching coupon");
+        });
     }
-    const {categoryOptions} = this.state
-    const addToCategories = (x, sub) =>{
-      let tmp = {}
-      let name = ""
-      for(var i = 0; i < sub.length; i++){
-        name+="| - - "
+    const { categoryOptions } = this.state;
+    const addToCategories = (x, sub) => {
+      let tmp = {};
+      let name = "";
+      for (var i = 0; i < sub.length; i++) {
+        name += "| - - ";
       }
-      tmp['label'] = name+ x.name
-      tmp['value'] = x._id
-      categoryOptions.push(tmp)
-      if(x.childrenCategory.length > 0){
-        sub.push("sub")
-        x.childrenCategory.forEach(y=>{
-          addToCategories(y, sub)
-        })      
-      }else{
-        return
+      tmp["label"] = name + x.name;
+      tmp["value"] = x._id;
+      categoryOptions.push(tmp);
+      if (x.childrenCategory.length > 0) {
+        sub.push("sub");
+        x.childrenCategory.forEach((y) => {
+          addToCategories(y, sub);
+        });
+      } else {
+        return;
       }
-      
-    }
+    };
 
-     api.get('/category/get').then(res=>{
-      res.data.data.forEach(val=>{
-        addToCategories(val, []) 
+    api
+      .get("/category/get")
+      .then((res) => {
+        res.data.data.forEach((val) => {
+          addToCategories(val, []);
+        });
       })
-    }).catch((err)=>{
-      console.log(err)
-    })
-    this.setState({categoryOptions})
+      .catch((err) => {
+        console.log(err);
+      });
+    this.setState({ categoryOptions });
   }
-  setCategoryArray1 = (val) => {
-        const { rolesArray } = this.state;
-        rolesArray.push(val);
-        var n = rolesArray.length;
-        var {categoryIds} = this.state
-        categoryIds = rolesArray[n - 1].split(",") 
-        this.setState({ rolesArray });
-        this.setState({ categoryIds });
-  };
-  setCategoryArray2 = (val) => {
-    const { rolesArray2 } = this.state;
-    rolesArray2.push(val);
-    var n = rolesArray2.length;
-    var {excludedCategoryIds} = this.state
-    excludedCategoryIds = rolesArray2[n - 1].split(",") 
-    this.setState({ rolesArray2 });
-    this.setState({ excludedCategoryIds });
-  }
+
   setVal = (key, val) => {
     const { data } = this.state;
     data[key] = val;
@@ -146,7 +154,15 @@ class CreateCoupon extends React.Component {
       this.setState({ submitting: true });
       if (this.props.edit == "true") {
         api
-          .put("/coupon", { data: data, _id: this.props.match.params.id, productIds: this.state.productIds, excludedProductIds: this.state.excludedProductIds, categoryIds: this.state.categoryIds, excludedCategoryIds: this.state.excludedCategoryIds,  requiredPermission: "Edit Coupons" })
+          .put("/coupon", {
+            data: data,
+            _id: this.props.match.params.id,
+            productIds: this.state.productIds,
+            excludedProductIds: this.state.excludedProductIds,
+            categoryIds: this.state.categoryIds,
+            excludedCategoryIds: this.state.excludedCategoryIds,
+            requiredPermission: "Edit Coupons",
+          })
           .then((res) => {
             this.setState({ submitting: false });
           })
@@ -156,12 +172,19 @@ class CreateCoupon extends React.Component {
           });
       } else {
         api
-          .post("/coupon", { data: data, productIds: this.state.productIds, excludedProductIds: this.state.excludedProductIds, categoryIds: this.state.categoryIds, excludedCategoryIds: this.state.excludedCategoryIds,  requiredPermission: "Create Coupons" })
+          .post("/coupon", {
+            data: data,
+            productIds: this.state.productIds,
+            excludedProductIds: this.state.excludedProductIds,
+            categoryIds: this.state.categoryIds,
+            excludedCategoryIds: this.state.excludedCategoryIds,
+            requiredPermission: "Create Coupons",
+          })
           .then((res) => {
-            this.setState({ submitting: false });
+            this.setState({ submitting: false, redirect: true });
           })
           .catch((err) => {
-            console.log("error posting coupon");
+            console.log(err.response.data);
             this.setState({ submitting: false });
           });
       }
@@ -173,7 +196,7 @@ class CreateCoupon extends React.Component {
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
       return (
-        <div className="tab-pane fade in active" >
+        <div className="tab-pane fade in active">
           <h3 className="tab-content-title">General</h3>
           <div className="row">
             <div className="col-md-8">
@@ -190,14 +213,14 @@ class CreateCoupon extends React.Component {
                     className="form-control "
                     type="text"
                     value={this.state.data.name}
-                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Code<span className="m-l-5 text-red">*</span>
                 </label>
                 <div className="col-md-9">
@@ -206,14 +229,14 @@ class CreateCoupon extends React.Component {
                     className="form-control "
                     type="text"
                     value={this.state.data.code}
-                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Discount Type
                 </label>
                 <div className="col-md-9">
@@ -221,7 +244,9 @@ class CreateCoupon extends React.Component {
                     name="discountType"
                     className="form-control custom-select-black "
                     value={this.state.data.discountType}
-                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   >
                     <option value="fixed">Fixed</option>
                     <option value="percent">Percent</option>
@@ -229,9 +254,7 @@ class CreateCoupon extends React.Component {
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Value
                 </label>
                 <div className="col-md-9">
@@ -240,7 +263,9 @@ class CreateCoupon extends React.Component {
                     className="form-control "
                     type="number"
                     value={this.state.data.value}
-                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
@@ -253,16 +278,15 @@ class CreateCoupon extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <div className="checkbox">
-                    
                     <input
                       type="checkbox"
                       name="freeshipping"
                       id="free_shipping"
                       checked={this.state.data.freeshipping}
-                      onChange={()=>{
-                        const {data} = this.state
-                        data.freeshipping = !this.state.data.freeshipping
-                        this.setState({data})
+                      onChange={() => {
+                        const { data } = this.state;
+                        data.freeshipping = !this.state.data.freeshipping;
+                        this.setState({ data });
                       }}
                     />
                     <label htmlFor="free_shipping">Allow free shipping</label>
@@ -282,14 +306,14 @@ class CreateCoupon extends React.Component {
                     className="form-control "
                     type="date"
                     value={this.state.data.startDate}
-                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   End date
                 </label>
                 <div className="col-md-9">
@@ -298,7 +322,9 @@ class CreateCoupon extends React.Component {
                     className="form-control"
                     type="date"
                     value={this.state.data.endDate}
-                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
@@ -316,10 +342,10 @@ class CreateCoupon extends React.Component {
                       name="status"
                       id="is_active"
                       checked={this.state.data.status}
-                      onChange={()=>{
-                        const {data} = this.state
-                        data.status = !this.state.data.status
-                        this.setState({data})
+                      onChange={() => {
+                        const { data } = this.state;
+                        data.status = !this.state.data.status;
+                        this.setState({ data });
                       }}
                     />
                     <label htmlFor="is_active">Enable the coupon</label>
@@ -350,7 +376,9 @@ class CreateCoupon extends React.Component {
                     min="0"
                     value={this.state.data.minimumSpend}
                     type="number"
-                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
@@ -367,64 +395,76 @@ class CreateCoupon extends React.Component {
                     className="form-control "
                     min="0"
                     type="number"
-                    value={this.state.data.maximumSpend != null? this.state.data.maximumSpend: ""}
-                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                    value={
+                      this.state.data.maximumSpend != null
+                        ? this.state.data.maximumSpend
+                        : ""
+                    }
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Products
                 </label>
                 <div className="col-md-9">
-                  <select
-                    className="form-control custom-select-black selectize prevent-creation"
+                  <MultiSelect
+                    onChange={(val) => {
+                      this.setState({ productIds: val.split(",") });
+                    }}
+                    largeData={true}
+                    options={this.state.productOptions}
+                    defaultValue={this.state.productIds.toString()}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Exclude Products
                 </label>
                 <div className="col-md-9">
-                  <select
-                    className="form-control custom-select-black selectize prevent-creation"
+                <MultiSelect
+                    onChange={(val) => {
+                      this.setState({ excludedProductIds: val.split(",") });
+                    }}
+                    largeData={true}
+                    options={this.state.productOptions}
+                    defaultValue={this.state.excludedProductIds.toString()}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Categories
                 </label>
                 <div className="col-md-9">
                   <MultiSelect
-                    onChange={this.setCategoryArray1}
+                    onChange={(val) => {
+                      this.setState({ categoryIds: val.split(",") });
+                    }}
                     options={this.state.categoryOptions}
-                    defaultValue={this.state.rolesArray[this.state.rolesArray.length-1]}
+                    defaultValue={this.state.categoryIds.toString()}
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  className="col-md-3 control-label text-left"
-                >
+                <label className="col-md-3 control-label text-left">
                   Exclude Categories
                 </label>
                 <div className="col-md-9">
                   <MultiSelect
-                    onChange={this.setCategoryArray2}
+                    onChange={(val) => {
+                      this.setState({ excludedCategoryIds: val.split(",") });
+                    }}
                     options={this.state.categoryOptions}
-                    defaultValue={this.state.rolesArray2[this.state.rolesArray.length-1]}
+                    defaultValue={this.state.excludedCategoryIds.toString()}
                   />
                 </div>
               </div>
-              </div>
+            </div>
           </div>
         </div>
       );
@@ -448,7 +488,9 @@ class CreateCoupon extends React.Component {
                     type="number"
                     min="0"
                     value={this.state.data.usageLimitPerCoupon}
-                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
@@ -466,8 +508,9 @@ class CreateCoupon extends React.Component {
                     type="number"
                     min="0"
                     value={this.state.data.usageLimitPerCustomer}
-                    onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
-
+                    onChange={(e) => {
+                      this.setVal(e.target.name, e.target.value);
+                    }}
                   />
                 </div>
               </div>
@@ -477,12 +520,21 @@ class CreateCoupon extends React.Component {
       );
     }
   };
-
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={"/coupons"} />;
+    }
     return (
       <div>
         <section className="content-header clearfix">
-          {this.props.edit == "true"? <h3>Edit Coupon</h3>: <h3>Create Coupon</h3>}
+          {this.props.edit == "true" ? (
+            <h3>Edit Coupon</h3>
+          ) : (
+            <h3>Create Coupon</h3>
+          )}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
@@ -490,11 +542,21 @@ class CreateCoupon extends React.Component {
             <li>
               <Link to="/coupons">Coupons</Link>
             </li>
-            {this.props.edit == "true"? <li className="active">Edit Coupon</li>: <li className="active">Create Coupon</li>}
+            {this.props.edit == "true" ? (
+              <li className="active">Edit Coupon</li>
+            ) : (
+              <li className="active">Create Coupon</li>
+            )}
           </ol>
         </section>
-        <Loading show={this.state.submitting}/>
+        <Loading show={this.state.submitting} />
         <section className="content">
+          {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
+
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">

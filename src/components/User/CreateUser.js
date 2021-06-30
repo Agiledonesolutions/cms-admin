@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import "./user.css";
 import api from '../../apis/api'
 import Validate from '../../utils/validation'
@@ -7,11 +7,14 @@ import MultiSelect from  'react-multiple-select-dropdown-lite'
 import  'react-multiple-select-dropdown-lite/dist/index.css'
 import PermissionGroup from './Roles/PermissionGroup'
 import { toast } from 'react-toastify';
+import {getMessage} from '../AlertMessage'
+import Loading from "../Loading";
 
 class CreateUser extends React.Component {
   
   state = {
     activePanel: "account",
+    submitting: false,
     dropdownActive: false,
     options: [],
     rolesArray: [],
@@ -357,7 +360,10 @@ class CreateUser extends React.Component {
       ],
     },
     RoleIds: [],
-    errors: []
+    errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false
   };
 
   setVal =(key, val, permName) => {
@@ -448,6 +454,7 @@ class CreateUser extends React.Component {
       }else{
         api.post('/users', {data: data, RoleIds: this.state.RoleIds}).then(res=>{
           console.log(res)
+          this.setState({redirect: true})
         }).catch(err=>{
           console.log("create user error")
         })
@@ -1123,11 +1130,17 @@ class CreateUser extends React.Component {
       );
     }
   };
+  onClose = ()=>{
+    this.setState({alertMessage: "", alertType: ""})
+  }
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={"/users"} />;
+    }
     return (
       <React.Fragment>
         <section className="content-header clearfix">
-          <h3>Create User</h3>
+        {this.props.edit == "true"? <h3>Edit User</h3>: <h3>Create User</h3>}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
@@ -1135,10 +1148,12 @@ class CreateUser extends React.Component {
             <li>
               <Link to="/users">Users</Link>
             </li>
-            <li className="active">Create User</li>
+            {this.props.edit == "true"? <li className="active">Edit User</li>: <li className="active">Create User</li>}
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
+        {getMessage(this.state.alertType, this.state.alertMessage, this.onClose)}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">

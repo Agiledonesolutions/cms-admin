@@ -44,7 +44,7 @@ class FlashSales extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .get("/flashsale/get")
+      .post("/flashsale/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;

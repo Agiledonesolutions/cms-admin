@@ -6,13 +6,14 @@ import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../apis/api";
-import { getToken } from "../../utils/session";
 import { format } from 'timeago.js';
+import Loading from '../Loading'
 import { toast } from 'react-toastify';
 
 class Users extends React.Component {
   state={
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -54,6 +55,7 @@ class Users extends React.Component {
   }
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -74,22 +76,46 @@ class Users extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
-        console.log(err);
+        this.setState({submitting: false})
+        toast.error(`${err.response.data.message}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   }
  
   deleteSelectedItems = () =>{
+    this.setState({submitting: true})
     const {selectedRows} = this.state
     const {requiredPermission} = this.state
     const data = {id: selectedRows, requiredPermission}
     api.delete('/users', {data}).then(res=>{
-      console.log(res)
+      toast.success(`Deleted successfully.`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
       this.componentDidMount()
     }).catch(err=>{
-      console.log("delete error")
+      this.setState({submitting: false})
+      toast.error(`${err.response.data.message}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
     })
   }
   render() {
@@ -107,6 +133,7 @@ class Users extends React.Component {
             <li className="active">Users</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">
