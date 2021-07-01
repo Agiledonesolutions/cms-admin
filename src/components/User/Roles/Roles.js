@@ -32,7 +32,7 @@ class Roles extends React.Component {
       ],
       data: []
     },
-    requiredPermission: "Delete Role",
+    requiredPermission: "Delete Roles",
     edit: ""
   }
   deleteSelectedItems = () =>{

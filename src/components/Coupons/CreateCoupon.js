@@ -171,6 +171,12 @@ class CreateCoupon extends React.Component {
             console.log("error updating brand");
           });
       } else {
+        console.log( {data: data,
+            productIds: this.state.productIds,
+            excludedProductIds: this.state.excludedProductIds,
+            categoryIds: this.state.categoryIds,
+            excludedCategoryIds: this.state.excludedCategoryIds,
+            requiredPermission: "Create Coupons"})
         api
           .post("/coupon", {
             data: data,

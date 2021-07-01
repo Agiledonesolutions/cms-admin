@@ -34,7 +34,11 @@ class Categories extends React.Component {
     autoExpandParent: true,
     expandedKeys: [],
     allKeys: [], 
-    submitting: false
+    submitting: false,
+    _id: "",
+    oldIndex: "",
+    newIndex:"",
+    parentCategoryId: ""
  
   };
 
@@ -381,17 +385,48 @@ class Categories extends React.Component {
       );
     }
   };
-
+  changeCategoryOrder = () =>{
+    console.log("chang")
+    // api.post('/category/changeOrder', {newIndex: this.state.newIndex, oldIndex: this.state.oldIndex, parentCategoryId: this.state.parentCategoryId, id: this.state._id}).then(res=>{
+    //   console.log(res)  
+    // }).then(err=>{
+    //   console.log(err)
+    // })
+  }
   onDragStart = (info) => {
-    console.log("start", info);
+    //console.log("start", info);
+    let oldIndex = parseInt(info.node.pos[info.node.pos.length-1])
+    let _id = info.node._id
+    let parentCategoryId = info.node.parentCategory
+    this.setState({_id, parentCategoryId, oldIndex})
   };
 
-  onDragEnter = () => {
-    console.log("enter");
-  };
 
   onDrop = (info) => {
-    // console.log("drop", info);
+    console.log("drop", info);
+    let down = false;
+    let newIndex;
+    let dragp = info.dragNode.pos[info.dragNode.pos.length-1]
+    let nodep = info.node.pos[info.node.pos.length-1]
+    if(dragp < nodep){
+      down = true;
+    }else{
+      down = false;
+    }
+    if(info.dropPosition == 0){
+      newIndex = 0;
+    }else if(down){
+      newIndex = info.dropPosition-1;
+    }else if(!down){
+      newIndex = info.dropPosition
+    }
+     console.log(newIndex)
+    let parentCategoryId;
+    if(info.node.parentCategory == null){
+      parentCategoryId = null
+    }else{
+      parentCategoryId = info.node._id
+    }
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
     const dropPos = info.node.pos.split("-");
@@ -419,15 +454,11 @@ class Categories extends React.Component {
     });
 
     if (dropPosition === 0) {
-      // Drop on the content
       loop(data, dropKey, (item) => {
-        // eslint-disable-next-line no-param-reassign
         item.children = item.children || [];
-        // where to insert 示例添加到尾部，可以是随意位置
         item.children.unshift(dragObj);
       });
     } else {
-      // Drop on the gap (insert before or insert after)
       let ar;
       let i;
       loop(data, dropKey, (item, index, arr) => {
@@ -443,6 +474,10 @@ class Categories extends React.Component {
 
     this.setState({
       treeData: data,
+      newIndex,
+      parentCategoryId
+    }, ()=>{
+      this.changeCategoryOrder()
     });
   };
 
@@ -567,7 +602,6 @@ class Categories extends React.Component {
                         showLine
                         draggable
                         onDragStart={this.onDragStart}
-                        onDragEnter={this.onDragEnter}
                         onDrop={this.onDrop}
                         treeData={this.state.treeData}
                       />

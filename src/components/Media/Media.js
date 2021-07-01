@@ -12,6 +12,7 @@ import "react-dropzone-component/styles/filepicker.css";
 import "dropzone/dist/min/dropzone.min.css";
 import {siteUrl} from '../../utils/utils'
 import { toast } from 'react-toastify';
+import Loading from '../Loading'
 class Media extends React.Component {
   constructor(props) {
     super(props);
@@ -29,6 +30,7 @@ class Media extends React.Component {
   state = {
     files: [],
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -66,6 +68,7 @@ class Media extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -84,25 +87,49 @@ class Media extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
-        console.log(err);
+        this.setState({submitting: false})
+        toast.error('Something went wrong.', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   }
 
   deleteSelectedItems = () => {
+    this.setState({submitting: true})
     const { selectedRows } = this.state;
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
       .delete("/media", { data })
       .then((res) => {
-        console.log(res);
+        toast.success('Media Item(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        this.setState({submitting: false})
+        toast.error('Something went wrong.', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   };
   handleFileAdded = (file) => {
@@ -127,21 +154,32 @@ class Media extends React.Component {
         },
       })
       .then((res) => {
-        console.log(res);
+        toast.success('Media item(s) added successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount()
       })
       .catch((err) => {
-        console.log(err);
+        toast.error('Something went wrong.', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   };
   handleImagePost = () => {
+    this.setState({submitting: false})
       this.state.files.map( (file) => {
          this.handlePost(file);
-     });
-    
-      console.log("here")
-    
-     
+     });         
   };
 
   render() {
@@ -160,6 +198,7 @@ class Media extends React.Component {
             <li className="active">Media</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="row">
             <div className="col-md-12">
