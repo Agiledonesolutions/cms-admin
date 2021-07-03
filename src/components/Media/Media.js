@@ -165,6 +165,7 @@ class Media extends React.Component {
         this.componentDidMount()
       })
       .catch((err) => {
+        this.setState({submitting: false})
         toast.error('Something went wrong.', {
           position: "bottom-right",
           autoClose: 3000,
@@ -176,7 +177,7 @@ class Media extends React.Component {
       });
   };
   handleImagePost = () => {
-    this.setState({submitting: false})
+    this.setState({submitting: true})
       this.state.files.map( (file) => {
          this.handlePost(file);
      });         

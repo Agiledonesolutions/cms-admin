@@ -171,12 +171,7 @@ class CreateCoupon extends React.Component {
             console.log("error updating brand");
           });
       } else {
-        console.log( {data: data,
-            productIds: this.state.productIds,
-            excludedProductIds: this.state.excludedProductIds,
-            categoryIds: this.state.categoryIds,
-            excludedCategoryIds: this.state.excludedCategoryIds,
-            requiredPermission: "Create Coupons"})
+       
         api
           .post("/coupon", {
             data: data,
@@ -190,12 +185,19 @@ class CreateCoupon extends React.Component {
             this.setState({ submitting: false, redirect: true });
           })
           .catch((err) => {
-            console.log(err.response.data);
+            toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
             this.setState({ submitting: false });
           });
       }
     } else {
-      console.log(this.state.errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
   };
 

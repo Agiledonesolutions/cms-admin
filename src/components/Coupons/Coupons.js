@@ -80,7 +80,14 @@ class Coupons extends React.Component {
       })
       .catch((err) => {
         this.setState({ submitting: false });
-        console.log(err);
+        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   }
 
@@ -92,12 +99,26 @@ class Coupons extends React.Component {
     api
       .delete("/coupon", { data })
       .then((res) => {
-        this.setState({ submitting: false });
+        toast.success('Coupon(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount();
       })
       .catch((err) => {
         this.setState({ submitting: false });
-        console.log("delete error");
+        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   };
 

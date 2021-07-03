@@ -8,9 +8,11 @@ import "react-data-table-component-extensions/dist/index.css";
 import api from "../../apis/api";
 import { format } from "timeago.js";
 import { toast } from 'react-toastify';
+import Loading from '../Loading'
 class Pages extends React.Component {
   state = {
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -42,6 +44,7 @@ class Pages extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -60,10 +63,19 @@ class Pages extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
-        console.log(err);
+        this.setState({submitting: false})
+        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        //console.log(err);
       });
   }
 
@@ -74,11 +86,26 @@ class Pages extends React.Component {
     api
       .delete("/page", { data })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
+        toast.success('Page(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   };
 
@@ -97,6 +124,7 @@ class Pages extends React.Component {
             <li className="active">Pages</li>
           </ol>
         </section>
+        <Loading show ={this.state.submitting}/>
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">

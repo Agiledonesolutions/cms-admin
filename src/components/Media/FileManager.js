@@ -90,6 +90,7 @@ class FileManager extends React.Component {
   }
 
   componentDidMount() {
+    this.setState({submitting: true})
       document.querySelector('html').style.overflowY = "hidden";
       console.log(this.props.multiple)
     const datalist = [];
@@ -110,10 +111,11 @@ class FileManager extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
-        console.log(err);
+        this.setState({submitting: false})
+        //console.log(err);
       });
   }
 
@@ -125,12 +127,27 @@ class FileManager extends React.Component {
     api
       .delete("/media", { data })
       .then((res) => {
-        console.log(res);
-        this.setState({submitting: false})
+        //console.log(res);
+        toast.success('Media Item(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.setState({submitting: false})
       });
   };
@@ -146,7 +163,6 @@ class FileManager extends React.Component {
   };
 
   handlePost = async (file) => {
-    this.setState({submitting: true})
 
     var formData = new FormData();
     await formData.append("image", file);
@@ -157,16 +173,32 @@ class FileManager extends React.Component {
         },
       })
       .then((res) => {
-        console.log(res);
-        this.setState({submitting: false})
+        //console.log(res);
+        toast.success('Media item(s) added successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount()
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
+        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.setState({submitting: false})
       });
   };
   handleImagePost = () => {
+    this.setState({submitting: true})
       this.state.files.map( (file) => {
          this.handlePost(file);
      });    

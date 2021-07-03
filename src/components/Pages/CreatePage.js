@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, Redirect, withRouter } from "react-router-dom";
 import Validate from "../../utils/validation";
 import api from "../../apis/api";
 import BraftEditor from "braft-editor";
@@ -9,6 +9,8 @@ import "braft-extensions/dist/table.css";
 import imageCompression from "browser-image-compression";
 import { siteUrl } from "../../utils/utils";
 import { toast } from 'react-toastify';
+import Loading from '../Loading'
+import { getMessage } from "../AlertMessage";
 
 const options = {
     defaultColumns: 3,
@@ -23,6 +25,7 @@ const options = {
 class CreatePage extends React.Component {
   state = {
     activePanel: "general",
+    submitting: false,
     data: {
       name: "",
       body: "",
@@ -33,9 +36,13 @@ class CreatePage extends React.Component {
     },
     editorState: BraftEditor.createEditorState(),
     errors: [],
+    redirect: false,
+    alertType: "",
+    alertMessage: ""
   };
   componentDidMount() {
     if (this.props.edit == "true") {
+      this.setState({submitting: true})
       const url = "/page/get/" + this.props.match.params.id;
       api
         .get(url)
@@ -47,10 +54,18 @@ class CreatePage extends React.Component {
             data.status = res.data.data.status
             data.metaTitle = res.data.data.metaTitle
             data.metaDescription = res.data.data.metaDescription
-            this.setState({data, editorState: BraftEditor.createEditorState(res.data.data.body)})
+            this.setState({submitting: false,data, editorState: BraftEditor.createEditorState(res.data.data.body)})
         })
         .catch((err) => {
-          console.log("error fetching page");
+          toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+            this.setState({submitting: false})
         });
     }
   }
@@ -103,7 +118,7 @@ class CreatePage extends React.Component {
       errors.splice(errors.indexOf("name"), 1);
       this.setState({ errors });
     }
-    if (!errors.includes("body") && !Validate.validateNotEmpty(data["body"])) {
+    if (!errors.includes("body") && data["body"] == "<p></p>") {
       errors.push("body");
       this.setState({ errors });
     } else if (
@@ -125,23 +140,50 @@ class CreatePage extends React.Component {
             this.setState({ errors });
           }
     }
-
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({submitting: true})
       if (this.props.edit == "true") {
         api.put('/page', {data: data, _id: this.props.match.params.id, requiredPermission: "Edit Pages"}).then(res=>{
-            console.log(res)
+            this.setState({submitting: false, alertType: "success", alertMessage: "Page edited successfully."})
+            
         }).catch(err=>{
-            console.log("error editing page")
+            //console.log("error editing page")
+            toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+              this.setState({submitting: false})
         })
       } else {
       api.post('/page', {data: data, requiredPermission: "Create Pages"}).then(res=>{
-          console.log(res)
+        toast.success('Page added successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+          this.setState({redirect: true})
+          this.setState({submitting: false})
       }).catch(err=>{
-          console.log("error adding page")
+        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+          this.setState({submitting: false})
       })
       }
     } else {
-      console.log(this.state.errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
   };
 
@@ -279,8 +321,13 @@ class CreatePage extends React.Component {
       );
     }
   };
-
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   render() {
+    if(this.state.redirect){
+      return <Redirect to={"/pages"} />;
+    }
     return (
       <div>
         <section className="content-header clearfix">
@@ -303,7 +350,13 @@ class CreatePage extends React.Component {
             )}
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
