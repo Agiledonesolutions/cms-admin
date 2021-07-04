@@ -140,7 +140,7 @@ class FileManager extends React.Component {
         this.componentDidMount();
       })
       .catch((err) => {
-        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",
           autoClose: 3000,
           hideProgressBar: true,
@@ -186,7 +186,7 @@ class FileManager extends React.Component {
       })
       .catch((err) => {
         //console.log(err);
-        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",
           autoClose: 3000,
           hideProgressBar: true,

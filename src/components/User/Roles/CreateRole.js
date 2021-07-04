@@ -1,14 +1,17 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import "../user.css";
 import PermissionGroup from "./PermissionGroup";
 import api from '../../../apis/api'
 import Validate from '../../../utils/validation'
 import { toast } from 'react-toastify';
+import {getMessage} from '../../AlertMessage'
+import Loading from "../../Loading";
 class CreateRole extends React.Component {
 
   state = {
     activePanel: "general",
+    submitting: false,
     data: {
       Name: "",
       Permissions: [
@@ -347,21 +350,31 @@ class CreateRole extends React.Component {
       ]
     },
     errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false,
   };
   
   componentDidMount(){
     if(this.props.edit == "true"){
+      this.setState({submitting: true})
       const url = "/roles/get/" + this.props.match.params.id
        api.get(url).then(res=>{
         const {data} = this.state
         data.Name = res.data.data.Name
         data.Permissions = res.data.data.Permissions
-        this.setState({data})
+        this.setState({data, submitting: false})
       }).catch(err=>{
-        console.log("error")
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       })
     }
-    console.log(this.state.data)
   }
   tabContentToggle = () => {
     if (this.state.activePanel == "general") {
@@ -932,24 +945,48 @@ class CreateRole extends React.Component {
       this.setState({ errors });
     }
     if(!Validate.validateNotEmpty(this.state.errors)){
+      this.setState({submitting: true})
       if(this.props.edit == "true"){
         api.put('/roles', {data: data, requiredPermission: "Edit Roles", _id: this.props.match.params.id}).then(res=>{
-          console.log(res)
+          this.setState({submitting: false, alertType: "success", alertMessage: "Role edited successfully."})
         }).catch(err=>{
-          console.log("error updating role")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+            this.setState({submitting: false})
         })
       }else{
-        data['Created'] = Date.now()
-        console.log(this.state.data)
           api.post('/roles',{data: data, requiredPermission: "Create Roles"}).then((res)=>{
-            console.log(res)
+            toast.success('Role added successfully', {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+            this.setState({redirect: true})
           }).catch((err)=>{
-            console.log(err)
+            this.setState({submitting: false})
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
           })
       }
     
     }else{
-      console.log(errors)
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
+
     }
 
    
@@ -973,9 +1010,14 @@ class CreateRole extends React.Component {
       data[key] = val
     }
     this.setState({data})
-    // console.log(this.state.data.Permissions)
   }
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={"/roles"} />;
+    }
     return (
       <React.Fragment>
         <section className="content-header clearfix">
@@ -990,10 +1032,15 @@ class CreateRole extends React.Component {
             <li className="active">Create Role</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal"
           >
-          
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
                 <div className="accordion-box">

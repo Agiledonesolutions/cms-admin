@@ -6,10 +6,14 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
+import Loading from "../../Loading";
+import { toast } from 'react-toastify';
+
 
 class Transactions extends React.Component {
   state = {
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -39,6 +43,7 @@ class Transactions extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -58,10 +63,18 @@ class Transactions extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
-        console.log("error fetching transaction");
+        this.setState({submitting:false})
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   }
 
@@ -77,6 +90,7 @@ class Transactions extends React.Component {
             <li className="active">Transactions</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="box box-primary">
             <div className="box-body index-table" id="attributes-table">

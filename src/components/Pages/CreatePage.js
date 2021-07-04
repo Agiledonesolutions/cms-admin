@@ -57,7 +57,7 @@ class CreatePage extends React.Component {
             this.setState({submitting: false,data, editorState: BraftEditor.createEditorState(res.data.data.body)})
         })
         .catch((err) => {
-          toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
             position: "bottom-right",
             autoClose: 3000,
             hideProgressBar: true,
@@ -148,7 +148,7 @@ class CreatePage extends React.Component {
             
         }).catch(err=>{
             //console.log("error editing page")
-            toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
               position: "bottom-right",
               autoClose: 3000,
               hideProgressBar: true,
@@ -171,7 +171,7 @@ class CreatePage extends React.Component {
           this.setState({redirect: true})
           this.setState({submitting: false})
       }).catch(err=>{
-        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",
           autoClose: 3000,
           hideProgressBar: true,

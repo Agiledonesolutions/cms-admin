@@ -20,7 +20,7 @@ class CreateCoupon extends React.Component {
       discountType: "fixed",
       value: "",
       freeshipping: false,
-      status: "",
+      status: false,
       usageLimitPerCoupon: "",
       usageLimitPerCustomer: "",
       startDate: "",
@@ -61,12 +61,11 @@ class CreateCoupon extends React.Component {
       api
         .get(url)
         .then((res) => {
-          console.log(res.data.data)
           const { data } = this.state;
           data.name = res.data.data.name;
           data.code = res.data.data.code;
           data.discountType = res.data.data.discountType;
-          data.value = res.data.data.value;
+          data.value = res.data.data.value != null?res.data.data.value: "";
           data.freeshipping = res.data.data.freeshipping;
           data.startDate =
             res.data.data.startDate != null
@@ -78,9 +77,9 @@ class CreateCoupon extends React.Component {
               : "";
           data.status = res.data.data.status;
           data.minimumSpend = res.data.data.minimumSpend;
-          data.maximumSpend = res.data.data.maximumSpend;
-          data.usageLimitPerCoupon = res.data.data.usageLimitPerCoupon;
-          data.usageLimitPerCustomer = res.data.data.usageLimitPerCustomer;        
+          data.maximumSpend = res.data.data.maximumSpend != null?res.data.data.maximumSpend: "";
+          data.usageLimitPerCoupon = res.data.data.usageLimitPerCoupon != null?res.data.data.usageLimitPerCoupon:"";
+          data.usageLimitPerCustomer = res.data.data.usageLimitPerCustomer != null?res.data.data.usageLimitPerCustomer:"";        
           this.setState({ data, submitting: false, categoryIds: res.data.data.categories, excludedCategoryIds: res.data.data.excludedCategories, productIds: res.data.data.products, excludedProductIds: res.data.data.excludedProducts });
         })
         .catch((err) => {
@@ -164,11 +163,18 @@ class CreateCoupon extends React.Component {
             requiredPermission: "Edit Coupons",
           })
           .then((res) => {
-            this.setState({ submitting: false });
+            this.setState({ submitting: false, alertType: "success", alertMessage: "Coupon edited successfully" });
           })
           .catch((err) => {
             this.setState({ submitting: false });
-            console.log("error updating brand");
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
           });
       } else {
        
@@ -183,9 +189,17 @@ class CreateCoupon extends React.Component {
           })
           .then((res) => {
             this.setState({ submitting: false, redirect: true });
+            toast.success( "Coupon added successfully.", {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
           })
           .catch((err) => {
-            toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
               position: "bottom-right",
               autoClose: 3000,
               hideProgressBar: true,

@@ -205,7 +205,6 @@ class Settings extends React.Component {
     api
       .get("/settings/get")
       .then((res) => {
-        console.log(res.data.data)
         const { data } = this.state;
         for (const [key, value] of Object.entries(res.data.data[0])) {
           
@@ -213,12 +212,24 @@ class Settings extends React.Component {
             data[key] = value;
           }
         }
-        //data.General.CustomerRoleId = this.state.data.General.CustomerRole._id
+        try{
+          data.General.CustomerRoleId = this.state.data.General.CustomerRole._id
+        }catch(err){
+          data.General.CustomerRoleId = ""
+        }
+        data.General.CustomerRoleId = this.state.data.General.CustomerRole?this.state.data.General.CustomerRole._id:""
         this.setState({ data, id: res.data.data[0]._id, submitting: false });
       })
       .catch((err) => {
         this.setState({submitting: false})
-        console.log(err);
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   }
   setVal2 = (key, key2, val) => {
@@ -464,13 +475,12 @@ class Settings extends React.Component {
     if (!Validate.validateNotEmpty(this.state.errors)) {
       this.setState({submitting: true})
       api.put('/settings', {data: this.state.data, _id: this.state.id, requiredPermission: "Edit Settings"}).then(res=>{
-        console.log(res)
+        //console.log(res)
         this.setState({submitting: false, alertType: "success", alertMessage: "Settings updated."})
 
       }).catch(err=>{
-        console.log(err.response.data.message)
         this.setState({submitting: false})
-        toast.success(`${err.response.data.message}`, {
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",
           autoClose: 3000,
           hideProgressBar: true,
@@ -480,7 +490,7 @@ class Settings extends React.Component {
           });
       })
     } else {
-      console.log(errors);
+      //console.log(errors);
       this.setState({ alertType: "fail", alertMessage: "Please fill the following: " + errors})
     }
   };

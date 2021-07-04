@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import api from "../../apis/api";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
@@ -10,6 +10,8 @@ import SortableItem from '../DND/SortableItem'
 import DragHandle from '../DND/DragHandle'
 import arrayMove from "array-move";
 import { toast } from 'react-toastify';
+import { getMessage } from "../AlertMessage";
+
 
 class CreateFlashSale extends React.Component {
   state = {
@@ -28,7 +30,9 @@ class CreateFlashSale extends React.Component {
       ],
     },
     errors: [],
-    toast: "",
+    alertType: "",
+    alertMessage: "",
+    redirect: false,
   };
 
   componentDidMount() {
@@ -80,7 +84,9 @@ class CreateFlashSale extends React.Component {
     data["products"][idx][name] = val;
     this.setState({ data });
   };
-
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   setVal = (key, val) => {
     const { data } = this.state;
     data[key] = val;
@@ -146,11 +152,18 @@ class CreateFlashSale extends React.Component {
             _id: this.props.match.params.id,
           })
           .then((res) => {
-            console.log(res);
-            this.setState({ submitting: false });
+            
+            this.setState({ submitting: false, alertType: "success", alertMessage: "Flash sale edited successfully." });
           })
           .catch((err) => {
-            console.log("error updating flashsale");
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
             this.setState({ submitting: false });
           });
       } else {
@@ -160,16 +173,30 @@ class CreateFlashSale extends React.Component {
             requiredPermission: "Create Flash Sales",
           })
           .then((res) => {
-            console.log(res);
-            this.setState({ submitting: false });
+            toast.success('Flash Sale added successfully', {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+            this.setState({ submitting: false, redirect: true });
           })
           .catch((err) => {
-            console.log("error adding flash sale");
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
             this.setState({ submitting: false });
           });
       }
     } else {
-      console.log(errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
   };
   onSortEnd = ({ oldIndex, newIndex }) => {
@@ -321,6 +348,9 @@ class CreateFlashSale extends React.Component {
     }
   };
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={"/flashsales"} />;
+    }
     return (
       <div>
         <section className="content-header clearfix">
@@ -345,6 +375,11 @@ class CreateFlashSale extends React.Component {
         </section>
         <Loading show={this.state.submitting} />
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">

@@ -74,12 +74,25 @@ class FlashSales extends React.Component {
     api
       .delete("/flashsale", { data })
       .then((res) => {
-        console.log(res);
-        this.setState({submitting: false})
+        toast.success('Flash Sale(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.setState({submitting: false})
       });
   };

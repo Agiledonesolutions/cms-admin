@@ -80,7 +80,7 @@ class Coupons extends React.Component {
       })
       .catch((err) => {
         this.setState({ submitting: false });
-        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",
           autoClose: 3000,
           hideProgressBar: true,
@@ -111,7 +111,7 @@ class Coupons extends React.Component {
       })
       .catch((err) => {
         this.setState({ submitting: false });
-        toast.error( `${err.response.data?err.response.data.message: "Something went wrong."}`, {
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",
           autoClose: 3000,
           hideProgressBar: true,

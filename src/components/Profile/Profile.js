@@ -6,6 +6,7 @@ import { getUser } from "../../utils/session";
 import Validate from "../../utils/validation";
 import Loading from "../Loading";
 import { toast } from 'react-toastify';
+import {getMessage} from '../AlertMessage'
 class Profile extends React.Component {
   state = {
     submitting: false,
@@ -19,9 +20,12 @@ class Profile extends React.Component {
     confirmPassword: "",
     _id: "",
     errors: [],
+    alertType: "",
+    alertMessage: "",
   };
 
   async componentDidMount() {
+    this.setState({submitting: true})
     if(getUser()){
       await this.setState({_id: getUser()})
     }else if(getUSerDetails()){
@@ -33,9 +37,17 @@ class Profile extends React.Component {
       data["First Name"]=res.data.data["First Name"]
       data["Last Name"]=res.data.data["Last Name"]
       data.Email = res.data.data.Email
-      this.setState({data})
+      this.setState({data, submitting: false})
     }).catch(err=>{
-      console.log(err)
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
+      this.setState({submitting: false})
     })
   }
 
@@ -44,7 +56,9 @@ class Profile extends React.Component {
     data[key] = val;
     this.setState({ data });
   };
-
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   handleSubmit = () => {
     const { errors } = this.state;
     const { data, newPassword, confirmPassword } = this.state;
@@ -90,17 +104,31 @@ class Profile extends React.Component {
     }
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
-      console.log(this.state)
-      this.setState({ submitting: true });
-      api.put('/users', {data: data, _id: this.state._id, requiredPermission: "Edit User", newPassword: this.state.newPassword}).then(res=>{
-        console.log(res)
-        this.setState({submitting: false})
+      this.setState({submitting: true})
+     let payload = {
+       data: data,
+       _id: this.state._id,
+       requiredPermission: "Edit User"
+     }
+     if(this.state.newPassword != ""){
+       payload.newPassword = this.state.newPassword
+     }
+      api.put('/users', payload).then(res=>{
+        
+        this.setState({submitting: false, alertType: "success", alertMessage: "Profile edited successfully."})
       }).catch(err=>{
-        console.log(err.response.message)
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.setState({submitting: false})
       })
     } else {
-      console.log(errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
   };
   tabContentToggle = () => {
@@ -229,7 +257,13 @@ class Profile extends React.Component {
             <li className="active">Edit Profile</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting} />
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
@@ -238,7 +272,7 @@ class Profile extends React.Component {
                     <div className="panel panel-default">
                       <div className="panel-heading">
                         <h4 className="panel-title">
-                          <a>Flash Sale Information</a>
+                          <a>Profile Information</a>
                         </h4>
                       </div>
                       <div
@@ -297,7 +331,6 @@ class Profile extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

@@ -445,23 +445,47 @@ class CreateUser extends React.Component {
 
     
     if(!Validate.validateNotEmpty(this.state.errors)){
+      this.setState({submitting: true})
       if(this.props.edit == "true"){
         api.put('/users',{data: data, RoleIds: this.state.RoleIds, _id: this.props.match.params.id, requiredPermission: "Edit Users"}).then(res=>{
-          console.log(res)
+          this.setState({submitting: false, alertType: "success", alertMessage: "User edited successfully."})
         }).catch(err=>{
-          console.log("error updating user")
+          this.setState({submitting: false})
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
         })
       }else{
         api.post('/users', {data: data, RoleIds: this.state.RoleIds}).then(res=>{
-          console.log(res)
+          toast.success('User added successfully', {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
           this.setState({redirect: true})
         }).catch(err=>{
-          console.log("create user error")
+          this.setState({submitting: false})
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
         })
       }
       
     }else{
-      console.log(this.state.errors)
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
   }
 
@@ -480,16 +504,27 @@ class CreateUser extends React.Component {
       console.log(err)
     })
     if(this.props.edit == "true"){
+      this.setState({submitting: true})
       const {data} = this.state
       const url = "/users/get/"+this.props.match.params.id
       api.get(url).then(res=>{
-        console.log(res.data.data)
+        //console.log(res.data.data)
         data["First Name"] = res.data.data["First Name"]
         data["Last Name"] = res.data.data["Last Name"]
         data.Email = res.data.data.Email
         data.Permissions = res.data.data.Permissions
-        this.setState({data, RoleIds: res.data.data.Roles})
-      }).catch((err)=>{console.log("error fetching user deets")})
+        this.setState({data, RoleIds: res.data.data.Roles, submitting: false})
+      }).catch((err)=>{
+        this.setState({submitting: false})
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+      })
      }
   }
   tabContentToggle = () => {

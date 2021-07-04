@@ -8,9 +8,11 @@ import "react-data-table-component-extensions/dist/index.css";
 import api from '../../../apis/api'
 import { format } from 'timeago.js';
 import { toast } from 'react-toastify';
+import Loading from "../../Loading";
 class Roles extends React.Component {
   state={
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -36,17 +38,34 @@ class Roles extends React.Component {
     edit: ""
   }
   deleteSelectedItems = () =>{
+    this.setState({submitting: true})
     const {selectedRows} = this.state
     const {requiredPermission} = this.state
     const data = {id: selectedRows, requiredPermission}
     api.delete('/roles', {data}).then(res=>{
-      console.log(res)
+      toast.success('Role(s) deleted successfully', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
       this.componentDidMount()
     }).catch(err=>{
-      console.log("delete error")
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
+        this.setState({submitting: false})
     })
   }
   componentDidMount(){
+    this.setState({submitting: true})
     const datalist = []
     var i=0
     api.post('/roles/get').then(res=>{
@@ -63,9 +82,17 @@ class Roles extends React.Component {
         })
         const {tableData} = this.state
         tableData['data'] = datalist
-        this.setState({tableData})
+        this.setState({tableData, submitting: false})
       }).catch((err)=>{
-        console.log(err)
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+          this.setState({submitting: false})
     })
   }
   
@@ -84,6 +111,7 @@ class Roles extends React.Component {
             <li className="active">Roles</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting} />
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">

@@ -7,9 +7,11 @@ import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
 import { toast } from 'react-toastify';
+import Loading from '../../Loading'
 class Orders extends React.Component {
   state = {
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -49,12 +51,12 @@ class Orders extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api.post('/order/get', {requiredPermission: "Show Order"}).then(res=>{
       res.data.data.map((val) => {
         i++;
-        console.log(val)
               var tmp = {
                 id: i,
                 customername: val.User?val.User["First Name"]+" "+val.User["Last Name"]: "--",
@@ -68,10 +70,17 @@ class Orders extends React.Component {
             });
             const { tableData } = this.state;
             tableData["data"] = datalist;
-            this.setState({ tableData });
+            this.setState({ tableData, submitting: false });
       
     }).catch(err=>{
-      console.log("error fetching orders")
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
     })
   }
 
@@ -90,6 +99,7 @@ class Orders extends React.Component {
             <li className="active">Orders</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="box box-primary">
             <div className="box-body index-table" id="attributes-table">

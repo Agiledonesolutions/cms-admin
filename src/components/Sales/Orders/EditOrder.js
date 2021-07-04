@@ -4,6 +4,7 @@ import api from "../../../apis/api";
 import "./order.css";
 import Loading from '../../Loading'
 import { toast } from 'react-toastify';
+import {getMessage} from '../../AlertMessage'
 class EditOrder extends React.Component {
   state={
     submitting: false,
@@ -42,7 +43,9 @@ class EditOrder extends React.Component {
     ],
     subTotal: "--",
     discount: "--",
-    Total: "--"
+    Total: "--",
+    alertType: "",
+    alertMessage: "",
   }
   componentDidMount(){
     const url = "order/get/" + this.props.match.params.id
@@ -71,13 +74,15 @@ class EditOrder extends React.Component {
   handleStatusUpdate = ()=>{
     this.setState({submitting: true})
     api.put('/order', {data: {Status: this.state.orderStatus}, _id: this.props.match.params.id, requiredPermission: "Edit Order"}).then(res=>{
-      console.log(res)
-      this.setState({submitting: false})
+      //console.log(res)
+      this.setState({submitting: false, alertType: "success", alertMessage: "Status updated successfully"})
     }).catch(err=>{
-      console.log("error updating status")
-      this.setState({submitting: false})
+      this.setState({submitting: false, alertType: "fail", alertMessage: `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`})
     })
   }
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   render() {
     return (
       <React.Fragment>
@@ -97,6 +102,11 @@ class EditOrder extends React.Component {
         </section>
         <Loading show={this.state.submitting}/>
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <div className="order-wrapper">
             <div className="order-information-wrapper">
               <div className="order-information-buttons">

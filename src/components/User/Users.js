@@ -80,7 +80,7 @@ class Users extends React.Component {
       })
       .catch((err) => {
         this.setState({submitting: false})
-        toast.error(`${err.response.data.message}`, {
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",
           autoClose: 3000,
           hideProgressBar: true,
@@ -97,7 +97,7 @@ class Users extends React.Component {
     const {requiredPermission} = this.state
     const data = {id: selectedRows, requiredPermission}
     api.delete('/users', {data}).then(res=>{
-      toast.success(`Deleted successfully.`, {
+      toast.success(`User(s) deleted successfully.`, {
         position: "bottom-right",
         autoClose: 3000,
         hideProgressBar: true,
@@ -108,7 +108,7 @@ class Users extends React.Component {
       this.componentDidMount()
     }).catch(err=>{
       this.setState({submitting: false})
-      toast.error(`${err.response.data.message}`, {
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
         position: "bottom-right",
         autoClose: 3000,
         hideProgressBar: true,
