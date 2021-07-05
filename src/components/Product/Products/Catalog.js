@@ -12,7 +12,6 @@ import { siteUrl } from "../../../utils/utils";
 import {getMessage} from '../../AlertMessage'
 import { toast } from 'react-toastify';
 
-
 class Catalog extends React.Component {
   state = {
     selectedRows: [],
@@ -92,7 +91,14 @@ class Catalog extends React.Component {
         this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
-        console.log(err)
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.setState({submitting: false})
       });
       
@@ -106,11 +112,25 @@ class Catalog extends React.Component {
     api
       .delete("/product", { data })
       .then((res) => {
-        this.setState({submitting: false, alertType: "success", alertMessage: "Deleted successfully."})
+        toast.success('Product(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.setState({submitting: false})
 
       });

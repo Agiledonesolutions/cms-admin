@@ -11,7 +11,6 @@ import Loading from "../../Loading";
 import { siteUrl } from "../../../utils/utils";
 import { toast } from 'react-toastify';
 
-
 class Brands extends React.Component {
   state = {
     selectedRows: [],
@@ -76,7 +75,14 @@ class Brands extends React.Component {
         this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
-        console.log(err);
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.setState({submitting: false})
       });
   }
@@ -89,7 +95,6 @@ class Brands extends React.Component {
     api
       .delete("/brand", { data })
       .then((res) => {
-        //console.log(res);
         this.setState({submitting: false})
         toast.success('Brand(s) deleted successfully', {
           position: "bottom-right",
@@ -102,10 +107,10 @@ class Brands extends React.Component {
         this.componentDidMount();
       })
       .catch((err) => {
-        //console.log("delete error");
         this.setState({submitting: false})
-        toast.error('Something went wrong. Please try again later.', {
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",
+          autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: true,

@@ -8,7 +8,7 @@ import FileManager from "../../Media/FileManager";
 import Loading from '../../Loading'
 import { siteUrl } from "../../../utils/utils";
 import { toast } from 'react-toastify';
-
+import {getMessage} from '../../AlertMessage'
 class CreateBrand extends React.Component {
   state = {
     imageType: "",
@@ -28,6 +28,8 @@ class CreateBrand extends React.Component {
     logo: "",
     banner: "",
     errors: [],
+    alertType: "",
+    alertMessage: "",
     redirect: false
   };
   setImageId = (id, multiple,image) => {  
@@ -39,20 +41,18 @@ class CreateBrand extends React.Component {
   };
   componentDidMount(){
     if(this.props.edit == "true"){
+      this.setState({submitting: true})
       const url = "/brand/get/" +  this.props.match.params.id
       api.get(url).then(res=>{
-        //console.log(res)
         const {data} = this.state
         data.name = res.data.data.name
         data.status = res.data.data.status
         data.url = res.data.data.url
         data.metaTitle = res.data.data.metaTitle
         data.metaDescription = res.data.data.metaDescription
-        this.setState({data})
-        this.setState({banner: res.data.data.banner?res.data.data.banner._id: "", bannerImage: res.data.data.banner?res.data.data.banner.image:"", logo: res.data.data.logo?res.data.data.logo._id:"", logoImage: res.data.data.logo?res.data.data.logo.image:""})
+        this.setState({data, banner: res.data.data.banner?res.data.data.banner._id: "", bannerImage: res.data.data.banner?res.data.data.banner.image:"", logo: res.data.data.logo?res.data.data.logo._id:"", logoImage: res.data.data.logo?res.data.data.logo.image:"", submitting: false})
       }).catch(err=>{
-        console.log(err)
-        toast.error('Something went wrong. Please try again later.', {
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",
           autoClose: 3000,
           hideProgressBar: true,
@@ -60,9 +60,13 @@ class CreateBrand extends React.Component {
           pauseOnHover: true,
           draggable: true,
           });
+          this.setState({submitting: false})
       })
     }
   }
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   setVal = (key, val) => {
     const { data } = this.state;
     data[key] = val;
@@ -82,15 +86,23 @@ class CreateBrand extends React.Component {
       errors.splice(errors.indexOf("name"), 1);
       this.setState({ errors });
     }
+ 
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
       this.setState({submitting: true})
       if(this.props.edit == "true"){
         api.put('/brand', {data: data, _id: this.props.match.params.id, logo: this.state.logo, banner: this.state.banner, requiredPermission: "Edit Brand"}).then(res=>{
-          console.log(res)
-          this.setState({submitting: false})
+          
+          this.setState({submitting: false, alertType: "success", alertMessage: "Brand edited successfully."})
         }).catch(err=>{
-          console.log("error updating brand")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
           this.setState({submitting: false})
 
         })
@@ -106,14 +118,22 @@ class CreateBrand extends React.Component {
             });
           this.setState({submitting: false, redirect: true})
         }).catch(err=>{
-          console.log("error posting brand")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
           this.setState({submitting: false})
 
         })
       }
      
     }else{
-      console.log(this.state.errors)
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
+
     }
   }
 
@@ -320,7 +340,13 @@ class CreateBrand extends React.Component {
             {this.props.edit == "true"? <li className="active">Edit Brand</li>: <li className="active">Create Brand</li>}
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
@@ -395,7 +421,6 @@ class CreateBrand extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting}/>
                       </div>
                     </div>
                   </div>

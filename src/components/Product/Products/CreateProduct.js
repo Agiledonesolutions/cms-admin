@@ -160,7 +160,6 @@ class CreateProduct extends React.Component {
   };
 
   componentDidMount() {
-    
     const { brands } = this.state;
     api
       .post("/brand/get")
@@ -271,7 +270,7 @@ class CreateProduct extends React.Component {
         this.setState({ tableData });
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err)
       });
 
     api
@@ -322,6 +321,7 @@ class CreateProduct extends React.Component {
         console.log("error fetching options");
       });
       if(this.props.edit == "true"){
+        this.setState({submitting: true})
         const url = "/product/get/" + this.props.match.params.id;
         api.get(url).then(res=>{
           let tmp= {
@@ -394,10 +394,16 @@ class CreateProduct extends React.Component {
               crossSellsIds.push(prod._id)
             })
           }    
-          this.setState({data: tmp,relatedProductIds, upSellsIds, crossSellsIds, downloadFilenames, downloadsIds, brandId: res.data.data.brand?res.data.data.brand._id: "", baseImage: res.data.data.baseImage?res.data.data.baseImage.image: "", baseImageId:  res.data.data.baseImage?res.data.data.baseImage._id: "" ,additionalImageIds, additionalImages ,editorState: BraftEditor.createEditorState(res.data.data.description), options: res.data.data.options, tagIds, categoryIds})
+          this.setState({submitting: false,data: tmp,relatedProductIds, upSellsIds, crossSellsIds, downloadFilenames, downloadsIds, brandId: res.data.data.brand?res.data.data.brand._id: "", baseImage: res.data.data.baseImage?res.data.data.baseImage.image: "", baseImageId:  res.data.data.baseImage?res.data.data.baseImage._id: "" ,additionalImageIds, additionalImages ,editorState: BraftEditor.createEditorState(res.data.data.description), options: res.data.data.options, tagIds, categoryIds})
         }).catch(err=>{
-          console.log(err)
-          console.log("error fetching product details")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
         })
   
       }
@@ -446,6 +452,16 @@ class CreateProduct extends React.Component {
         this.setState({ errors });
       }
     })
+    if (!errors.includes("description") && data["description"] == "<p></p>" ) {
+      errors.push("description");
+      this.setState({ errors });
+    } else if (
+      errors.includes("description") &&
+      Validate.validateNotEmpty(data["description"])
+    ) {
+      errors.splice(errors.indexOf("description"), 1);
+      this.setState({ errors });
+    }
     if (!Validate.validateNotEmpty(this.state.errors)) {
       this.setState({submitting: true})
       data.options = this.state.options
@@ -459,30 +475,44 @@ class CreateProduct extends React.Component {
       })
       if(this.props.edit == "true"){
         api.put('/product',{data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Edit Products", _id: this.props.match.params.id}).then(res=>{
-          this.setState({submitting: false, alertType: "success", alertMessage: "Changes have been saved"})
+          this.setState({submitting: false, alertType: "success", alertMessage: "Product edited successfully."})
         }).catch(err=>{
-          console.log("error updating product")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
           this.setState({submitting: false})
 
         })
       }else{
         api.post('/product', {data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Create Products"}).then(res=>{
-          this.setState({submitting: false, redirect: true})
           toast.success('Product added successfully.', {
             position: "bottom-right",
             hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
-            });
+          });
+          this.setState({submitting: false, redirect: true})
         }).catch(err=>{
-          console.log(err.response.data.message)
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
           this.setState({submitting: false})
 
         })
       }   
     }else{
-      this.setState({alertType: "fail", alertMessage: this.state.errors + " are required fields."})
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
 
   };
@@ -1781,6 +1811,7 @@ class CreateProduct extends React.Component {
               )}
             </ol>
           </section>
+          <Loading show={this.state.submitting}/>
           <section className="content">
           {getMessage(this.state.alertType, this.state.alertMessage, this.closeAlert)}
             <form className="form-horizontal">
@@ -2030,7 +2061,6 @@ class CreateProduct extends React.Component {
                           >
                             Save
                           </button>
-                          <Loading show={this.state.submitting}/>
                         </div>
                       </div>
                     </div>
