@@ -84,8 +84,8 @@ class CreateSlide extends React.Component {
         slides.splice(0,1)
         res.data.data.Slides.forEach(slide=>{
           let tmp = {
-            imageId: slide.Image._id,
-            image: slide.Image.image,
+            imageId: slide.Image?slide.Image._id:"",
+            image: slide.Image?slide.Image.image:"",
             General: slide.General,
             Options: [],
             slideTab: "general",
@@ -104,7 +104,7 @@ class CreateSlide extends React.Component {
         data.Settings = res.data.data.Settings
         this.setState({data, slides})
       }).catch(err=>{
-        console.log("error fetching sslider")
+        console.log(err)
       })
     }
   }
@@ -217,7 +217,7 @@ class CreateSlide extends React.Component {
               </div>
               <div className="slide-body">
                 
-                {this.state.slides[idx].image? <div className="slide-image" onClick={()=>{
+                {this.state.slides[idx].image != ""? <div className="slide-image" onClick={()=>{
                   this.setState({showModal: true, multiple: false, idx: idx})
                 }} ><img src={siteUrl+this.state.slides[idx].image} height={120} width={120}/></div>: <div className="slide-image" onClick={()=>{
                   this.setState({showModal: true, multiple: false, idx: idx})
