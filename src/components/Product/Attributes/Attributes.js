@@ -50,6 +50,7 @@ class Attributes extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -58,7 +59,7 @@ class Attributes extends React.Component {
         res.data.data.map((val) => {
           i++;
           var tmp = {
-            id: i,
+            id: val.ID,
             name: val["name"],
             attributeset: val["attributeSet"]["name"],
             filterable: val.filterable?"Yes": "No",
@@ -69,10 +70,18 @@ class Attributes extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false});
       })
       .catch((err) => {
-        console.log(err);
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       });
   }
 
@@ -82,11 +91,25 @@ class Attributes extends React.Component {
     const {requiredPermission} = this.state
     const data = {id: selectedRows, requiredPermission}
     api.delete('/attribute', {data}).then(res=>{
-      console.log(res)
+      toast.success('Attribute(s) deleted successfully', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
       this.setState({submitting: false})
       this.componentDidMount()
     }).catch(err=>{
-      console.log("delete error")
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
       this.setState({submitting: false})
 
     })

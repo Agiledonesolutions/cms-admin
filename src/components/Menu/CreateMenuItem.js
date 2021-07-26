@@ -76,7 +76,8 @@ class CreateMenuItem extends React.Component {
           label: val.name,
           value: val._id
         }
-        pageOptions.push(tmp)
+        if(val.status)
+          pageOptions.push(tmp)
       })
       this.setState({pageOptions})
     }).catch(err=>{

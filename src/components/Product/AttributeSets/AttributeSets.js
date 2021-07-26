@@ -39,12 +39,12 @@ class AttributeSets extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true});
     const datalist = [];
     var i = 0;
     api
       .post("/attributeset/get")
       .then((res) => {
-          // console.log(res.data.data)
         res.data.data.map((val) => {
           i++;
           var tmp = {
@@ -57,10 +57,18 @@ class AttributeSets extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false});
       })
       .catch((err) => {
-        console.log(err);
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       });
   }
 
@@ -70,11 +78,25 @@ class AttributeSets extends React.Component {
     const {requiredPermission} = this.state
     const data = {id: selectedRows, requiredPermission}
     api.delete('/attributeset', {data}).then(res=>{
-      console.log(res)
+      toast.success('Attribute Set(s) deleted successfully', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
       this.setState({submitting: false})
       this.componentDidMount()
     }).catch(err=>{
-      console.log("delete error")
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
       this.setState({submitting: false})
 
     })
@@ -130,7 +152,6 @@ class AttributeSets extends React.Component {
                     selected["selectedRows"].forEach((row) => {
                       arr.push(row._id);
                     });
-                    console.log(arr);
                     this.setState({ selectedRows: arr });
                   }}
                   responsive

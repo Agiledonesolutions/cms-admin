@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import api from "../../apis/api";
-import { getUSerDetails } from "../../utils/local";
+import { getUserDetails } from "../../utils/local";
 import { getUser } from "../../utils/session";
 import Validate from "../../utils/validation";
 import Loading from "../Loading";
@@ -28,8 +28,8 @@ class Profile extends React.Component {
     this.setState({submitting: true})
     if(getUser()){
       await this.setState({_id: getUser()})
-    }else if(getUSerDetails()){
-     await this.setState({_id: getUSerDetails()})
+    }else if(getUserDetails()){
+     await this.setState({_id: getUserDetails()})
     }
     const url = "users/get/"+ this.state._id;
     const {data} = this.state
@@ -108,7 +108,7 @@ class Profile extends React.Component {
      let payload = {
        data: data,
        _id: this.state._id,
-       requiredPermission: "Edit User"
+      //  requiredPermission: "Edit User"
      }
      if(this.state.newPassword != ""){
        payload.newPassword = this.state.newPassword

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import api from "../../../apis/api";
 import "./attribute.css";
 import MultiSelect from "react-multiple-select-dropdown-lite";
@@ -11,6 +11,8 @@ import SortableItem from '../../DND/SortableItem'
 import DragHandle from '../../DND/DragHandle'
 import arrayMove from "array-move";
 import { toast } from 'react-toastify';
+import {getMessage} from '../../AlertMessage'
+
 class CreateAttribute extends React.Component {
   state = {
     activePanel: "general",
@@ -24,30 +26,52 @@ class CreateAttribute extends React.Component {
       value: [""],
     },
     CategoryIds: [],
-    rolesArray: [],
     errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false
   };
-
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   componentDidMount() {
+    api
+    .get("/category/get")
+    .then((res) => {
+      res.data.data.forEach((val) => {
+        addToCategories(val, []);
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
     if (this.props.edit == "true") {
+      this.setState({submitting: true})
+
       const url = "/attribute/get/" + this.props.match.params.id;
       const { data } = this.state;
-      const { rolesArray } = this.state;
+      const { CategoryIds } = this.state;
       api
         .get(url)
         .then((res) => {
           console.log(res.data.data);
           data.name = res.data.data.name;
           data.attributeSetId = res.data.data.attributeSet;
-          data.categoryIds = res.data.data.categories;
-          rolesArray.push(res.data.data.categories.toString());
+          CategoryIds.push(res.data.data.categories);
           data.filterable = res.data.data.filterable;
           data.value = res.data.data.value;
-          this.setState({ data });
-          this.setState({ rolesArray });
+          this.setState({ data,CategoryIds, submitting: false});
         })
         .catch((err) => {
-          console.log("error fetching attri");
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+          this.setState({submitting: false})
         });
     }
     const { attributesSets } = this.state;
@@ -83,16 +107,7 @@ class CreateAttribute extends React.Component {
       }
     };
 
-    api
-      .get("/category/get")
-      .then((res) => {
-        res.data.data.forEach((val) => {
-          addToCategories(val, []);
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+
     this.setState({ categoryOptions });
   }
   setValues = (idx, val) => {
@@ -158,12 +173,20 @@ class CreateAttribute extends React.Component {
             requiredPermission: "Edit Attributes",
           })
           .then((res) => {
-            console.log(res);
-            this.setState({ submitting: false });
+            this.setState({submitting: false, alertType: "success", alertMessage: "Attribute edited successfully."})
+
           })
           .catch((err) => {
-            console.log("error updating attri");
-            this.setState({ submitting: false });
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+            this.setState({submitting: false})
+  
           });
       } else {
         api
@@ -173,16 +196,30 @@ class CreateAttribute extends React.Component {
             requiredPermission: "Create Attributes",
           })
           .then((res) => {
-            console.log(res);
-            this.setState({ submitting: false });
+            toast.success('Attribute added successfully', {
+              position: "bottom-right",
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+            this.setState({submitting: false, redirect: true})
           })
           .catch((err) => {
-            console.log("error creating attribute");
-            this.setState({ submitting: false });
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+            this.setState({submitting: false})
+  
           });
       }
     } else {
-      console.log(errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
   };
    onSortEnd = ({ oldIndex, newIndex }) => {
@@ -363,6 +400,9 @@ class CreateAttribute extends React.Component {
     }
   };
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={ "/attributes"} />
+    }
     return (
       <div>
         <section className="content-header clearfix">
@@ -385,7 +425,13 @@ class CreateAttribute extends React.Component {
             )}
           </ol>
         </section>
+        <Loading show={this.state.submitting} />
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
@@ -441,7 +487,6 @@ class CreateAttribute extends React.Component {
                     <div className="form-group">
                       <div
                         className="col-md-2 col-md-10"
-                        style={{ display: "flex" }}
                       >
                         <button
                           type="submit"
@@ -453,7 +498,6 @@ class CreateAttribute extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

@@ -10,6 +10,8 @@ import FileManager from "../../Media/FileManager";
 import Loading from "../../Loading";
 import { siteUrl } from "../../../utils/utils";
 import { toast } from 'react-toastify';
+import {getMessage} from '../../AlertMessage'
+
 class StoreFront extends React.Component {
   state = {
     showModal: false,
@@ -376,7 +378,12 @@ class StoreFront extends React.Component {
     },
     _id: "",
     errors: [],
+    alertType: "",
+    alertMessage: "",
   };
+  onClose = ()=>{
+    this.setState({alertMessage: "", alertType: ""})
+  }
   componentDidMount() {
     this.setState({submitting: true})
 
@@ -389,7 +396,8 @@ class StoreFront extends React.Component {
             label: val.name,
             value: val._id,
           };
-          pagesOptions.push(tmp);
+          if(val.status)
+            pagesOptions.push(tmp);
         });
         this.setState({ pagesOptions });
       })
@@ -509,7 +517,7 @@ class StoreFront extends React.Component {
       });
 
     api
-      .get("/flashsale/get")
+      .post("/flashsale/get")
       .then((res) => {
         const { flashsaleOptions } = this.state;
         res.data.data.forEach((val) => {
@@ -752,15 +760,21 @@ class StoreFront extends React.Component {
         })
         .then((res) => {
           console.log(res);
-          this.setState({ submitting: false });
+          this.setState({submitting: false, alertType: "success", alertMessage: "Storefront settings updated."})
         })
         .catch((err) => {
-          console.log(err.response);
-          this.setState({ submitting: false });
-          console.log("error posting storefront");
+          this.setState({submitting: false})
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         });
     } else {
-      console.log(errors);
+      this.setState({ alertType: "fail", alertMessage: "Please fill the following: " + errors})
     }
   };
 
@@ -3625,6 +3639,7 @@ class StoreFront extends React.Component {
           </section>
           <Loading show={this.state.submitting}/>
           <section className="content">
+          {getMessage(this.state.alertType, this.state.alertMessage, this.onClose)}
             <form className="form-horizontal">
               <div className="accordion-content clearfix">
                 <div className="col-lg-3 col-md-4">

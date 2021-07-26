@@ -7,7 +7,7 @@
     localStorage.removeItem('userId')
     localStorage.removeItem('userName')
   }
-  export const getUSerDetails = () =>{
+  export const getUserDetails = () =>{
     return localStorage.getItem('userId')
   }
 
