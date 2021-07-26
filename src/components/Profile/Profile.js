@@ -18,6 +18,7 @@ class Profile extends React.Component {
     },
     newPassword: "",
     confirmPassword: "",
+    RoleIds: [],
     _id: "",
     errors: [],
     alertType: "",
@@ -37,7 +38,7 @@ class Profile extends React.Component {
       data["First Name"]=res.data.data["First Name"]
       data["Last Name"]=res.data.data["Last Name"]
       data.Email = res.data.data.Email
-      this.setState({data, submitting: false})
+      this.setState({data, submitting: false, RoleIds: res.data.data.Roles})
     }).catch(err=>{
       toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
         position: "bottom-right",
@@ -108,7 +109,7 @@ class Profile extends React.Component {
      let payload = {
        data: data,
        _id: this.state._id,
-      //  requiredPermission: "Edit User"
+       RoleIds: this.state.RoleIds
      }
      if(this.state.newPassword != ""){
        payload.newPassword = this.state.newPassword

@@ -50,17 +50,15 @@ class CreateAttribute extends React.Component {
 
       const url = "/attribute/get/" + this.props.match.params.id;
       const { data } = this.state;
-      const { CategoryIds } = this.state;
       api
         .get(url)
         .then((res) => {
           console.log(res.data.data);
           data.name = res.data.data.name;
           data.attributeSetId = res.data.data.attributeSet;
-          CategoryIds.push(res.data.data.categories);
           data.filterable = res.data.data.filterable;
           data.value = res.data.data.value;
-          this.setState({ data,CategoryIds, submitting: false});
+          this.setState({ data,CategoryIds: res.data.data.categories, submitting: false});
         })
         .catch((err) => {
           toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
