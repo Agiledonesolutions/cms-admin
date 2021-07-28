@@ -170,6 +170,7 @@ class CreateProduct extends React.Component {
             name: val.name,
             id: val._id,
           };
+          if(val.status)
           brands.push(tmp);
         });
         this.setState({ brands });

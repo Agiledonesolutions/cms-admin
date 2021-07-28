@@ -476,6 +476,7 @@ class StoreFront extends React.Component {
             label: val.name,
             value: val._id,
           };
+          if(val.status)
           brandsOptions.push(tmp);
         });
         this.setState({ brandsOptions });
@@ -491,6 +492,7 @@ class StoreFront extends React.Component {
           let tmp = {};
           tmp.value = val._id;
           tmp.label = val.name;
+          if(val.status)
           productOptions.push(tmp);
         });
         this.setState({ productOptions });
@@ -508,6 +510,7 @@ class StoreFront extends React.Component {
             label: val.name,
             value: val._id,
           };
+          if(val.status)
           menuOptions.push(tmp);
         });
         this.setState({ menuOptions });

@@ -44,6 +44,7 @@ class CreateFlashSale extends React.Component {
           let tmp = {};
           tmp.value = val._id;
           tmp.label = val.name;
+          if(val.status)
           productOptions.push(tmp);
         });
         this.setState({ productOptions, submitting: false });

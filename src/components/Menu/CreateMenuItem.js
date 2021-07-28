@@ -95,6 +95,7 @@ class CreateMenuItem extends React.Component {
         if(this.props.edit == "true" && val._id == this.props.match.params.id2){
           
         } else{
+          if(val.status)
           menuItemsOptions.push(tmp)
         }
       })
