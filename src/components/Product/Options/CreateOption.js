@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import api from "../../../apis/api";
 import "./options.css";
 import Validate from "../../../utils/validation";
@@ -9,6 +9,7 @@ import SortableItem from '../../DND/SortableItem'
 import DragHandle from '../../DND/DragHandle'
 import arrayMove from "array-move";
 import { toast } from 'react-toastify';
+import {getMessage} from '../../AlertMessage'
 class CreateOption extends React.Component {
   state = {
     activePanel: "general",
@@ -26,10 +27,14 @@ class CreateOption extends React.Component {
       ],
     },
     errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false
   };
 
   componentDidMount() {
     if(this.props.edit == "true"){
+      this.setState({submitting: true})
       const url = "/option/get/" + this.props.match.params.id
       api.get(url).then(res=>{
         const {data} = this.state
@@ -37,12 +42,23 @@ class CreateOption extends React.Component {
         data.type = res.data.data.type
         data.required = res.data.data.required
         data.values = res.data.data.values
-        this.setState({data})
+        this.setState({data, submitting: false})
       }).catch(err=>{
-        console.log("error fetching option det")
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       })
     }
   }
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   setValues = (name, val, multi, idx) => {
     const { data } = this.state;
     if (multi) {
@@ -109,11 +125,18 @@ class CreateOption extends React.Component {
           _id: this.props.match.params.id,
           requiredPermission: "Edit Options"
         }).then(res=>{
-          console.log(res)
-          this.setState({submitting: false})
+          this.setState({submitting: false, alertType: "success", alertMessage: "Option edited successfully."})
+
 
         }).catch(err=>{
-          console.log("error updating option")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
           this.setState({submitting: false})
 
         })
@@ -124,18 +147,31 @@ class CreateOption extends React.Component {
             requiredPermission: "Create Options",
           })
           .then((res) => {
-            console.log(res);
-            this.setState({submitting: false})
+            toast.success('Option added successfully', {
+              position: "bottom-right",
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+            this.setState({submitting: false, redirect: true})
 
           })
           .catch((err) => {
-            console.log("error creating option");
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
             this.setState({submitting: false})
 
           });
       }
     } else {
-      console.log(errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
   };
   onSortEnd = ({ oldIndex, newIndex }) => {
@@ -427,6 +463,9 @@ class CreateOption extends React.Component {
     }
   };
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={ "/options"} />
+    }
     return (
       <div>
         <section className="content-header clearfix">
@@ -441,7 +480,13 @@ class CreateOption extends React.Component {
             {this.props.edit == "true"? <li className="active">Edit Option</li>: <li className="active">Create Option</li>}
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
@@ -495,7 +540,7 @@ class CreateOption extends React.Component {
                   <div className="tab-content clearfix">
                     {this.tabContentToggle()}
                     <div className="form-group">
-                      <div className="col-md-2 col-md-10" style={{display: "flex"}}>
+                      <div className="col-md-2 col-md-10">
                         <button
                           type="submit"
                           className="btn btn-primary"
@@ -506,7 +551,6 @@ class CreateOption extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting}/>
                       </div>
                     </div>
                   </div>

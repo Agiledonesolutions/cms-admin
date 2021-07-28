@@ -1,9 +1,11 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import api from "../../../apis/api";
 import Validate from '../../../utils/validation'
 import Loading from '../../Loading'
 import { toast } from 'react-toastify';
+import {getMessage} from '../../AlertMessage'
+
 class CreateTag extends React.Component {
   state = {
     submitting: false,
@@ -12,21 +14,36 @@ class CreateTag extends React.Component {
       "url": ""
     },
     requiredPermission: "Create Tag",
-    errors: []
+    errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false
   }
   componentDidMount(){
     if(this.props.edit == "true"){
+      this.setState({submitting: true})
       const url = "/tag/get/" + this.props.match.params.id
       const {data} = this.state
         api.get(url).then(res=>{
         data.name = res.data.data.name
         data.url = res.data.data.url
-        this.setState({data})
+        this.setState({data, submitting: false})
       }).catch(err=>{
-        console.log("error")
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+          this.setState({submitting: false})
       })
     }
   }
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   setVal = (key,val) => {
     const {data} = this.state
     data[key] = val;
@@ -49,38 +66,77 @@ class CreateTag extends React.Component {
       errors.splice(errors.indexOf("name"), 1);
       this.setState({ errors });
     }
+    if(this.props.edit == "true"){
+      if (
+        !errors.includes("url") &&
+        !Validate.validateNotEmpty(data['url'])
+      ) {
+        errors.push("url");
+        this.setState({ errors });
+      } else if (
+        errors.includes("url") &&
+        Validate.validateNotEmpty(data['url'])
+      ) {
+        errors.splice(errors.indexOf("url"), 1);
+        this.setState({ errors });
+      }
+    }
     if(!Validate.validateNotEmpty(this.state.errors)){
       this.setState({submitting: true})
       if(this.props.edit == "true"){
-        console.log("edit")
         const _id = this.props.match.params.id
         api.put('/tag', {data, _id, requiredPermission: "Edit Tag"}).then(res=>{
-          console.log(res)
-          this.setState({submitting: false})
+          this.setState({submitting: false, alertType: "success", alertMessage: "Tag edited successfully."})
+
         }).catch(err=>{
-          console.log("edit attri set error")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
           this.setState({submitting: false})
+
 
         })
       }else{
         const {requiredPermission} = this.state
         api.post('/tag',{data: data, requiredPermission}).then(res=>{
-          console.log(res)
-          this.setState({submitting: false})
+          toast.success('Tag added successfully', {
+            position: "bottom-right",
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+          this.setState({submitting: false, redirect: true})
 
         }).catch(err=>{
-          console.log("tag add error")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
           this.setState({submitting: false})
+
 
         })
       }
     
     }else{
-      console.log("name empty")
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
     
   }
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={ "/tags"} />
+    }
     return (
       <React.Fragment>
         <section className="content-header clearfix">
@@ -95,7 +151,14 @@ class CreateTag extends React.Component {
             {this.props.edit == "true"? <li className="active">Edit Tag</li>: <li className="active">Create Tag</li>}
           </ol>
         </section>
+        <Loading show={this.state.submitting} />
+
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
@@ -175,7 +238,6 @@ class CreateTag extends React.Component {
                       <div className="col-md-offset-2 col-md-10" style={{display: "flex"}}>
                         <button
                           className="btn btn-primary "
-                          style={{marginTop: "5px"}}
                           onClick={(e)=>{
                             e.preventDefault()
                             this.handleSubmit()
@@ -183,7 +245,6 @@ class CreateTag extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

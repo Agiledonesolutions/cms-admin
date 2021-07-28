@@ -79,7 +79,14 @@ class Reviews extends React.Component {
       })
       .catch((err) => {
         this.setState({submitting: false})
-        console.log(err);
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   }
 
@@ -91,13 +98,26 @@ class Reviews extends React.Component {
     api
       .delete("/review", { data })
       .then((res) => {
-        console.log(res);
         this.setState({submitting: false})
-
+        toast.success('Review(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.setState({submitting: false})
 
       });
@@ -146,7 +166,6 @@ class Reviews extends React.Component {
                     selected["selectedRows"].forEach((row) => {
                       arr.push(row._id);
                     });
-                    console.log(arr);
                     this.setState({ selectedRows: arr });
                   }}
                   responsive

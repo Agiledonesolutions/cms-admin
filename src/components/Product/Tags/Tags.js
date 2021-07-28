@@ -39,6 +39,7 @@ class Tags extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -56,10 +57,18 @@ class Tags extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false});
       })
       .catch((err) => {
-        console.log(err);
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+          this.setState({submitting: false})
       });
   }
 
@@ -69,12 +78,26 @@ class Tags extends React.Component {
     const {requiredPermission} = this.state
     const data = {id: selectedRows, requiredPermission}
     api.delete('/tag', {data}).then(res=>{
-      console.log(res)
       this.setState({submitting: false})
+      toast.success('Tag(s) deleted successfully', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
       this.componentDidMount()
     }).catch(err=>{
-      console.log("delete error")
-      this.setState({submitting: false})
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
+        this.setState({submitting: false})
     })
   };
 
@@ -93,6 +116,7 @@ class Tags extends React.Component {
             <li className="active">Tags</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting} />
         <section className="content">
         <div className="row">
                   <div className="btn-group pull-right">
@@ -101,7 +125,6 @@ class Tags extends React.Component {
                     </Link>
                   </div>
                 </div>
-                <Loading show={this.state.submitting} />
           <div className="box box-primary">
             <div className="box-body index-table" id="attributes-table">
               <div className="table-delete-button">
@@ -128,7 +151,6 @@ class Tags extends React.Component {
                     selected["selectedRows"].forEach((row) => {
                       arr.push(row._id);
                     });
-                    console.log(arr);
                     this.setState({ selectedRows: arr });
                   }}
                   responsive

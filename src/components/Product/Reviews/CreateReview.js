@@ -1,9 +1,11 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter,Redirect } from "react-router-dom";
 import api from "../../../apis/api";
 import Validate from "../../../utils/validation";
 import Loading from "../../Loading";
 import { toast } from 'react-toastify';
+import {getMessage} from '../../AlertMessage'
+
 class CreateReview extends React.Component {
   state = {
     submitting: false,
@@ -15,10 +17,13 @@ class CreateReview extends React.Component {
     },
     productId: "",
     errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false
   };
   componentDidMount() {
-    this.setState({submitting: true})
     if (this.props.edit == "true") {
+      this.setState({submitting: true})
       const url = "/review/get/" + this.props.match.params.id;
       const { data } = this.state;
        api
@@ -33,10 +38,20 @@ class CreateReview extends React.Component {
         })
         .catch((err) => {
           this.setState({submitting: false})
-          console.log("error fetching");
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
         });
     }
   }
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   setVal = (key, val) => {
     const { data } = this.state;
     data[key] = val;
@@ -83,22 +98,40 @@ class CreateReview extends React.Component {
         api
           .put("/review", { data, _id, productId: this.state.productId, requiredPermission: "Edit Review" })
           .then((res) => {
-            this.setState({submitting: false})
+            this.setState({submitting: false, alertType: "success", alertMessage: "Review edited successfully."})
 
           })
           .catch((err) => {
-            console.log("edit review set error");
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
             this.setState({submitting: false})
 
           });
       } else {
-        console.log("you're not supposed to be here")
+        toast.warn( "You were not supposed to be there.", {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({redirect: true})
       }
     } else {
-      console.log(this.state.errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
   };
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={ "/reviews"} />
+    }
     return (
       <React.Fragment>
         <section className="content-header clearfix">
@@ -115,6 +148,11 @@ class CreateReview extends React.Component {
         </section>
         <Loading show={this.state.submitting} />
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">

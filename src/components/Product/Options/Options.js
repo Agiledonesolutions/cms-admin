@@ -45,6 +45,7 @@ class Options extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -63,10 +64,18 @@ class Options extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false});
       })
       .catch((err) => {
-        console.log(err);
+        this.setState({submitting: false})
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   }
 
@@ -78,12 +87,26 @@ class Options extends React.Component {
     api
       .delete("/option", { data })
       .then((res) => {
-        console.log(res);
+        toast.success('Option(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.setState({submitting: false})
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.setState({submitting: false})
       });
   };
@@ -141,7 +164,6 @@ class Options extends React.Component {
                     selected["selectedRows"].forEach((row) => {
                       arr.push(row._id);
                     });
-                    console.log(arr);
                     this.setState({ selectedRows: arr });
                   }}
                   responsive
