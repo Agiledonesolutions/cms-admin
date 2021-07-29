@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import api from "../../../apis/api";
 import "./tax.css";
 import Validate from "../../../utils/validation";
@@ -8,10 +8,12 @@ import SortableItem from '../../DND/SortableItem'
 import DragHandle from '../../DND/DragHandle'
 import arrayMove from "array-move";
 import { toast } from 'react-toastify';
-
+import {getMessage} from '../../AlertMessage'
+import Loading from "../../Loading";
 class CreateTax extends React.Component {
   state = {
     activePanel: "general",
+    submitting: false,
     data: {
       taxClass: "",
       basedOn: "Shipping Address",
@@ -27,10 +29,14 @@ class CreateTax extends React.Component {
       ],
     },
     errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false
   };
 
   componentDidMount() {
     if (this.props.edit == "true") {
+      this.setState({submitting: true})
       const url = "/tax/get/" + this.props.match.params.id;
       api.get(url).then(res=>{
         const {data} = this.state
@@ -47,12 +53,23 @@ class CreateTax extends React.Component {
             tmp.rate = val.rate
             data.rates.push(tmp)
         })
-        this.setState({data})
+        this.setState({data, submitting: false})
       }).catch(err=>{
-          console.log("error fetching tax")
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+          this.setState({submitting: false})
       })
     }
   }
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   setValues = (name, val, idx) => {
     const { data } = this.state;
     data["rates"][idx][name] = val;
@@ -116,21 +133,46 @@ class CreateTax extends React.Component {
     //   })
    
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({submitting: true})
       if (this.props.edit == "true") {
         api.put('/tax', {data: data, _id: this.props.match.params.id, requiredPermission: "Edit Tax"}).then(res=>{
-            console.log(res)
+          this.setState({submitting: false, alertType: "success", alertMessage: "Tax edited successfully."})
+
         }).catch(err=>{
-            console.log("error editing tax")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+            this.setState({submitting: false})
         })
       } else {
         api.post('/tax', {data: data, requiredPermission: "Create Tax"}).then(res=>{
-            console.log(res)
+          toast.success('Tax added successfully', {
+            position: "bottom-right",
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+          this.setState({submitting: false, redirect: true})
         }).catch(err=>{
-            console.log("error creating tax")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+            this.setState({submitting: false})
         })
       }
     } else {
-      console.log(errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
   };
   onSortEnd = ({ oldIndex, newIndex }) => {
@@ -333,6 +375,9 @@ class CreateTax extends React.Component {
     }
   };
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={ "/taxes"} />
+    }
     return (
       <div>
         <section className="content-header clearfix">
@@ -351,7 +396,13 @@ class CreateTax extends React.Component {
             )}
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">

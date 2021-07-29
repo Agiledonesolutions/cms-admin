@@ -8,10 +8,12 @@ import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
 import { toast } from 'react-toastify';
+import Loading from '../../Loading'
 
 class Taxes extends React.Component {
   state = {
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -37,10 +39,11 @@ class Taxes extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
-      .get("/tax/get")
+      .post("/tax/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
@@ -54,25 +57,50 @@ class Taxes extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false});
       })
       .catch((err) => {
-        console.log(err);
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       });
   }
 
   deleteSelectedItems = () => {
+    this.setState({submitting: true})
     const { selectedRows } = this.state;
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
       .delete("/tax", { data })
       .then((res) => {
-        console.log(res);
+        toast.success('Tax(es) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+          
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       });
   };
 
@@ -91,6 +119,7 @@ class Taxes extends React.Component {
             <li className="active">Taxes</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">

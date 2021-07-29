@@ -7,8 +7,10 @@ import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
 import { toast } from 'react-toastify';
+import Loading from "../../Loading";
 class CurrencyRates extends React.Component {
   state = {
+    submitting: false,
     tableData: {
       columns: [
       
@@ -40,6 +42,7 @@ class CurrencyRates extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     api.get('/currency/get').then(res=>{
       //console.log(res.data.data)
@@ -55,18 +58,43 @@ class CurrencyRates extends React.Component {
       });
       const { tableData } = this.state;
       tableData["data"] = datalist;
-      this.setState({ tableData });
+      this.setState({ tableData, submitting: false});
     }).catch(err=>{
-      console.log(err)
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
+      this.setState({submitting: false})
     })
   }
 
   refreshRates = () =>{
+    this.setState({submitting: true})
     api.get('/currency').then(res=>{
-      console.log(res)
+      this.setState({submitting: false})
+      toast.success('Currency rates refreshed.', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
       this.componentDidMount()
     }).catch(err=>{
-      console.log(err)
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
+      this.setState({submitting: false})
     })
   }
 
@@ -85,7 +113,7 @@ class CurrencyRates extends React.Component {
             <li className="active">Currency Rates</li>
           </ol>
         </section>
-
+      <Loading show={this.state.submitting}/>
         <section className="content">
         <div className="row">
             <div className="btn-group pull-right">

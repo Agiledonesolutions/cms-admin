@@ -3,20 +3,36 @@ import { Link, withRouter } from "react-router-dom";
 import api from "../../../apis/api";
 import Validate from "../../../utils/validation";
 import { toast } from 'react-toastify';
+import {getMessage} from '../../AlertMessage'
+import Loading from "../../Loading";
 class EditCurrency extends React.Component {
   state = {
     activePanel: "general",
+    submitting: false,
     rate: "",
     errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false
   };
-
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   componentDidMount() {
+    this.setState({submitting: true})
     let url = "/currency/get/"+this.props.match.params.id
     api.get(url).then(res=>{
-      console.log(res.data.data)
-      this.setState({rate: res.data.data.Rate})
+      this.setState({rate: res.data.data.Rate, submitting: false})
     }).catch(err=>{
-      console.log(err)
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
+      this.setState({submitting: false})
     })
   }
 
@@ -37,12 +53,21 @@ class EditCurrency extends React.Component {
    
     if (!Validate.validateNotEmpty(this.state.errors)) {
       api.put('/currency', {Rate: this.state.rate, requiredPermission: "Edit Currency Rates", id: this.props.match.params.id}).then(res=>{
-        console.log(res)
+        this.setState({submitting: false, alertType: "success", alertMessage: "Rate updated successfully."})
+
       }).catch(err=>{
-        console.log(err)
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       })
     } else {
-      console.log(errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
     }
   };
   tabContentToggle = () => {
@@ -91,7 +116,13 @@ class EditCurrency extends React.Component {
             
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
