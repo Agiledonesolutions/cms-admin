@@ -387,11 +387,11 @@ class Categories extends React.Component {
   };
   changeCategoryOrder = () =>{
     console.log("chang")
-    // api.post('/category/changeOrder', {newIndex: this.state.newIndex, oldIndex: this.state.oldIndex, parentCategoryId: this.state.parentCategoryId, id: this.state._id}).then(res=>{
-    //   console.log(res)  
-    // }).then(err=>{
-    //   console.log(err)
-    // })
+    api.post('/category/changeOrder', {newIndex: this.state.newIndex, oldIndex: this.state.oldIndex, parentCategoryId: this.state.parentCategoryId, id: this.state._id}).then(res=>{
+      console.log(res)  
+    }).then(err=>{
+      console.log(err)
+    })
   }
   onDragStart = (info) => {
     //console.log("start", info);

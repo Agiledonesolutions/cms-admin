@@ -7,11 +7,13 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
+import Loading from "../../Loading";
 import { toast } from 'react-toastify';
 
 class Sliders extends React.Component {
   state = {
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -38,6 +40,7 @@ class Sliders extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -55,10 +58,18 @@ class Sliders extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
-        console.log(err);
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       });
   }
 
@@ -69,11 +80,27 @@ class Sliders extends React.Component {
     api
       .delete("/slides", { data })
       .then((res) => {
-        console.log(res);
+        this.setState({submitting: false})
+        toast.success('Slider(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       });
   };
 
@@ -92,6 +119,8 @@ class Sliders extends React.Component {
             <li className="active">Sliders</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
+
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">

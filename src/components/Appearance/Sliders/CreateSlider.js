@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import api from "../../../apis/api";
 import Validate from "../../../utils/validation";
 import "react-responsive-modal/styles.css";
@@ -11,7 +11,9 @@ import SortableContainer from '../../DND/SortableContainer'
 import SortableItem from '../../DND/SortableItem'
 import DragHandle from '../../DND/DragHandle'
 import arrayMove from "array-move";
+import Loading from '../../Loading'
 import { toast } from 'react-toastify';
+import {getMessage} from '../../AlertMessage'
 
 class CreateSlide extends React.Component {
   state = {
@@ -20,6 +22,7 @@ class CreateSlide extends React.Component {
     idx: "",
     imageTab: "general",
     activePanel: "slides",
+    submitting: false,
     data: {
       Name: "",
       Settings: {
@@ -65,6 +68,9 @@ class CreateSlide extends React.Component {
       },
     ],
     errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false
   };
   setData = (val, key1, key2) => {
     const { data } = this.state;
@@ -77,6 +83,7 @@ class CreateSlide extends React.Component {
   };
   componentDidMount() {
     if (this.props.edit == "true") {
+      this.setState({submitting: true})
       const {data, slides} = this.state
       const url = "/slides/get/" + this.props.match.params.id;
       api.get(url).then(res=>{
@@ -102,9 +109,17 @@ class CreateSlide extends React.Component {
         })
         data.Name = res.data.data.Name
         data.Settings = res.data.data.Settings
-        this.setState({data, slides})
+        this.setState({data, slides, submitting: false})
       }).catch(err=>{
-        console.log(err)
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+          this.setState({submitting: false})
       })
     }
   }
@@ -113,6 +128,9 @@ class CreateSlide extends React.Component {
     slides[idx][key][key2] =val
     this.setState({slides})
   }
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   setImageId = (id, multiple, image) => {
     const {slides, idx} = this.state
     slides[idx].imageId = id
@@ -159,7 +177,6 @@ class CreateSlide extends React.Component {
     this.setState({ slides });
   };
   handleSubmit = () => {
-    console.log(this.state)
     const { errors } = this.state;
     const { data } = this.state;
 
@@ -175,21 +192,47 @@ class CreateSlide extends React.Component {
     }
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({submitting: true})
       if (this.props.edit == "true") {
         api.put('/slides', {data: this.state.data, slides: this.state.slides, requiredPermission: "Edit Slider", _id: this.props.match.params.id}).then(res=>{
-          console.log(res)
+          this.setState({submitting: false, alertType: "success", alertMessage: "Slider edited successfully."})
+
         }).catch(err=>{
-          console.log("error editing slide")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+          this.setState({submitting: false})
         })
       } else {
         api.post('/slides', {data: this.state.data, slides: this.state.slides, requiredPermission: "Create Slider"}).then(res=>{
-          console.log(res)
+          toast.success('Slider added successfully', {
+            position: "bottom-right",
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+          this.setState({submitting: false, redirect: true})
         }).catch(err=>{
-          console.log("error adding slide")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+          this.setState({submitting: false})
         })
       }
     } else {
-      console.log(errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
+
     }
   };
   onSortEnd = ({ oldIndex, newIndex }) => {
@@ -626,6 +669,9 @@ class CreateSlide extends React.Component {
     }
   };
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={ "/sliders"} />
+    }
     return (
       <React.Fragment>
         <Modal
@@ -674,7 +720,13 @@ class CreateSlide extends React.Component {
               )}
             </ol>
           </section>
+          <Loading show={this.state.submitting}/>
           <section className="content">
+          {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
             <form className="form-horizontal">
               <div className="accordion-content clearfix">
                 <div className="col-lg-3 col-md-4">
