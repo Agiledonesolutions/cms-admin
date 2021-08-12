@@ -33,7 +33,7 @@ class Blogs extends React.Component {
         },
       ],
     },
-    requiredPermission: "Delete Pages",
+    requiredPermission: "Delete Blogs",
     edit: "",
   };
 

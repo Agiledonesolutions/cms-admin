@@ -79,7 +79,6 @@ class Users extends React.Component {
         this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
-        console.log(err.response)
         this.setState({submitting: false})
         toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",

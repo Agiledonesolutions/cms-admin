@@ -51,7 +51,6 @@ class CreateBlog extends React.Component {
       api
         .get(url)
         .then((res) => {
-            console.log(res.data.data)
             const { data} = this.state
             data.heading = res.data.data.heading
             data.body = res.data.data.body
@@ -134,7 +133,7 @@ class CreateBlog extends React.Component {
     if (!Validate.validateNotEmpty(this.state.errors)) {
       this.setState({submitting: true})
       if (this.props.edit == "true") {
-        api.put('/blog', {data: data, img: this.state.img, _id: this.props.match.params.id, requiredPermission: "Edit Pages"}).then(res=>{
+        api.put('/blog', {data: data, img: this.state.img, _id: this.props.match.params.id, requiredPermission: "Edit Blogs"}).then(res=>{
             this.setState({submitting: false, alertType: "success", alertMessage: "Blog edited successfully."})
             
         }).catch(err=>{
@@ -150,7 +149,7 @@ class CreateBlog extends React.Component {
               this.setState({submitting: false})
         })
       } else {
-      api.post('/blog', {data: data,img: this.state.img, requiredPermission: "Create Pages"}).then(res=>{
+      api.post('/blog', {data: data,img: this.state.img, requiredPermission: "Create Blogs"}).then(res=>{
         toast.success('Blog added successfully', {
           position: "bottom-right",
           autoClose: 3000,
