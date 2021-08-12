@@ -59,7 +59,7 @@ class Users extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .post("/users/get")
+      .post("/users/get",{})
       .then((res) => {
         res.data.data.map((val) => {
           i++;
@@ -79,6 +79,7 @@ class Users extends React.Component {
         this.setState({ tableData, submitting: false });
       })
       .catch((err) => {
+        console.log(err.response)
         this.setState({submitting: false})
         toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",

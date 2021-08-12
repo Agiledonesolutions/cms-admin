@@ -178,6 +178,14 @@ const SideBar = () => {
               <li
                 className=""
               >
+                <Link to='/blogs' onClick={closeNav}>
+                  <i className="fa fa-paint-brush" />
+                  <span>Blogs</span>
+                </Link>
+              </li>
+              <li
+                className=""
+              >
                 <Link to='/media' onClick={closeNav}>
                   <i className="fa fa-camera" />
                   <span>Media</span>

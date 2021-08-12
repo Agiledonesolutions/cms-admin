@@ -490,15 +490,38 @@ class CreateProduct extends React.Component {
 
         })
       }else{
-        api.post('/product', {data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Create Products"}).then(res=>{
-          toast.success('Product added successfully.', {
-            position: "bottom-right",
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
-          this.setState({submitting: false, redirect: true})
+        api.post('/product', {data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Create Products"}).then( (res)=>{
+          let id = res.data.data._id
+          if(res.data.data.inventoryManagement){
+           api.post('/product/stock/create', {productId: id,requiredPermission: "Create Products"}).then(res2=>{
+             console.log(res2)
+            toast.success('Stock added successfully.', {
+              position: "bottom-right",
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+           
+          }).catch(err=>{
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Could not add stock to product."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+          })
+        }
+        toast.success('Product added successfully.', {
+          position: "bottom-right",
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        this.setState({submitting: false, redirect: true})
         }).catch(err=>{
           toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
             position: "bottom-right",

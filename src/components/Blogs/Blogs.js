@@ -9,7 +9,7 @@ import api from "../../apis/api";
 import { format } from "timeago.js";
 import { toast } from 'react-toastify';
 import Loading from '../Loading'
-class Pages extends React.Component {
+class Blogs extends React.Component {
   state = {
     selectedRows: [],
     submitting: false,
@@ -22,15 +22,9 @@ class Pages extends React.Component {
           width: "65px"
         },
         {
-          name: "Name",
-          selector: "name",
+          name: "Title",
+          selector: "title",
           sortable: true,
-        },
-        {
-          name: "Status",
-          selector: "status",
-          sortable: true,
-          cell: row=><span className={row.status? "dot green": "dot red"}></span>
         },
         {
           name: "Created",
@@ -48,14 +42,13 @@ class Pages extends React.Component {
     const datalist = [];
     var i = 0;
     api
-      .post("/page/get")
+      .post("/blog/get")
       .then((res) => {
         res.data.data.map((val) => {
           i++;
           var tmp = {
             id: i,
-            name: val["name"],
-            status: val["status"],
+            title: val.heading,
             created: format(val["createdAt"]),
             _id: val["_id"],
           };
@@ -80,15 +73,15 @@ class Pages extends React.Component {
   }
 
   deleteSelectedItems = () => {
-    this.setState({submitting: true});
+      this.setState({submitting: true});
     const { selectedRows } = this.state;
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
-      .delete("/page", { data })
+      .delete("/blog", { data })
       .then((res) => {
         // console.log(res);
-        toast.success('Page(s) deleted successfully', {
+        toast.success('Blog(s) deleted successfully', {
           position: "bottom-right",
           autoClose: 3000,
           hideProgressBar: true,
@@ -113,17 +106,17 @@ class Pages extends React.Component {
 
   render() {
     if (this.state.edit != "") {
-      return <Redirect to={"/pages/" + this.state.edit + "/edit"} />;
+      return <Redirect to={"/blogs/" + this.state.edit + "/edit"} />;
     }
     return (
       <div>
         <section className="content-header clearfix">
-          <h3>Pages</h3>
+          <h3>Blogs</h3>
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
             </li>
-            <li className="active">Pages</li>
+            <li className="active">Blogs</li>
           </ol>
         </section>
         <Loading show ={this.state.submitting}/>
@@ -131,10 +124,10 @@ class Pages extends React.Component {
           <div className="row">
             <div className="btn-group pull-right">
               <Link
-                to="/pages/create"
+                to="/blogs/create"
                 className="btn btn-primary btn-actions btn-create"
               >
-                Create Page
+                Create Blog
               </Link>
             </div>
           </div>
@@ -183,4 +176,4 @@ class Pages extends React.Component {
     );
   }
 }
-export default Pages;
+export default Blogs;

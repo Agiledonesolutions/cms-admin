@@ -52,6 +52,8 @@ import CurrencyRates from '../components/Localization/CurrencyRates/CurrencyRate
 import EditCurrency from '../components/Localization/CurrencyRates/EditCurrency';
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import Blogs from '../components/Blogs/Blogs';
+import CreateBlog from '../components/Blogs/CreateBlog';
 
 
 const routes = (
@@ -116,6 +118,10 @@ const routes = (
         <PrivateRoute exact path='/pages' component={()=><Dashboard abc={ <Pages />} />} />
         <PrivateRoute exact path='/pages/create' component={()=><Dashboard abc={ <CreatePage />} />} />
         <PrivateRoute exact path='/pages/:id/edit' component={()=><Dashboard abc={ <CreatePage edit="true"/>} />} />
+
+        <PrivateRoute exact path='/blogs' component={()=><Dashboard abc={ <Blogs />} />} />
+        <PrivateRoute exact path='/blogs/create' component={()=><Dashboard abc={ <CreateBlog />} />} />
+        <PrivateRoute exact path='/blogs/:id/edit' component={()=><Dashboard abc={ <CreateBlog edit="true"/>} />} />
 
         <PrivateRoute exact path='/media' component={()=><Dashboard abc={ <Media />} />} />
 

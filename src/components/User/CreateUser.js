@@ -226,6 +226,22 @@ class CreateUser extends React.Component {
           "value": "Inherit"
       },
       {
+        "name": "Index Blogs",
+        "value": "Inherit"
+    },
+    {
+        "name": "Create Blogs",
+        "value": "Inherit"
+    },
+    {
+        "name": "Edit Blogs",
+        "value": "Inherit"
+    },
+    {
+        "name": "Delete Blogs",
+        "value": "Inherit"
+    },
+      {
           "name": "Index Products",
           "value": "Inherit"
       },
@@ -926,6 +942,14 @@ class CreateUser extends React.Component {
                 heading="admin.pages"
                 attributes={["Index", "Create", "Edit", "Delete"]}
                 suffix="Pages"
+                setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
+              />
+              <PermissionGroup
+                heading="admin.blogs"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Blogs"
                 setVal = {this.setVal}
                 editPermissions = {this.state.data.Permissions}
 
