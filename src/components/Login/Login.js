@@ -82,6 +82,7 @@ class Login extends React.Component {
         }else if(error.response.status === 500){
           console.log("Something went wrong")
         }
+        this.setState({submitting: false})
       })
     } 
   }

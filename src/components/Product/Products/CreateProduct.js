@@ -15,16 +15,15 @@ import FileManager from "../../Media/FileManager";
 import Related from "./Related";
 import UpSells from "./UpSells";
 import CrossSells from "./CrossSells";
-import Validate from '../../../utils/validation'
-import Loading from '../../Loading'
+import Validate from "../../../utils/validation";
+import Loading from "../../Loading";
 import { siteUrl } from "../../../utils/utils";
-import {getMessage} from '../../AlertMessage'
-import SortableContainer from '../../DND/SortableContainer'
-import SortableItem from '../../DND/SortableItem'
-import DragHandle from '../../DND/DragHandle'
+import { getMessage } from "../../AlertMessage";
+import SortableContainer from "../../DND/SortableContainer";
+import SortableItem from "../../DND/SortableItem";
+import DragHandle from "../../DND/DragHandle";
 import arrayMove from "array-move";
-import { toast } from 'react-toastify';
-
+import { toast } from "react-toastify";
 
 const options = {
   defaultColumns: 3,
@@ -53,7 +52,11 @@ class CreateProduct extends React.Component {
           sortable: true,
           cell: (row) => (
             <img
-              src={row.thumbnail? siteUrl + row.thumbnail: "https://via.placeholder.com/60"}
+              src={
+                row.thumbnail
+                  ? siteUrl + row.thumbnail
+                  : "https://via.placeholder.com/60"
+              }
               height={60}
               width={60}
             />
@@ -120,7 +123,7 @@ class CreateProduct extends React.Component {
       shortDescription: "",
       productNewFrom: "",
       productNewTo: "",
-      options: []
+      options: [],
     },
     brandId: "",
     categoryIds: [],
@@ -141,7 +144,7 @@ class CreateProduct extends React.Component {
       {
         name: "",
         type: "",
-        required:false,
+        required: false,
         value: [
           {
             label: "",
@@ -156,7 +159,8 @@ class CreateProduct extends React.Component {
     editorState: BraftEditor.createEditorState(),
     alertType: "",
     alertMessage: "",
-    redirect: false
+    redirect: false,
+    stock: [],
   };
 
   componentDidMount() {
@@ -170,8 +174,7 @@ class CreateProduct extends React.Component {
             name: val.name,
             id: val._id,
           };
-          if(val.status)
-          brands.push(tmp);
+          if (val.status) brands.push(tmp);
         });
         this.setState({ brands });
       })
@@ -253,7 +256,7 @@ class CreateProduct extends React.Component {
           i++;
           var tmp = {
             id: i,
-            thumbnail: val.baseImage? val.baseImage.image: false,
+            thumbnail: val.baseImage ? val.baseImage.image : false,
             name: val["name"],
             price: val["price"],
             status: val.status,
@@ -271,7 +274,7 @@ class CreateProduct extends React.Component {
         this.setState({ tableData });
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
       });
 
     api
@@ -321,11 +324,13 @@ class CreateProduct extends React.Component {
       .catch((err) => {
         console.log("error fetching options");
       });
-      if(this.props.edit == "true"){
-        this.setState({submitting: true})
-        const url = "/product/get/" + this.props.match.params.id;
-        api.get(url).then(res=>{
-          let tmp= {
+    if (this.props.edit == "true") {
+      this.setState({ submitting: true });
+      const url = "/product/get/" + this.props.match.params.id;
+      api
+        .get(url)
+        .then((res) => {
+          let tmp = {
             name: res.data.data.name,
             taxClass: res.data.data.taxClass,
             virtual: res.data.data.virtual,
@@ -334,80 +339,148 @@ class CreateProduct extends React.Component {
             price: res.data.data.price,
             specialPrice: res.data.data.specialPrice,
             specialPriceType: res.data.data.specialPriceType,
-            specialPriceStart: res.data.data.specialPriceStart == null? "": res.data.data.specialPriceStart.substr(0,10),
-            specialPriceEnd: res.data.data.specialPriceEnd == null? "": res.data.data.specialPriceEnd.substr(0,10),
+            specialPriceStart:
+              res.data.data.specialPriceStart == null
+                ? ""
+                : res.data.data.specialPriceStart.substr(0, 10),
+            specialPriceEnd:
+              res.data.data.specialPriceEnd == null
+                ? ""
+                : res.data.data.specialPriceEnd.substr(0, 10),
             inventoryManagement: res.data.data.inventoryManagement,
             Qty: res.data.data.Qty,
             SKU: res.data.data.SKU,
             stockAvailability: res.data.data.stockAvailability,
-            metaTitle: res.data.data.metaTitle? res.data.data.metaTitle: "",
-            metaDescription: res.data.data.metaDescription? res.data.data.metaDescription : "",
-            shortDescription: res.data.data.shortDescription? res.data.data.shortDescription: "",
-            productNewFrom: res.data.data.productNewFrom == null? "":res.data.data.productNewFrom.substr(0,10),
-            productNewTo: res.data.data.productNewTo == null? "":res.data.data.productNewTo.substr(0,10),
-            options: res.data.data.options
+            metaTitle: res.data.data.metaTitle ? res.data.data.metaTitle : "",
+            metaDescription: res.data.data.metaDescription
+              ? res.data.data.metaDescription
+              : "",
+            shortDescription: res.data.data.shortDescription
+              ? res.data.data.shortDescription
+              : "",
+            productNewFrom:
+              res.data.data.productNewFrom == null
+                ? ""
+                : res.data.data.productNewFrom.substr(0, 10),
+            productNewTo:
+              res.data.data.productNewTo == null
+                ? ""
+                : res.data.data.productNewTo.substr(0, 10),
+            options: res.data.data.options,
+          };
+          const {
+            tagIds,
+            categoryIds,
+            additionalImageIds,
+            additionalImages,
+            downloadFilenames,
+            downloadsIds,
+            relatedProductIds,
+            upSellsIds,
+            crossSellsIds,
+          } = this.state;
+          res.data.data.tags.forEach((tag) => {
+            tagIds.push(tag._id);
+          });
+          res.data.data.categories.forEach((category) => {
+            categoryIds.push(category._id);
+          });
+
+          if (res.data.data.additionalImages.length > 0) {
+            res.data.data.additionalImages.forEach((image) => {
+              additionalImageIds.push(image._id);
+              additionalImages.push(image.image);
+            });
           }
-          const {tagIds, categoryIds,additionalImageIds, additionalImages, downloadFilenames, downloadsIds, relatedProductIds, upSellsIds, crossSellsIds} = this.state
-          res.data.data.tags.forEach(tag=>{
-            tagIds.push(tag._id)
-          })
-          res.data.data.categories.forEach(category=>{
-            categoryIds.push(category._id)
-          })
-          
-          if(res.data.data.additionalImages.length>0){
-            res.data.data.additionalImages.forEach(image=>{
-              additionalImageIds.push(image._id)
-              additionalImages.push(image.image)
-            })
-          }
-          if(res.data.data.attributes.length>0){
-            const attributesNew = []
-            res.data.data.attributes.forEach(attr=>{
+          if (res.data.data.attributes.length > 0) {
+            const attributesNew = [];
+            res.data.data.attributes.forEach((attr) => {
               let tmp = {
                 attributeId: attr.attribute._id,
-                value: attr.value
-              }
-              attributesNew.push(tmp)
-            })
-            this.setState({attributes: attributesNew})
-          }
-          if(res.data.data.downloads.length>0){
-            downloadFilenames.splice(0,1)
-            downloadsIds.splice(0,1)
-            res.data.data.downloads.forEach(down=>{
-              downloadFilenames.push(down.fileName)
-              downloadsIds.push(down._id)
-            })
-          }
-          if(res.data.data.relatedProducts.length>0){
-            res.data.data.relatedProducts.forEach(prod=>{
-              relatedProductIds.push(prod._id)
-            })
-          }
-          if(res.data.data.upSells.length>0){
-            res.data.data.upSells.forEach(prod=>{
-              upSellsIds.push(prod._id)
-            })
-          } 
-          if(res.data.data.crossSells.length>0){
-            res.data.data.crossSells.forEach(prod=>{
-              crossSellsIds.push(prod._id)
-            })
-          }    
-          this.setState({submitting: false,data: tmp,relatedProductIds, upSellsIds, crossSellsIds, downloadFilenames, downloadsIds, brandId: res.data.data.brand?res.data.data.brand._id: "", baseImage: res.data.data.baseImage?res.data.data.baseImage.image: "", baseImageId:  res.data.data.baseImage?res.data.data.baseImage._id: "" ,additionalImageIds, additionalImages ,editorState: BraftEditor.createEditorState(res.data.data.description), options: res.data.data.options, tagIds, categoryIds})
-        }).catch(err=>{
-          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
-            position: "bottom-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
+                value: attr.value,
+              };
+              attributesNew.push(tmp);
             });
+            this.setState({ attributes: attributesNew });
+          }
+          if (res.data.data.downloads.length > 0) {
+            downloadFilenames.splice(0, 1);
+            downloadsIds.splice(0, 1);
+            res.data.data.downloads.forEach((down) => {
+              downloadFilenames.push(down.fileName);
+              downloadsIds.push(down._id);
+            });
+          }
+          if (res.data.data.relatedProducts.length > 0) {
+            res.data.data.relatedProducts.forEach((prod) => {
+              relatedProductIds.push(prod._id);
+            });
+          }
+          if (res.data.data.upSells.length > 0) {
+            res.data.data.upSells.forEach((prod) => {
+              upSellsIds.push(prod._id);
+            });
+          }
+          if (res.data.data.crossSells.length > 0) {
+            res.data.data.crossSells.forEach((prod) => {
+              crossSellsIds.push(prod._id);
+            });
+          }
+          this.setState({
+            submitting: false,
+            data: tmp,
+            relatedProductIds,
+            upSellsIds,
+            crossSellsIds,
+            downloadFilenames,
+            downloadsIds,
+            brandId: res.data.data.brand ? res.data.data.brand._id : "",
+            baseImage: res.data.data.baseImage
+              ? res.data.data.baseImage.image
+              : "",
+            baseImageId: res.data.data.baseImage
+              ? res.data.data.baseImage._id
+              : "",
+            additionalImageIds,
+            additionalImages,
+            editorState: BraftEditor.createEditorState(
+              res.data.data.description
+            ),
+            options: res.data.data.options,
+            tagIds,
+            categoryIds,
+          });
         })
-  
-      }
+        .catch((err) => {
+          toast.error(
+            `${
+              err.response && err.response.data
+                ? err.response.data.message
+                : "Something went wrong."
+            }`,
+            {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            }
+          );
+        });
+      api
+        .post("/product/stock/byproduct/get", {
+          productId: this.props.match.params.id,
+          requiredPermission: "Create Products",
+        })
+        .then((res) => {
+          console.log(res.data.data);
+          this.setState({ stock: res.data.data });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }
 
   setVal = (key, val) => {
@@ -439,21 +512,21 @@ class CreateProduct extends React.Component {
     this.setVal("description", editorState.toHTML());
   };
   handleSubmit = () => {
-    const {data, errors} = this.state
-    const required = ["name", "description", "price"]
-    required.forEach(val=>{
-      if (!errors.includes(val) && !Validate.validateNotEmpty(data[val].toString())) {
+    const { data, errors } = this.state;
+    const required = ["name", "description", "price"];
+    required.forEach((val) => {
+      if (
+        !errors.includes(val) &&
+        !Validate.validateNotEmpty(data[val].toString())
+      ) {
         errors.push(val);
         this.setState({ errors });
-      } else if (
-        errors.includes(val) &&
-        Validate.validateNotEmpty(data[val])
-      ) {
+      } else if (errors.includes(val) && Validate.validateNotEmpty(data[val])) {
         errors.splice(errors.indexOf(val), 1);
         this.setState({ errors });
       }
-    })
-    if (!errors.includes("description") && data["description"] == "<p></p>" ) {
+    });
+    if (!errors.includes("description") && data["description"] == "<p></p>") {
       errors.push("description");
       this.setState({ errors });
     } else if (
@@ -464,81 +537,144 @@ class CreateProduct extends React.Component {
       this.setState({ errors });
     }
     if (!Validate.validateNotEmpty(this.state.errors)) {
-      this.setState({submitting: true})
-      data.options = this.state.options
-      const downloadsIdsNew = this.state.downloadsIds.filter(val=>{
-        return val!="";
-      })
-      const attributesNew = this.state.attributes.filter(val=>{
-        if(val.attributeId != "" && val.value.length >0){
+      this.setState({ submitting: true });
+      data.options = this.state.options;
+      const downloadsIdsNew = this.state.downloadsIds.filter((val) => {
+        return val != "";
+      });
+      const attributesNew = this.state.attributes.filter((val) => {
+        if (val.attributeId != "" && val.value.length > 0) {
           return val;
         }
-      })
-      if(this.props.edit == "true"){
-        api.put('/product',{data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Edit Products", _id: this.props.match.params.id}).then(res=>{
-          this.setState({submitting: false, alertType: "success", alertMessage: "Product edited successfully."})
-        }).catch(err=>{
-          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
-            position: "bottom-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            });
-          this.setState({submitting: false})
-
-        })
-      }else{
-        api.post('/product', {data: this.state.data, brandId: this.state.brandId, tagIds: this.state.tagIds, categoryIds: this.state.categoryIds, relatedProductIds: this.state.relatedProductIds, upSellsIds: this.state.upSellsIds, crossSellsIds: this.state.crossSellsIds, attributes: attributesNew, baseImageId: this.state.baseImageId, additionalImageIds: this.state.additionalImageIds,downloadsIds: downloadsIdsNew, requiredPermission: "Create Products"}).then( (res)=>{
-          let id = res.data.data._id
-          if(res.data.data.inventoryManagement){
-           api.post('/product/stock/create', {productId: id,requiredPermission: "Create Products"}).then(res2=>{
-             console.log(res2)
-            toast.success('Stock added successfully.', {
-              position: "bottom-right",
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-            });
-           
-          }).catch(err=>{
-            toast.error( `${err.response && err.response.data?err.response.data.message: "Could not add stock to product."}`, {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              });
+      });
+      if (this.props.edit == "true") {
+        api
+          .put("/product", {
+            data: this.state.data,
+            brandId: this.state.brandId,
+            tagIds: this.state.tagIds,
+            categoryIds: this.state.categoryIds,
+            relatedProductIds: this.state.relatedProductIds,
+            upSellsIds: this.state.upSellsIds,
+            crossSellsIds: this.state.crossSellsIds,
+            attributes: attributesNew,
+            baseImageId: this.state.baseImageId,
+            additionalImageIds: this.state.additionalImageIds,
+            downloadsIds: downloadsIdsNew,
+            requiredPermission: "Edit Products",
+            _id: this.props.match.params.id,
           })
-        }
-        toast.success('Product added successfully.', {
-          position: "bottom-right",
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-        this.setState({submitting: false, redirect: true})
-        }).catch(err=>{
-          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
-            position: "bottom-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
+          .then((res) => {
+            this.setState({
+              submitting: false,
+              alertType: "success",
+              alertMessage: "Product edited successfully.",
             });
-          this.setState({submitting: false})
-
-        })
-      }   
-    }else{
-      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
+          })
+          .catch((err) => {
+            toast.error(
+              `${
+                err.response && err.response.data
+                  ? err.response.data.message
+                  : "Something went wrong."
+              }`,
+              {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              }
+            );
+            this.setState({ submitting: false });
+          });
+      } else {
+        api
+          .post("/product", {
+            data: this.state.data,
+            brandId: this.state.brandId,
+            tagIds: this.state.tagIds,
+            categoryIds: this.state.categoryIds,
+            relatedProductIds: this.state.relatedProductIds,
+            upSellsIds: this.state.upSellsIds,
+            crossSellsIds: this.state.crossSellsIds,
+            attributes: attributesNew,
+            baseImageId: this.state.baseImageId,
+            additionalImageIds: this.state.additionalImageIds,
+            downloadsIds: downloadsIdsNew,
+            requiredPermission: "Create Products",
+          })
+          .then((res) => {
+            let id = res.data.data._id;
+            if (res.data.data.inventoryManagement) {
+              api
+                .post("/product/stock/create", {
+                  productId: id,
+                  requiredPermission: "Create Products",
+                })
+                .then((res2) => {
+                  console.log(res2);
+                  toast.success("Stock added successfully.", {
+                    position: "bottom-right",
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                  });
+                })
+                .catch((err) => {
+                  toast.error(
+                    `${
+                      err.response && err.response.data
+                        ? err.response.data.message
+                        : "Could not add stock to product."
+                    }`,
+                    {
+                      position: "bottom-right",
+                      autoClose: 3000,
+                      hideProgressBar: true,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                    }
+                  );
+                });
+            }
+            toast.success("Product added successfully.", {
+              position: "bottom-right",
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+            this.setState({ submitting: false, redirect: true });
+          })
+          .catch((err) => {
+            toast.error(
+              `${
+                err.response && err.response.data
+                  ? err.response.data.message
+                  : "Something went wrong."
+              }`,
+              {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              }
+            );
+            this.setState({ submitting: false });
+          });
+      }
+    } else {
+      this.setState({
+        alertType: "fail",
+        alertMessage: "Please fill the following: " + errors,
+      });
     }
-
   };
   uploadImageEditor = async (param) => {
     // const options = {
@@ -587,12 +723,12 @@ class CreateProduct extends React.Component {
   handleRemoveSpecificRowAttribute = (idx) => {
     const { attributes } = this.state;
     attributes.splice(idx, 1);
-    this.setState({ attributes, activePanel: "general" },()=>{
-      this.setState({activePanel: "attributes"})
+    this.setState({ attributes, activePanel: "general" }, () => {
+      this.setState({ activePanel: "attributes" });
     });
   };
   handleAddRowOption = () => {
-    const {options} = this.state
+    const { options } = this.state;
     options.push({
       name: "",
       type: "",
@@ -604,45 +740,49 @@ class CreateProduct extends React.Component {
           priceType: "",
         },
       ],
-    })
-    this.setState({options})
+    });
+    this.setState({ options });
   };
   handleRemoveSpecificRowOption = (idx) => {
-    const {options} =this.state
-    options.splice(idx,1)
-    this.setState({options})
+    const { options } = this.state;
+    options.splice(idx, 1);
+    this.setState({ options });
   };
-  handleAddNewOptionValue= (idx) =>{
-    const {options} = this.state
+  handleAddNewOptionValue = (idx) => {
+    const { options } = this.state;
     options[idx].value.push({
       label: "",
       price: "",
-      priceType: ""
-    })
-    this.setState({options})
-  }
-  handleRemoveSpecificOptionValue = (idx, idx2)=>{
-    const {options} = this.state
-    options[idx].value.splice(idx2,1)
-    this.setState({options})
-  }
+      priceType: "",
+    });
+    this.setState({ options });
+  };
+  handleRemoveSpecificOptionValue = (idx, idx2) => {
+    const { options } = this.state;
+    options[idx].value.splice(idx2, 1);
+    this.setState({ options });
+  };
   onDownloadSortEnd = ({ oldIndex, newIndex }) => {
-    let arr = arrayMove(this.state.downloadsIds, oldIndex, newIndex)
-    let arr2 = arrayMove(this.state.downloadFilenames, oldIndex, newIndex)
-    this.setState({downloadsIds: arr, downloadFilenames: arr2})
+    let arr = arrayMove(this.state.downloadsIds, oldIndex, newIndex);
+    let arr2 = arrayMove(this.state.downloadFilenames, oldIndex, newIndex);
+    this.setState({ downloadsIds: arr, downloadFilenames: arr2 });
   };
   onAttributeSortEnd = ({ oldIndex, newIndex }) => {
-    let arr = arrayMove(this.state.attributes, oldIndex, newIndex)
-    this.setState({attributes: arr})
+    let arr = arrayMove(this.state.attributes, oldIndex, newIndex);
+    this.setState({ attributes: arr });
   };
   onOptionSortEnd = ({ oldIndex, newIndex }) => {
-    let arr = arrayMove(this.state.options, oldIndex, newIndex)
-    this.setState({options: arr})
+    let arr = arrayMove(this.state.options, oldIndex, newIndex);
+    this.setState({ options: arr });
   };
-  onOptionTypeSortEnd = ( oldIndex, newIndex,idx) => {
-    const {options} = this.state
-    options[idx].value = arrayMove(this.state.options[idx].value, oldIndex, newIndex)
-    this.setState({options})
+  onOptionTypeSortEnd = (oldIndex, newIndex, idx) => {
+    const { options } = this.state;
+    options[idx].value = arrayMove(
+      this.state.options[idx].value,
+      oldIndex,
+      newIndex
+    );
+    this.setState({ options });
   };
   OptionTypeToggle = (idx) => {
     if (
@@ -654,7 +794,7 @@ class CreateProduct extends React.Component {
       this.state.options[idx].type == "Multiple Select"
     ) {
       return (
-        <div className="option-values clearfix" >
+        <div className="option-values clearfix">
           <div className="option-select m-b-15">
             <div className="table-responsive">
               <table className="options table table-bordered">
@@ -667,81 +807,95 @@ class CreateProduct extends React.Component {
                     <th></th>
                   </tr>
                 </thead>
-                <SortableContainer onSortEnd={({ oldIndex, newIndex })=>{this.onOptionTypeSortEnd(oldIndex,newIndex, idx)}} useDragHandle>
-                <tbody id="select-values">
-                  {this.state.options[idx].value.map((item, idx2) => (
-                    <SortableItem key={idx2} index={idx2}>
-                    <tr key={idx2} className="option-row">
-                      <td className="text-center">
-                        <DragHandle />
-                      </td>
-                      <td>
-                        <div className="form-group">
-                          <input
-                            type="text"
-                            name="label"
-                            value={this.state.options[idx].value[idx2].label}
-                            className="form-control"
-                            onChange={(e) => {
-                              const {options} = this.state
-                              options[idx].value[idx2][e.target.name] = e.target.value
-                              this.setState({options})
-                            }}
-                          />
-                        </div>
-                      </td>
-                      <td>
-                        <div className="form-group">
-                          <input
-                            type="text"
-                            name="price"
-                            value={this.state.options[idx].value[idx2].price}
-                            className="form-control"
-                            onChange={(e) => {
-                              const {options} = this.state
-                              options[idx].value[idx2][e.target.name] = e.target.value
-                              this.setState({options})
-                            }}
-                          />
-                        </div>
-                      </td>
-                      <td>
-                        <select
-                          name="priceType"
-                          className="form-control custom-select-black"
-                          value={this.state.options[idx].value[idx2].priceType}
-                          onChange={(e) => {
-                            const {options} = this.state
-                            options[idx].value[idx2][e.target.name] = e.target.value
-                            this.setState({options})
-                          }}
-                        >
-                          <option value="fixed">Fixed</option>
-                          <option value="percent">Percent</option>
-                        </select>
-                      </td>
-                      <td className="text-center">
-                        <button
-                          type="button"
-                          className="btn btn-default delete-row"
-                          onClick={(e) => {
-                            this.handleRemoveSpecificOptionValue(idx,idx2);
-                          }}
-                        >
-                          <i className="fa fa-trash" />
-                        </button>
-                      </td>
-                    </tr>
-                    </SortableItem>
-                  ))}
-                </tbody>
+                <SortableContainer
+                  onSortEnd={({ oldIndex, newIndex }) => {
+                    this.onOptionTypeSortEnd(oldIndex, newIndex, idx);
+                  }}
+                  useDragHandle
+                >
+                  <tbody id="select-values">
+                    {this.state.options[idx].value.map((item, idx2) => (
+                      <SortableItem key={idx2} index={idx2}>
+                        <tr key={idx2} className="option-row">
+                          <td className="text-center">
+                            <DragHandle />
+                          </td>
+                          <td>
+                            <div className="form-group">
+                              <input
+                                type="text"
+                                name="label"
+                                value={
+                                  this.state.options[idx].value[idx2].label
+                                }
+                                className="form-control"
+                                onChange={(e) => {
+                                  const { options } = this.state;
+                                  options[idx].value[idx2][e.target.name] =
+                                    e.target.value;
+                                  this.setState({ options });
+                                }}
+                              />
+                            </div>
+                          </td>
+                          <td>
+                            <div className="form-group">
+                              <input
+                                type="text"
+                                name="price"
+                                value={
+                                  this.state.options[idx].value[idx2].price
+                                }
+                                className="form-control"
+                                onChange={(e) => {
+                                  const { options } = this.state;
+                                  options[idx].value[idx2][e.target.name] =
+                                    e.target.value;
+                                  this.setState({ options });
+                                }}
+                              />
+                            </div>
+                          </td>
+                          <td>
+                            <select
+                              name="priceType"
+                              className="form-control custom-select-black"
+                              value={
+                                this.state.options[idx].value[idx2].priceType
+                              }
+                              onChange={(e) => {
+                                const { options } = this.state;
+                                options[idx].value[idx2][e.target.name] =
+                                  e.target.value;
+                                this.setState({ options });
+                              }}
+                            >
+                              <option value="fixed">Fixed</option>
+                              <option value="percent">Percent</option>
+                            </select>
+                          </td>
+                          <td className="text-center">
+                            <button
+                              type="button"
+                              className="btn btn-default delete-row"
+                              onClick={(e) => {
+                                this.handleRemoveSpecificOptionValue(idx, idx2);
+                              }}
+                            >
+                              <i className="fa fa-trash" />
+                            </button>
+                          </td>
+                        </tr>
+                      </SortableItem>
+                    ))}
+                  </tbody>
                 </SortableContainer>
               </table>
             </div>
             <button
               type="button"
               className="btn btn-default"
-              onClick={()=>this.handleAddNewOptionValue(idx)}
+              onClick={() => this.handleAddNewOptionValue(idx)}
             >
               Add New Value
             </button>
@@ -756,7 +910,7 @@ class CreateProduct extends React.Component {
       this.state.options[idx].type == "Time"
     ) {
       return (
-        <div className="option-values clearfix" >
+        <div className="option-values clearfix">
           <div className="table-responsive option-text">
             <table className="table table-bordered">
               <thead>
@@ -774,9 +928,9 @@ class CreateProduct extends React.Component {
                       className="form-control"
                       value={this.state.options[idx].value[0].price}
                       onChange={(e) => {
-                        const {options} = this.state
-                        options[idx].value[0][e.target.name] = e.target.value
-                        this.setState({options})
+                        const { options } = this.state;
+                        options[idx].value[0][e.target.name] = e.target.value;
+                        this.setState({ options });
                       }}
                     />
                   </td>
@@ -786,9 +940,9 @@ class CreateProduct extends React.Component {
                       className="form-control custom-select-black"
                       value={this.state.options[idx].value[0].priceType}
                       onChange={(e) => {
-                        const {options} = this.state
-                        options[idx].value[0][e.target.name] = e.target.value
-                        this.setState({options})
+                        const { options } = this.state;
+                        options[idx].value[0][e.target.name] = e.target.value;
+                        this.setState({ options });
                       }}
                     >
                       <option value="fixed">Fixed</option>
@@ -879,13 +1033,11 @@ class CreateProduct extends React.Component {
                 </label>
                 <div className="col-md-9">
                   <MultiSelect
-                    onChange={(val)=>{
-                      this.setState({categoryIds: val.split(",")})
+                    onChange={(val) => {
+                      this.setState({ categoryIds: val.split(",") });
                     }}
                     options={this.state.categoryOptions}
-                    defaultValue={
-                      this.state.categoryIds.toString()
-                    }
+                    defaultValue={this.state.categoryIds.toString()}
                   />
                 </div>
               </div>
@@ -920,13 +1072,11 @@ class CreateProduct extends React.Component {
                 <label className="col-md-3 control-label text-left">Tags</label>
                 <div className="col-md-9">
                   <MultiSelect
-                    onChange={(val)=>{
-                      this.setState({tagIds: val.split(",")})
+                    onChange={(val) => {
+                      this.setState({ tagIds: val.split(",") });
                     }}
                     options={this.state.tagOptions}
-                    defaultValue={
-                      this.state.tagIds.toString()
-                    }
+                    defaultValue={this.state.tagIds.toString()}
                   />
                 </div>
               </div>
@@ -1117,19 +1267,13 @@ class CreateProduct extends React.Component {
                       this.setVal(e.target.name, e.target.value);
                     }}
                   >
-                    <option value={false}>
-                      Don't Track Inventory
-                    </option>
+                    <option value={false}>Don't Track Inventory</option>
                     <option value={true}>Track Inventory</option>
                   </select>
                 </div>
               </div>
               <div
-                className={
-                  this.state.data.inventoryManagement
-                    ? ""
-                    : "hide"
-                }
+                className={this.state.data.inventoryManagement ? "" : "hide"}
               >
                 <div className="form-group">
                   <label
@@ -1171,7 +1315,61 @@ class CreateProduct extends React.Component {
                   </select>
                 </div>
               </div>
-            </div>
+              {this.state.stock.length > 0 && 
+              <div className="form-group">
+                <label className="col-md-3 control-label text-left">
+                  Add Stock
+                </label>
+                <div className="table-responsive " style={{height: '250px', overflowY: 'auto'}}>
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Type</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {this.state.stock.map((item,key)=>{
+                        return <tr key={key} >
+                          <td className="p-2">{item.name}</td>
+                          <td className="p-2">
+                          <input
+                      name="qty"
+                      className="form-control "
+                      type="number"
+                      min={0}
+                      placeholder={"Qty"}
+                      value={item.qty}
+                      // value={this.state.data.Qty}
+                      // onChange={(e) => {
+                      //   this.setVal(e.target.name, e.target.value);
+                      // }}
+                    />
+                          </td>
+                          <td className="p-2">
+                          <input
+                      name="price"
+                      className="form-control "
+                      type="number"
+                      min={0}
+                      placeholder={"Price"}
+                      value={item.price}
+                      // value={this.state.data.Qty}
+                      // onChange={(e) => {
+                      //   this.setVal(e.target.name, e.target.value);
+                      // }}
+                    />
+                          </td>
+                        </tr>
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                    <p  style={{color: '#777', padding: '0.5em'}}>* Stock resets everytime the product options are changed.</p>
+             </div>
+            
+                    }</div>
           </div>
         </div>
       );
@@ -1196,9 +1394,7 @@ class CreateProduct extends React.Component {
               {this.state.baseImage ? (
                 <div className="image-holder">
                   <img
-                    src={
-                      siteUrl + this.state.baseImage
-                    }
+                    src={siteUrl + this.state.baseImage}
                     height={120}
                     width={120}
                   />
@@ -1310,94 +1506,95 @@ class CreateProduct extends React.Component {
                     <th />
                   </tr>
                 </thead>
-                <SortableContainer onSortEnd={this.onAttributeSortEnd} useDragHandle>
-                <tbody id="product-attributes">
-                  {this.state.attributes.map((val, idx) => (
-                    <SortableItem key={idx} index={idx}>
-                    <tr key={idx}>
-                      <td className="text-center">
-                        <DragHandle />
-                      </td>
-                      <td>
-                        <div className="form-group">
-                          <label className="visible-xs">Attribute</label>
-                          <select
-                            name="attributeID"
-                            className="form-control attribute custom-select-black"
-                            value={this.state.attributes[idx].attributeId}
-                            onChange={(e) => {
-                              const {
-                                attributes
-                              } = this.state;
-                              const arr = e.target.options[
-                                e.target.selectedIndex
-                              ].dataset.values.split(",");
+                <SortableContainer
+                  onSortEnd={this.onAttributeSortEnd}
+                  useDragHandle
+                >
+                  <tbody id="product-attributes">
+                    {this.state.attributes.map((val, idx) => (
+                      <SortableItem key={idx} index={idx}>
+                        <tr key={idx}>
+                          <td className="text-center">
+                            <DragHandle />
+                          </td>
+                          <td>
+                            <div className="form-group">
+                              <label className="visible-xs">Attribute</label>
+                              <select
+                                name="attributeID"
+                                className="form-control attribute custom-select-black"
+                                value={this.state.attributes[idx].attributeId}
+                                onChange={(e) => {
+                                  const { attributes } = this.state;
+                                  const arr =
+                                    e.target.options[
+                                      e.target.selectedIndex
+                                    ].dataset.values.split(",");
 
-                              attributes[idx].attributeId = e.target.value;
-                              let tmparr = [];
-                              arr.map((val) => {
-                                let tmp = {
-                                  label: val,
-                                  value: val,
-                                };
-                                tmparr.push(tmp);
-                              });
-                              attributes[idx].value = []
-                              attributes[idx].options = tmparr
-                              this.setState({ attributes });
-                            }}
-                          >
-                            <option value="">Please Select</option>
-                            {Object.entries(this.state.attributesOptions).map(
-                              ([key, val], idx2) => (
-                                <optgroup label={key} key={idx2}>
-                                  {val.map((option, idx3) => (
-                                    <option
-                                      value={option.id}
-                                      key={idx3}
-                                      data-values={option.values}
-                                    >
-                                      {option.attribute}
-                                    </option>
-                                  ))}
-                                </optgroup>
-                              )
-                            )}
-                          </select>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="form-group">
-                          
-                          <MultiSelect
-                            options={this.state.attributes[idx].options}
-                            onChange={(val) => {
-                              const { attributes } = this.state;
-                              attributes[idx].value = val.split(",");
-                              this.setState({ attributes });
-                            }}
-                            defaultValue={this.state.attributes[
-                              idx
-                            ].value.toString()}
-                          />
-                        </div>
-                      </td>
-                      <td className="text-center">
-                        <button
-                          type="button"
-                          className="btn btn-default delete-row"
-                          data-toggle="tooltip"
-                          onClick={(e) => {
-                            this.handleRemoveSpecificRowAttribute(idx);
-                          }}
-                        >
-                          <i className="fa fa-trash" />
-                        </button>
-                      </td>
-                    </tr>
-                    </SortableItem>
-                  ))}
-                </tbody>
+                                  attributes[idx].attributeId = e.target.value;
+                                  let tmparr = [];
+                                  arr.map((val) => {
+                                    let tmp = {
+                                      label: val,
+                                      value: val,
+                                    };
+                                    tmparr.push(tmp);
+                                  });
+                                  attributes[idx].value = [];
+                                  attributes[idx].options = tmparr;
+                                  this.setState({ attributes });
+                                }}
+                              >
+                                <option value="">Please Select</option>
+                                {Object.entries(
+                                  this.state.attributesOptions
+                                ).map(([key, val], idx2) => (
+                                  <optgroup label={key} key={idx2}>
+                                    {val.map((option, idx3) => (
+                                      <option
+                                        value={option.id}
+                                        key={idx3}
+                                        data-values={option.values}
+                                      >
+                                        {option.attribute}
+                                      </option>
+                                    ))}
+                                  </optgroup>
+                                ))}
+                              </select>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="form-group">
+                              <MultiSelect
+                                options={this.state.attributes[idx].options}
+                                onChange={(val) => {
+                                  const { attributes } = this.state;
+                                  attributes[idx].value = val.split(",");
+                                  this.setState({ attributes });
+                                }}
+                                defaultValue={this.state.attributes[
+                                  idx
+                                ].value.toString()}
+                              />
+                            </div>
+                          </td>
+                          <td className="text-center">
+                            <button
+                              type="button"
+                              className="btn btn-default delete-row"
+                              data-toggle="tooltip"
+                              onClick={(e) => {
+                                this.handleRemoveSpecificRowAttribute(idx);
+                              }}
+                            >
+                              <i className="fa fa-trash" />
+                            </button>
+                          </td>
+                        </tr>
+                      </SortableItem>
+                    ))}
+                  </tbody>
                 </SortableContainer>
               </table>
             </div>
@@ -1419,128 +1616,127 @@ class CreateProduct extends React.Component {
         <div className="tab-pane fade in active">
           <h3 className="tab-content-title">Options</h3>
           <SortableContainer onSortEnd={this.onOptionSortEnd} useDragHandle>
-          <div id="options-group" className="sortable">
-            {this.state.options.map((val, idx) => (
-              <SortableItem key={idx} index={idx}>
-              <div
-                className="content-accordion panel-group options-group-wrapper"
-                id="option-0"
-                key={idx}
-              >
-                <div className="panel panel-default option">
-                  <div className="panel-heading">
-                    <h4 className="panel-title">
-                      <a
-                       
-                      >
-                        <DragHandle />
-                        <span id="option-name" className="pull-left">
-                          {this.state.options[idx].name !=""? this.state.options[idx].name: "New Option"}
-                        </span>
-                      </a>
-                    </h4>
-                  </div>
+            <div id="options-group" className="sortable">
+              {this.state.options.map((val, idx) => (
+                <SortableItem key={idx} index={idx}>
                   <div
-                    className="panel-collapse collapse in"
+                    className="content-accordion panel-group options-group-wrapper"
+                    id="option-0"
+                    key={idx}
                   >
-                    <div className="panel-body">
-                      <div className="new-option clearfix">
-                        <div className="col-lg-6 col-md-12 p-l-0">
-                          <div className="form-group">
-                            <label htmlFor="option-0-name">Name</label>
-                            <input
-                              type="text"
-                              name="name"
-                              value={this.state.options[idx].name}
-                              className="form-control option-name-field"
-                              onChange={(e)=>{
-                                const{options} = this.state
-                                options[idx].name = e.target.value
-                                this.setState({options})
-
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-lg-3 col-md-12 p-l-0">
-                          <div className="form-group">
-                            <label >Type</label>
-                            <select
-                              name="type"
-                              value={this.state.options[idx].type}
-                              className="form-control custom-select-black"
-                              onChange={(e)=>{
-                                const{options} = this.state
-                                options[idx].type = e.target.value
-                                this.setState({options})
-
+                    <div className="panel panel-default option">
+                      <div className="panel-heading">
+                        <h4 className="panel-title">
+                          <a>
+                            <DragHandle />
+                            <span id="option-name" className="pull-left">
+                              {this.state.options[idx].name != ""
+                                ? this.state.options[idx].name
+                                : "New Option"}
+                            </span>
+                          </a>
+                        </h4>
+                      </div>
+                      <div className="panel-collapse collapse in">
+                        <div className="panel-body">
+                          <div className="new-option clearfix">
+                            <div className="col-lg-6 col-md-12 p-l-0">
+                              <div className="form-group">
+                                <label htmlFor="option-0-name">Name</label>
+                                <input
+                                  type="text"
+                                  name="name"
+                                  value={this.state.options[idx].name}
+                                  className="form-control option-name-field"
+                                  onChange={(e) => {
+                                    const { options } = this.state;
+                                    options[idx].name = e.target.value;
+                                    this.setState({ options });
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-lg-3 col-md-12 p-l-0">
+                              <div className="form-group">
+                                <label>Type</label>
+                                <select
+                                  name="type"
+                                  value={this.state.options[idx].type}
+                                  className="form-control custom-select-black"
+                                  onChange={(e) => {
+                                    const { options } = this.state;
+                                    options[idx].type = e.target.value;
+                                    this.setState({ options });
+                                  }}
+                                >
+                                  <option value="">Please Select</option>
+                                  <optgroup label="Text">
+                                    <option value="Field">Field</option>
+                                    <option value="Textarea">Textarea</option>
+                                  </optgroup>
+                                  <optgroup label="Select">
+                                    <option value="Dropdown">Dropdown</option>
+                                    <option value="Checkbox">Checkbox</option>
+                                    <option value={"Custom Checkbox"}>
+                                      Custom Checkbox
+                                    </option>
+                                    <option value={"Radio Button"}>
+                                      Radio Button
+                                    </option>
+                                    <option value={"Custom Radio Button"}>
+                                      Custom Radio Button
+                                    </option>
+                                    <option value={"Multiple Select"}>
+                                      Multiple Select
+                                    </option>
+                                  </optgroup>
+                                  <optgroup label="Date">
+                                    <option value="Date">Date</option>
+                                    <option value="Date Time">
+                                      Date &amp; Time
+                                    </option>
+                                    <option value="Time">Time</option>
+                                  </optgroup>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="checkbox">
+                              <input
+                                type="checkbox"
+                                name="required"
+                                className="form-control"
+                                id={"option-0-is-required" + idx}
+                                checked={this.state.options[idx].required}
+                                onChange={() => {
+                                  const { options } = this.state;
+                                  options[idx].required =
+                                    !this.state.options[idx].required;
+                                  this.setState({ options });
+                                }}
+                              />
+                              <label htmlFor={"option-0-is-required" + idx}>
+                                Required
+                              </label>
+                            </div>
+                            <button
+                              type="button"
+                              className="btn btn-default delete-option pull-right"
+                              onClick={() => {
+                                this.handleRemoveSpecificRowOption(idx);
                               }}
                             >
-                              <option value="">Please Select</option>
-                              <optgroup label="Text">
-                                <option value="Field">Field</option>
-                                <option value="Textarea">Textarea</option>
-                              </optgroup>
-                              <optgroup label="Select">
-                                <option value="Dropdown">Dropdown</option>
-                                <option value="Checkbox">Checkbox</option>
-                                <option value={"Custom Checkbox"}>
-                                  Custom Checkbox
-                                </option>
-                                <option value={"Radio Button"}>
-                                  Radio Button
-                                </option>
-                                <option value={"Custom Radio Button"}>
-                                  Custom Radio Button
-                                </option>
-                                <option value={"Multiple Select"}>
-                                  Multiple Select
-                                </option>
-                              </optgroup>
-                              <optgroup label="Date">
-                                <option value="Date">Date</option>
-                                <option value="Date Time">
-                                  Date &amp; Time
-                                </option>
-                                <option value="Time">Time</option>
-                              </optgroup>
-                            </select>
+                              <i className="fa fa-trash" />
+                            </button>
                           </div>
+                          <div className="clearfix" />
+                          {this.OptionTypeToggle(idx)}
                         </div>
-                        <div className="checkbox">
-                          <input
-                            type="checkbox"
-                            name="required"
-                            className="form-control"
-                            id={"option-0-is-required"+idx}
-                            checked={this.state.options[idx].required}
-                            onChange={()=>{
-                              const {options} =  this.state
-                              options[idx].required = !this.state.options[idx].required
-                              this.setState({options})
-                            }}
-                          />
-                          <label htmlFor={"option-0-is-required"+idx}>Required</label>
-                        </div>
-                        <button
-                          type="button"
-                          className="btn btn-default delete-option pull-right"
-                          onClick={()=>{
-                            this.handleRemoveSpecificRowOption(idx);
-                          }}
-                        >
-                          <i className="fa fa-trash" />
-                        </button>
                       </div>
-                      <div className="clearfix" />
-                      {this.OptionTypeToggle(idx)}
                     </div>
                   </div>
-                </div>
-              </div>
-              </SortableItem>
-            ))}
-          </div>
+                </SortableItem>
+              ))}
+            </div>
           </SortableContainer>
 
           <div className="box-footer no-border p-t-0">
@@ -1549,8 +1745,8 @@ class CreateProduct extends React.Component {
                 <button
                   type="button"
                   className="btn btn-default m-r-10"
-                  onClick={()=>{
-                    this.handleAddRowOption()
+                  onClick={() => {
+                    this.handleAddRowOption();
                   }}
                 >
                   Add New Option
@@ -1563,9 +1759,8 @@ class CreateProduct extends React.Component {
                   className="form-control custom-select-black"
                   onChange={(e) => {
                     this.setState({
-                      selectedGlobalOption: this.state.optionsGlobal[
-                        e.target.value
-                      ],
+                      selectedGlobalOption:
+                        this.state.optionsGlobal[e.target.value],
                     });
                   }}
                 >
@@ -1686,7 +1881,7 @@ class CreateProduct extends React.Component {
       );
     } else if (this.state.activePanel == "downloads") {
       return (
-        <div className="tab-pane fade in active" >
+        <div className="tab-pane fade in active">
           <h3 className="tab-content-title">Downloads</h3>
           <style
             dangerouslySetInnerHTML={{
@@ -1712,55 +1907,58 @@ class CreateProduct extends React.Component {
                         <th />
                       </tr>
                     </thead>
-                    <SortableContainer onSortEnd={this.onDownloadSortEnd} useDragHandle>
-                    <tbody>
-                      {this.state.downloadsIds.map((val, idx) => (
-                        <SortableItem key={idx} index={idx}>
-                        <tr key={idx}>
-                          <td className="text-center">
-                            <DragHandle />
-                          </td>
-                          <td>
-                            <div className="form-group">
-                              <label className="visible-xs">File</label>
-                              <div className="choose-file-group">
-                                <input
-                                  type="text"
-                                  value={this.state.downloadFilenames[idx]}
-                                  className="form-control download-name"
-                                  readOnly={true}
-                                />
-                                <span
-                                  className="btn btn-default btn-choose-file"
+                    <SortableContainer
+                      onSortEnd={this.onDownloadSortEnd}
+                      useDragHandle
+                    >
+                      <tbody>
+                        {this.state.downloadsIds.map((val, idx) => (
+                          <SortableItem key={idx} index={idx}>
+                            <tr key={idx}>
+                              <td className="text-center">
+                                <DragHandle />
+                              </td>
+                              <td>
+                                <div className="form-group">
+                                  <label className="visible-xs">File</label>
+                                  <div className="choose-file-group">
+                                    <input
+                                      type="text"
+                                      value={this.state.downloadFilenames[idx]}
+                                      className="form-control download-name"
+                                      readOnly={true}
+                                    />
+                                    <span
+                                      className="btn btn-default btn-choose-file"
+                                      onClick={() =>
+                                        this.setState({
+                                          multiple: false,
+                                          showModal: true,
+                                        })
+                                      }
+                                    >
+                                      Choose
+                                    </span>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="text-center">
+                                <button
+                                  type="button"
+                                  className="btn btn-default delete-row"
+                                  data-toggle="tooltip"
+                                  data-title="Delete File"
                                   onClick={() =>
-                                    this.setState({
-                                      multiple: false,
-                                      showModal: true,
-                                    })
+                                    this.handleRemoveSpecificRowDownload(idx)
                                   }
                                 >
-                                  Choose
-                                </span>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="text-center">
-                            <button
-                              type="button"
-                              className="btn btn-default delete-row"
-                              data-toggle="tooltip"
-                              data-title="Delete File"
-                              onClick={() =>
-                                this.handleRemoveSpecificRowDownload(idx)
-                              }
-                            >
-                              <i className="fa fa-trash" />
-                            </button>
-                          </td>
-                        </tr>
-                        </SortableItem>
-                      ))}
-                    </tbody>
+                                  <i className="fa fa-trash" />
+                                </button>
+                              </td>
+                            </tr>
+                          </SortableItem>
+                        ))}
+                      </tbody>
                     </SortableContainer>
                   </table>
                 </div>
@@ -1780,7 +1978,9 @@ class CreateProduct extends React.Component {
       );
     }
   };
-  closeAlert = () => {this.setState({alertType: ""})}
+  closeAlert = () => {
+    this.setState({ alertType: "" });
+  };
   render() {
     if (this.state.edit != "") {
       return <Redirect to={"/products/" + this.state.edit + "/edit"} />;
@@ -1835,9 +2035,13 @@ class CreateProduct extends React.Component {
               )}
             </ol>
           </section>
-          <Loading show={this.state.submitting}/>
+          <Loading show={this.state.submitting} />
           <section className="content">
-          {getMessage(this.state.alertType, this.state.alertMessage, this.closeAlert)}
+            {getMessage(
+              this.state.alertType,
+              this.state.alertMessage,
+              this.closeAlert
+            )}
             <form className="form-horizontal">
               <div className="accordion-content clearfix">
                 <div className="col-lg-3 col-md-4">
