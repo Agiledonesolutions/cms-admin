@@ -160,7 +160,8 @@ class CreateProduct extends React.Component {
     alertType: "",
     alertMessage: "",
     redirect: false,
-    stock: [],
+    stocks: [],
+    optionchange: false
   };
 
   componentDidMount() {
@@ -330,6 +331,7 @@ class CreateProduct extends React.Component {
       api
         .get(url)
         .then((res) => {
+          console.log(res.data.data.inventoryManagement)
           let tmp = {
             name: res.data.data.name,
             taxClass: res.data.data.taxClass,
@@ -367,6 +369,7 @@ class CreateProduct extends React.Component {
                 ? ""
                 : res.data.data.productNewTo.substr(0, 10),
             options: res.data.data.options,
+            
           };
           const {
             tagIds,
@@ -475,14 +478,23 @@ class CreateProduct extends React.Component {
         })
         .then((res) => {
           console.log(res.data.data);
-          this.setState({ stock: res.data.data });
+          const {stocks} = this.state
+          res.data.data.forEach((stk=>{
+            let temp = {
+              stockId: stk._id,
+              name: stk.name,
+              price: this.state.data.price,
+              qty: stk.qty
+            }
+            stocks.push(temp);
+          }))
+          this.setState({ stock: res.data.data,stocks });
         })
         .catch((err) => {
           console.log(err);
         });
     }
-  }
-
+  } 
   setVal = (key, val) => {
     const { data } = this.state;
     data[key] = val;
@@ -548,6 +560,7 @@ class CreateProduct extends React.Component {
         }
       });
       if (this.props.edit == "true") {
+        
         api
           .put("/product", {
             data: this.state.data,
@@ -565,6 +578,43 @@ class CreateProduct extends React.Component {
             _id: this.props.match.params.id,
           })
           .then((res) => {
+            if(this.state.optionchange){
+              api
+              .post("/product/stock/create", {
+                productId: res.data.data._id,
+                requiredPermission: "Edit Products",
+              })
+              .then((res2) => {
+                toast.success("Stock has been refreshed, reload and add stock again.", {
+                  position: "bottom-right",
+                  hideProgressBar: true,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                });
+              })
+              .catch((err) => {
+                toast.error(
+                  `${
+                    err.response && err.response.data
+                      ? err.response.data.message
+                      : "Could not add stock to product."
+                  }`,
+                  {
+                    position: "bottom-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                  }
+                );
+              });
+            }
+            
+            api.post("/product/stock/qty",{stocks: this.state.stocks,requiredPermission: "Edit Products"}).then(res=>{
+              // console.log(res)
+            }).catch(err=>console.log(err))
             this.setState({
               submitting: false,
               alertType: "success",
@@ -692,7 +742,6 @@ class CreateProduct extends React.Component {
         },
       })
       .then((res) => {
-        console.log(res.data.data);
         param.success({
           url: siteUrl + res.data.data.image,
         });
@@ -741,12 +790,12 @@ class CreateProduct extends React.Component {
         },
       ],
     });
-    this.setState({ options });
+    this.setState({ options,optionchange: true });
   };
   handleRemoveSpecificRowOption = (idx) => {
     const { options } = this.state;
     options.splice(idx, 1);
-    this.setState({ options });
+    this.setState({ options, optionchange: true });
   };
   handleAddNewOptionValue = (idx) => {
     const { options } = this.state;
@@ -755,12 +804,12 @@ class CreateProduct extends React.Component {
       price: "",
       priceType: "",
     });
-    this.setState({ options });
+    this.setState({ options, optionchange: true });
   };
   handleRemoveSpecificOptionValue = (idx, idx2) => {
     const { options } = this.state;
     options[idx].value.splice(idx2, 1);
-    this.setState({ options });
+    this.setState({ options, optionchange: true });
   };
   onDownloadSortEnd = ({ oldIndex, newIndex }) => {
     let arr = arrayMove(this.state.downloadsIds, oldIndex, newIndex);
@@ -773,7 +822,7 @@ class CreateProduct extends React.Component {
   };
   onOptionSortEnd = ({ oldIndex, newIndex }) => {
     let arr = arrayMove(this.state.options, oldIndex, newIndex);
-    this.setState({ options: arr });
+    this.setState({ options: arr, optionchange: true });
   };
   onOptionTypeSortEnd = (oldIndex, newIndex, idx) => {
     const { options } = this.state;
@@ -782,7 +831,7 @@ class CreateProduct extends React.Component {
       oldIndex,
       newIndex
     );
-    this.setState({ options });
+    this.setState({ options, optionchange: true });
   };
   OptionTypeToggle = (idx) => {
     if (
@@ -1008,7 +1057,7 @@ class CreateProduct extends React.Component {
                   <select
                     name="brandId"
                     className="form-control custom-select-black "
-                    value={this.state.brandId}
+                    value={this.state.brandId?this.state.brandId:""}
                     onChange={(e) => {
                       this.setState({ brandId: e.target.value });
                     }}
@@ -1052,7 +1101,7 @@ class CreateProduct extends React.Component {
                   <select
                     name="taxClass"
                     className="form-control custom-select-black "
-                    value={this.state.data.taxClass}
+                    value={this.state.data.taxClass?this.state.data.taxClass:""}
                     onChange={(e) => {
                       this.setVal(e.target.name, e.target.value);
                     }}
@@ -1272,6 +1321,7 @@ class CreateProduct extends React.Component {
                   </select>
                 </div>
               </div>
+
               <div
                 className={this.state.data.inventoryManagement ? "" : "hide"}
               >
@@ -1288,7 +1338,7 @@ class CreateProduct extends React.Component {
                       className="form-control "
                       type="number"
                       min={0}
-                      value={this.state.data.Qty}
+                      value={this.state.data.Qty?this.state.data.Qty:0}
                       onChange={(e) => {
                         this.setVal(e.target.name, e.target.value);
                       }}
@@ -1309,67 +1359,75 @@ class CreateProduct extends React.Component {
                       this.setVal(e.target.name, e.target.value);
                     }}
                   >
-                    <option value={false}>Please Select</option>
                     <option value={true}>In Stock</option>
                     <option value={false}>Out of Stock</option>
                   </select>
                 </div>
               </div>
-              {this.state.stock.length > 0 && 
-              <div className="form-group">
-                <label className="col-md-3 control-label text-left">
-                  Add Stock
-                </label>
-                <div className="table-responsive " style={{height: '250px', overflowY: 'auto'}}>
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Type</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.stock.map((item,key)=>{
-                        return <tr key={key} >
-                          <td className="p-2">{item.name}</td>
-                          <td className="p-2">
-                          <input
-                      name="qty"
-                      className="form-control "
-                      type="number"
-                      min={0}
-                      placeholder={"Qty"}
-                      value={item.qty}
-                      // value={this.state.data.Qty}
-                      // onChange={(e) => {
-                      //   this.setVal(e.target.name, e.target.value);
-                      // }}
-                    />
-                          </td>
-                          <td className="p-2">
-                          <input
-                      name="price"
-                      className="form-control "
-                      type="number"
-                      min={0}
-                      placeholder={"Price"}
-                      value={item.price}
-                      // value={this.state.data.Qty}
-                      // onChange={(e) => {
-                      //   this.setVal(e.target.name, e.target.value);
-                      // }}
-                    />
-                          </td>
+              {this.state.stocks.length > 0 && this.state.data.inventoryManagement && (
+                <div className="form-group">
+                  <label className="col-md-3 control-label text-left">
+                    Add Stock
+                  </label>
+                  <div
+                    className="table-responsive "
+                    style={{ height: "250px", overflowY: "auto" }}
+                  >
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Type</th>
+                          <th>Quantity</th>
+                          <th>Price</th>
                         </tr>
-                      })}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {this.state.stocks.map((item, key) => {
+                          return (
+                            <tr key={key}>
+                              <td className="p-2">{item.name}</td>
+                              <td className="p-2">
+                                <input
+                                  name="stockqty"
+                                  className="form-control "
+                                  type="number"
+                                  min={0}
+                                  placeholder={"Qty"}
+                                  value={item.qty}
+                                  onChange={(e) => {
+                                    const {stocks} = this.state
+                                    stocks[key].qty = e.target.value
+                                    this.setState({stocks})
+                                  }}
+                                />
+                              </td>
+                              <td className="p-2">
+                                <input
+                                  name="stockprice"
+                                  className="form-control "
+                                  type="number"
+                                  min={0}
+                                  placeholder={"Price"}
+                                  value={item.price}
+                                  onChange={(e) => {
+                                    const {stocks} = this.state
+                                    stocks[key].price = e.target.value
+                                    this.setState({stocks})
+                                  }}
+                                />
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p style={{ color: "#777", padding: "0.5em" }}>
+                    * Stock resets everytime the product options are changed.
+                  </p>
                 </div>
-                    <p  style={{color: '#777', padding: '0.5em'}}>* Stock resets everytime the product options are changed.</p>
-             </div>
-            
-                    }</div>
+              )}
+            </div>
           </div>
         </div>
       );
@@ -1666,7 +1724,7 @@ class CreateProduct extends React.Component {
                                   onChange={(e) => {
                                     const { options } = this.state;
                                     options[idx].type = e.target.value;
-                                    this.setState({ options });
+                                    this.setState({ options, optionchange: true });
                                   }}
                                 >
                                   <option value="">Please Select</option>
@@ -1711,7 +1769,7 @@ class CreateProduct extends React.Component {
                                   const { options } = this.state;
                                   options[idx].required =
                                     !this.state.options[idx].required;
-                                  this.setState({ options });
+                                  this.setState({ options, optionchange: true });
                                 }}
                               />
                               <label htmlFor={"option-0-is-required" + idx}>
@@ -1778,7 +1836,7 @@ class CreateProduct extends React.Component {
                 onClick={() => {
                   const { options } = this.state;
                   options.push(this.state.selectedGlobalOption);
-                  this.setState({ options, selectedGlobalOption: {} });
+                  this.setState({ options, selectedGlobalOption: {}, optionchange: true });
                 }}
               >
                 Add Global Option
