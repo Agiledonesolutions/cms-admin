@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 import api from "../../apis/api";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
@@ -10,6 +10,8 @@ import { Modal } from "react-responsive-modal";
 import FileManager from '../Media/FileManager'
 import { siteUrl } from "../../utils/utils";
 import { toast } from 'react-toastify';
+import {getMessage} from '../AlertMessage'
+
 class CreateMenuItem extends React.Component {
   state = {
     submitting: false,
@@ -36,8 +38,14 @@ class CreateMenuItem extends React.Component {
     image: "",
     menuId: "",
     errors: [],
+    alertType: "",
+    alertMessage: "",
+    redirect: false,
+    selectDataLoad: this.props.edit=="true"?false:true
   };
-
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   componentDidMount() {
     
     const {categoryOptions} = this.state
@@ -49,6 +57,7 @@ class CreateMenuItem extends React.Component {
       }
       tmp['label'] = name+ x.name
       tmp['value'] = x._id
+      if(x.status)
       categoryOptions.push(tmp)
       if(x.childrenCategory.length > 0){
         sub.push("sub")
@@ -106,27 +115,32 @@ class CreateMenuItem extends React.Component {
     })
 
     if (this.props.edit == "true") {
+      this.setState({submitting: true})
       const url2 = "menu/menuitem/get/"+this.props.match.params.id2
       api.get(url2).then(res=>{
-        const {data, CategoryId, url} = this.state
-        console.log(res.data.data)
+        const {data} = this.state
         data.name = res.data.data.name
         data.type = res.data.data.type
         data.icon = res.data.data.icon?res.data.data.icon: ""
         data.fluidMenu = res.data.data.fluidMenu
         data.target = res.data.data.target
         data.status = res.data.data.status
-
         if(res.data.data.parentMenu){
           this.setState({parentMenuId: res.data.data.parentMenu._id})
         }
-        if(res.data.data.image){
-          this.setState({ImageId: res.data.data.image._id, image: res.data.data.image.image})
-        }
-        res.data.data.page?this.setState({PageId: res.data.data.page._id}): res.data.data.category?this.setState({CategoryId: res.data.data.category._id}):data.url = res.data.data.url
-        this.setState({data})
+
+        res.data.data.page?this.setState({PageId: res.data.data.page._id, selectDataLoad: true}): res.data.data.category?this.setState({CategoryId: res.data.data.category._id, selectDataLoad: true}):data.url = res.data.data.url
+        this.setState({data, submitting: false, ImageId: res.data.data.image?res.data.data.image._id:"", image: res.data.data.image?res.data.data.image.image:""})
       }).catch(err=>{
-        console.log("error fetching menu item details")
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       })
     }
 
@@ -167,6 +181,8 @@ class CreateMenuItem extends React.Component {
     }
     
     if (data.type == "Category" && !errors.includes("category") && !Validate.validateNotEmpty(CategoryId)) {
+      errors.splice(errors.indexOf("url"), 1);
+      errors.splice(errors.indexOf("page"), 1);
       errors.push("category");
       this.setState({ errors });
     } else if (
@@ -177,6 +193,8 @@ class CreateMenuItem extends React.Component {
       this.setState({ errors });
     }
     if (data.type == "Page" && !errors.includes("page") && !Validate.validateNotEmpty(PageId)) {
+      errors.splice(errors.indexOf("url"), 1);
+      errors.splice(errors.indexOf("category"), 1);
       errors.push("page");
       this.setState({ errors });
     } else if (
@@ -187,6 +205,8 @@ class CreateMenuItem extends React.Component {
       this.setState({ errors });
     }
     if (data.type == "URL" && !errors.includes("url") && !Validate.validateNotEmpty(data["url"])) {
+      errors.splice(errors.indexOf("page"), 1);
+      errors.splice(errors.indexOf("category"), 1);
       errors.push("url");
       this.setState({ errors });
     } else if (
@@ -198,24 +218,47 @@ class CreateMenuItem extends React.Component {
     }
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
-      console.log(this.state);
-      // this.setState({ submitting: true });
+      this.setState({ submitting: true });
       if (this.props.edit == "true") {
-        console.log(this.state)
         api.put('/menu/menuitem', {data: this.state.data, CategoryId: this.state.CategoryId, PageId: this.state.PageId, parentMenuId: this.state.parentMenuId, ImageId: this.state.ImageId, menuId: this.props.match.params.id, requiredPermission: "Edit Menu Items", _id: this.props.match.params.id2}).then(res=>{
-          console.log(res)
+          this.setState({submitting: false, alertType: "success", alertMessage: "Menu Item edited successfully."})
+
         }).catch(err=>{
-          console.log(err.response.message)
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+          this.setState({submitting: false})
         })
       } else {
         api.post('/menu/menuitem', {data: this.state.data, CategoryId: this.state.CategoryId, PageId: this.state.PageId, parentMenuId: this.state.parentMenuId, ImageId: this.state.ImageId, menuId: this.props.match.params.id, requiredPermission: "Create Menu Items"}).then(res=>{
-          console.log(res)
+          this.setState({ submitting: false, redirect: true });
+          toast.success('Menu Item added successfully', {
+            position: "bottom-right",
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
         }).catch(err=>{
-          console.log("error adding item")
+          toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            });
+          this.setState({submitting: false})
         })
       }
     } else {
-      console.log(errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
+
     }
   };
   tabContentToggle = () => {
@@ -266,7 +309,7 @@ class CreateMenuItem extends React.Component {
                   </select>
                 </div>
               </div>
-              {this.state.data.type == "Category"? 
+              {this.state.selectDataLoad && this.state.data.type == "Category"? 
               <div className="link-field category-field ">
                 <div className="form-group">
                   <label
@@ -468,6 +511,9 @@ class CreateMenuItem extends React.Component {
     }
   };
   render() {
+    if(this.state.redirect){
+      return <Redirect to={"/menus/"+this.props.match.params.id+"/edit"}/>
+    }
     return (
       <React.Fragment>
           <Modal
@@ -497,7 +543,7 @@ class CreateMenuItem extends React.Component {
         </Modal>
         <section className="content-header clearfix">
           {this.props.edit == "true" ? (
-            <h3>Edit Menu Item Sale</h3>
+            <h3>Edit Menu Item</h3>
           ) : (
             <h3>Create Menu Item</h3>
           )}
@@ -519,7 +565,13 @@ class CreateMenuItem extends React.Component {
             )}
           </ol>
         </section>
+        <Loading show={this.state.submitting} />
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="accordion-content clearfix">
               <div className="col-lg-3 col-md-4">
@@ -575,7 +627,6 @@ class CreateMenuItem extends React.Component {
                     <div className="form-group">
                       <div
                         className="col-md-2 col-md-10"
-                        style={{ display: "flex" }}
                       >
                         <button
                           type="submit"
@@ -587,7 +638,6 @@ class CreateMenuItem extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting} />
                       </div>
                     </div>
                   </div>

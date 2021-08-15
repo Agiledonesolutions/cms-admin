@@ -5,6 +5,7 @@ import Loading from "../Loading";
 import Validate from "../../utils/validation";
 import api from "../../apis/api";
 import Tree from "rc-tree";
+import {getMessage} from '../AlertMessage'
 import { toast } from 'react-toastify';
 class CreateMenu extends React.Component {
   state = {
@@ -33,7 +34,11 @@ class CreateMenu extends React.Component {
     _id: "",
     oldIndex: "",
     newIndex:"",
-    parentMenuId: ""
+    parentMenuId: "",
+    alertType: "",
+    alertMessage: "",
+    redirect: false,
+    newId: ""
   };
   componentDidMount = () => {
     var dataTemp = [];
@@ -119,13 +124,32 @@ class CreateMenu extends React.Component {
         });
     }
   };
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   handleDelete = (id) =>{
-    console.log(id)
+    this.setState({submitting: true })
     api.delete('/menu/menuitem', {data: {_id: id, requiredPermission: "Delete Menu Items"}}).then(res=>{
-      console.log(res.data.data)
+      this.setState({submitting: false})
+        toast.success('Menu Item deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       this.componentDidMount()
     }).catch(err=>{
-      console.log(err.response.data)
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
+      this.setState({submitting: false})
     })
   }
 
@@ -159,12 +183,19 @@ class CreateMenu extends React.Component {
             requiredPermission: "Edit Menus",
           })
           .then((res) => {
-            console.log(res);
-            this.setState({ submitting: false });
+            this.setState({submitting: false, alertType: "success", alertMessage: "Menu edited successfully."})
+
           })
           .catch((err) => {
-            console.log("error editing menu");
-            this.setState({ submitting: false });
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+            this.setState({submitting: false})
           });
       } else {
         api
@@ -173,16 +204,30 @@ class CreateMenu extends React.Component {
             requiredPermission: "Create Menus",
           })
           .then((res) => {
-            console.log(res.data.data);
-            this.setState({ submitting: false, edit: res.data.data._id });
+            this.setState({ submitting: false, redirect: true, newId: res.data.data._id });
+            toast.success('Menu added successfully', {
+              position: "bottom-right",
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
           })
           .catch((err) => {
-            console.log("error adding menu");
-            this.setState({ submitting: false });
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+            this.setState({submitting: false})
           });
       }
     } else {
-      console.log(errors);
+      this.setState({alertType: "fail", alertMessage: "Please fill the following: "+ errors})
+
     }
   };
   onDragStart = (info) => {
@@ -197,7 +242,15 @@ class CreateMenu extends React.Component {
     api.post('/menu/menuitem/changeOrder', {newIndex: this.state.newIndex, oldIndex: this.state.oldIndex, parentMenuId: this.state.parentMenuId, id: this.state._id}).then(res=>{
       console.log(res)
     }).then(err=>{
-      console.log(err)
+      toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
+      this.setState({submitting: false})
     })
   }
   onDrop = (info) => {
@@ -291,11 +344,17 @@ class CreateMenu extends React.Component {
   render() {
     if (this.state.edit != "") {
       return <Redirect to={"/menus/" + this.props.match.params.id + "/items/"+this.state.edit+"/edit"} />;
+    }else if(this.state.redirect){
+      return <Redirect to={"/menus/"+this.state.newId+"/edit"}/>
     }
     return (
       <React.Fragment>
         <section className="content-header clearfix">
-          <h3>Create Menu</h3>
+        {this.props.edit == "true" ? (
+            <h3>Edit Menu</h3>
+          ) : (
+            <h3>Create Item</h3>
+          )}
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
@@ -303,10 +362,17 @@ class CreateMenu extends React.Component {
             <li>
               <Link to="/menus">Menus</Link>
             </li>
-            <li className="active">Create Menu</li>
+            {this.props.edit == "true"? (<li className="active">Edit Menu</li>):(<li className="active">Create Menu</li>)}
+            
           </ol>
         </section>
+        <Loading show={this.state.submitting} />
         <section className="content">
+        {getMessage(
+            this.state.alertType,
+            this.state.alertMessage,
+            this.onClose
+          )}
           <form className="form-horizontal">
             <div className="row">
               <div className="col-md-6">
@@ -396,7 +462,6 @@ class CreateMenu extends React.Component {
                     <div className="form-group">
                       <div
                         className="col-md-offset-3 col-md-9"
-                        style={{ display: "flex" }}
                       >
                         <button
                           type="submit"
@@ -408,7 +473,7 @@ class CreateMenu extends React.Component {
                         >
                           Save
                         </button>
-                        <Loading show={this.state.submitting} />
+                        
                       </div>
                     </div>
                   </div>

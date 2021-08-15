@@ -134,6 +134,7 @@ class Brands extends React.Component {
             <li className="active">Brands</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">
@@ -145,7 +146,7 @@ class Brands extends React.Component {
               </Link>
             </div>
           </div>
-          <Loading show={this.state.submitting}/>
+          
           <div className="box box-primary">
             <div className="box-body index-table" id="attributes-table">
               <div className="table-delete-button">

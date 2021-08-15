@@ -7,10 +7,12 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../apis/api";
 import { format } from "timeago.js";
+import Loading from "../Loading";
 import { toast } from 'react-toastify';
 class Menu extends React.Component {
   state = {
     selectedRows: [],
+    submitting: false,
     tableData: {
       columns: [
         {
@@ -42,6 +44,7 @@ class Menu extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({submitting: true})
     const datalist = [];
     var i = 0;
     api
@@ -60,25 +63,50 @@ class Menu extends React.Component {
         });
         const { tableData } = this.state;
         tableData["data"] = datalist;
-        this.setState({ tableData });
+        this.setState({ tableData, submitting: false});
       })
       .catch((err) => {
-        console.log(err);
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       });
   }
 
   deleteSelectedItems = () => {
+    this.setState({submitting: true})
     const { selectedRows } = this.state;
     const { requiredPermission } = this.state;
     const data = { id: selectedRows, requiredPermission };
     api
       .delete("/menu", { data })
       .then((res) => {
-        console.log(res);
+        this.setState({submitting: false})
+        toast.success('Menu(s) deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log("delete error");
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+        this.setState({submitting: false})
       });
   };
 
@@ -97,6 +125,7 @@ class Menu extends React.Component {
             <li className="active">Menu</li>
           </ol>
         </section>
+        <Loading show={this.state.submitting}/>
         <section className="content">
           <div className="row">
             <div className="btn-group pull-right">
