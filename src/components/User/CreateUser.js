@@ -521,15 +521,17 @@ class CreateUser extends React.Component {
     })
     if(this.props.edit == "true"){
       this.setState({submitting: true})
-      const {data} = this.state
+      const {data, RoleIds} = this.state
       const url = "/users/get/"+this.props.match.params.id
       api.get(url).then(res=>{
-        //console.log(res.data.data)
         data["First Name"] = res.data.data["First Name"]
         data["Last Name"] = res.data.data["Last Name"]
         data.Email = res.data.data.Email
         data.Permissions = res.data.data.Permissions
-        this.setState({data, RoleIds: res.data.data.Roles, submitting: false})
+        res.data.data.Roles.forEach(role=>{
+          RoleIds.push(role._id)
+        })
+        this.setState({data, RoleIds, submitting: false})
       }).catch((err)=>{
         this.setState({submitting: false})
         toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {

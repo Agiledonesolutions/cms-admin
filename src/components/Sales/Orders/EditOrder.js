@@ -11,6 +11,7 @@ class EditOrder extends React.Component {
     orderDate: "--",
     orderStatus: "Processing",
     shippingMethod: "--",
+    shippingPrice: "--",
     paymentMethod: "--",
     currency: "--",
     currencyRate: "--",
@@ -61,11 +62,12 @@ class EditOrder extends React.Component {
             Name: item.Product?item.Product.name:"",
             _id: item.Product?item.Product._id:"",
             price: item.Product?item.Product.price:""
-          }
+          },
+          Stock: item.Stock
         }
         arr.push(tmp)
       })
-      this.setState({shippingAddress: val.Address.ShippingAddress, billingAddress: val.Address.BillingAddress, orderDate: val.createdAt.substr(0,10).split("-").reverse().join("-"), shippingMethod: val.ShippingMethod, paymentMethod: val.PaymentMethod,orderStatus: val.Status, customerName: val.User?val.User["First Name"]+" "+val.User["Last Name"]: "--", customerEmail: val.User?val.User.Email: "--", items: arr, subTotal: val.SubTotal, discount: val.Discount, Total: val.Total, submitting: false})
+      this.setState({shippingAddress: val.Address.ShippingAddress, billingAddress: val.Address.BillingAddress, orderDate: val.createdAt.substr(0,10).split("-").reverse().join("-"), shippingMethod: val.ShippingMethod, shippingPrice: val.ShippingPrice, paymentMethod: val.PaymentMethod,orderStatus: val.Status, customerName: val.User?val.User["First Name"]+" "+val.User["Last Name"]: "--", customerEmail: val.User?val.User.Email: "--", items: arr, subTotal: val.SubTotal, discount: val.Discount, Total: val.Total, submitting: false})
     }).catch(err=>{
       console.log("error fetching order details")
       this.setState({submitting: false})
@@ -276,11 +278,14 @@ class EditOrder extends React.Component {
                         </thead>
                         <tbody>
                           {this.state.items.map((item, idx)=>(
-                          <tr key={idx}>
+                            <tr key={idx}>
                             <td>
                               <Link to={"/products/"+ item.Product._id+"/edit"}>
                                 {item.Product.Name}
                               </Link>
+                              {item.Stock && item.Stock.name &&
+                              <span style={{fontSize: "12px"}}>{"options: "+ item.Stock.name.split("-")}</span>
+                              }
                             </td>
                             <td>{item.Product.price}</td>
                             <td>{item.Qty}</td>
@@ -305,8 +310,8 @@ class EditOrder extends React.Component {
                           <td className="text-right">{this.state.subTotal}</td>
                         </tr>
                         <tr>
-                          <td>Flat Rate</td>
-                          <td className="text-right">{this.state.discount}</td>
+                          <td>{this.state.shippingMethod}</td>
+                          <td className="text-right">{this.state.shippingPrice}</td>
                         </tr>
                         <tr>
                           <td>Total</td>
