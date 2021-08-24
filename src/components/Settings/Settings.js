@@ -203,7 +203,7 @@ class Settings extends React.Component {
         console.log("error fetching roles");
       });
     api
-      .post("/settings/get", {requiredPerission: "Edit Settings"})
+      .post("/settings/get", {requiredPermission: "Edit Settings"})
       .then((res) => {
         const { data } = this.state;
         for (const [key, value] of Object.entries(res.data.data[0])) {

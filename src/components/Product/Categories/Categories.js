@@ -562,6 +562,7 @@ class Categories extends React.Component {
                     style={{ marginBottom: "5px" }}
                     onClick={() => {
                       this.setState({ selectedCategory: "none" });
+                      this.resetData();
                     }}
                   >
                     Add Root Category

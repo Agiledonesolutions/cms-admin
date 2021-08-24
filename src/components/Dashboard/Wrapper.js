@@ -55,7 +55,7 @@ const Wrapper = (props) => {
                   </li>
                 </ul>
               </li>
-              <li className="language dropdown top-nav-menu pull-right">
+              {/* <li className="language dropdown top-nav-menu pull-right">
                 <a
                   style={{ cursor: "pointer" }}
                   className="dropdown-toggle"
@@ -76,7 +76,7 @@ const Wrapper = (props) => {
                     </a>
                   </li>
                 </ul>
-              </li>
+              </li> */}
             </ul>
           </nav>
           {props.children}

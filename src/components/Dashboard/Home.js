@@ -111,7 +111,7 @@ class Home extends React.Component {
           </div>
           <div className="row">
             <div className="col-md-7">
-              <div className="sales-analytics">
+              {/* <div className="sales-analytics">
                 <div className="grid-header clearfix">
                   <h4>
                     <i className="fa fa-bar-chart" aria-hidden="true" />
@@ -121,7 +121,7 @@ class Home extends React.Component {
                 <div className="canvas">
                   <canvas className="chart" width={400} height={250} />
                 </div>
-              </div>
+              </div> */}
               <div className="dashboard-panel">
                 <div className="grid-header">
                   <h4>
