@@ -31,7 +31,7 @@ const Wrapper = (props) => {
           <nav className="navbar navbar-static-top clearfix">
             <ul className="nav navbar-nav clearfix">
               <li className="visit-store hidden-sm hidden-xs">
-                <a href="https://lokostop.in" target="_blank">
+                <a href="https://shrijishringar.com/" target="_blank">
                   <i className="fa fa-desktop" />
                   Visit Store
                 </a>

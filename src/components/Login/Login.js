@@ -6,6 +6,7 @@ import Validate from '../../utils/validation'
 import {setUser, setUserName, setUserSession} from '../../utils/session'
 import Loading from "../Loading";
 import { setAuthToken, setUserDetails, setName } from "../../utils/local";
+import { toast } from "react-toastify";
 
 
 class Login extends React.Component {
@@ -77,8 +78,23 @@ class Login extends React.Component {
         window.location.href="/dashboard"
 
       }).catch(error=>{
+        toast.error(
+          `${
+            error.response && error.response.data
+              ? error.response.data.message
+              : "Something went wrong."
+          }`,
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          }
+        );
         if(error.response.status === 422){
-          console.log("Wrong EMail or paass")
+          console.log("Wrong Email or paass")
         }else if(error.response.status === 500){
           console.log("Something went wrong")
         }

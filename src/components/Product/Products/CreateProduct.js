@@ -141,18 +141,18 @@ class CreateProduct extends React.Component {
       },
     ],
     options: [
-      {
-        name: "",
-        type: "",
-        required: false,
-        value: [
-          {
-            label: "",
-            price: "",
-            priceType: "",
-          },
-        ],
-      },
+      // {
+      //   name: "",
+      //   type: "",
+      //   required: false,
+      //   value: [
+      //     {
+      //       label: "",
+      //       price: "",
+      //       priceType: "",
+      //     },
+      //   ],
+      // },
     ],
     edit: "",
     errors: [],
@@ -511,6 +511,15 @@ class CreateProduct extends React.Component {
       this.setState({ baseImageId: id, baseImage: image });
     }
   };
+  removeImageId = (id, multiple, image) => {
+    if(multiple){
+      const { additionalImageIds } = this.state;
+      const { additionalImages } = this.state;
+      additionalImageIds.splice(id,1)
+      additionalImages.splice(id,1);
+      this.setState({ additionalImageIds, additionalImages });
+    }
+  }
   setDownloadId = (id, multiple, image, filename) => {
     const { downloadsIds, downloadFilenames } = this.state;
     downloadsIds[downloadsIds.length - 1] = id;
@@ -1456,6 +1465,15 @@ class CreateProduct extends React.Component {
                     height={120}
                     width={120}
                   />
+                   <button
+                    type="button"
+                    className="btn remove-image"
+                    onClick={() => {
+                      
+                        this.setImageId("", false, "");
+                  
+                    }}
+                  />
                 </div>
               ) : (
                 <div className="image-holder placeholder">
@@ -1488,6 +1506,13 @@ class CreateProduct extends React.Component {
                               height={120}
                               width={120}
                             />
+                            <button
+                              type="button"
+                              className="btn remove-image"
+                              onClick={() => {
+                                  this.removeImageId(key, true, "")
+                              }}
+                  />
                           </div>
                         );
                       })

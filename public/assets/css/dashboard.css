@@ -244,7 +244,7 @@ a {
 }
 
 .bf-container .public-DraftEditor-content{
-  max-height: 300px;
+  /* max-height: 300px; */
   overflow-y: auto;
 }
 .bf-content{
