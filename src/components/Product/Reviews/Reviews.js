@@ -64,7 +64,7 @@ class Reviews extends React.Component {
           
           var tmp = {
             id: val.ID,
-            product: val["product"]["name"],
+            product: val.product?.name,
             reviewername: val["reviewerName"],
             rating: val.rating,
             approved: val.status,
@@ -154,7 +154,7 @@ class Reviews extends React.Component {
               <DataTableExtensions {...this.state.tableData}>
                 <DataTable
                   noHeader
-                  defaultSortField="id"
+                  defaultSortField="date"
                   defaultSortAsc={true}
                   sortIcon={<SortIcon />}
                   selectableRowsComponent={Checkbox}

@@ -594,13 +594,14 @@ class CreateProduct extends React.Component {
                 requiredPermission: "Edit Products",
               })
               .then((res2) => {
-                toast.success("Stock has been refreshed, reload and add stock again.", {
+                toast.success("Stock has been refreshed.", {
                   position: "bottom-right",
                   hideProgressBar: true,
                   closeOnClick: true,
                   pauseOnHover: true,
                   draggable: true,
                 });
+                window.location.reload();
               })
               .catch((err) => {
                 toast.error(

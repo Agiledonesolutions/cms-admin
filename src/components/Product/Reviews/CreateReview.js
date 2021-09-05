@@ -11,7 +11,7 @@ class CreateReview extends React.Component {
     submitting: false,
     data: {
       reviewerName: "",
-      rating: "",
+      rating: 0,
       comment: "",
       status: false
     },
@@ -71,12 +71,12 @@ class CreateReview extends React.Component {
       errors.splice(errors.indexOf("reviewerName"), 1);
       this.setState({ errors });
     }
-    if (!errors.includes("rating") && !Validate.validateNotEmpty(data["rating"])) {
+    if (!errors.includes("rating") && data["rating"] == 0) {
         errors.push("rating");
         this.setState({ errors });
       } else if (
         errors.includes("rating") &&
-        Validate.validateNotEmpty(data["rating"])
+        data["rating"] != 0
       ) {
         errors.splice(errors.indexOf("rating"), 1);
         this.setState({ errors });
@@ -202,6 +202,7 @@ class CreateReview extends React.Component {
                                 value={this.state.data.rating}
                                 onChange={(e)=>{this.setVal(e.target.name, e.target.value)}}
                               >
+                                <option value="0">Please Select</option>
                                 <option value="1" >
                                   1
                                 </option>
