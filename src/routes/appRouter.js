@@ -54,6 +54,9 @@ import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Blogs from '../components/Blogs/Blogs';
 import CreateBlog from '../components/Blogs/CreateBlog';
+import Queries from '../components/Support/Queries/Queries';
+import Complaints from '../components/Support/Complaints/Complaints';
+import EditQuery from '../components/Support/Queries/EditQuery';
 
 
 const routes = (
@@ -106,6 +109,11 @@ const routes = (
         <PrivateRoute exact path='/orders/:id' component={()=><Dashboard abc={ <EditOrder />} />} />
 
         <PrivateRoute exact path='/transactions' component={()=><Dashboard abc={ <Transactions />} />} />
+
+        <PrivateRoute exact path='/queries' component={()=><Dashboard abc={ <Queries />} />} />
+        <PrivateRoute exact path='/queries/:id' component={()=><Dashboard abc={ <EditQuery />} />} />
+
+        <PrivateRoute exact path='/complaints' component={()=><Dashboard abc={ <Complaints />} />} />
 
         <PrivateRoute exact path='/flashsales' component={()=><Dashboard abc={ <FlashSales />} />} />
         <PrivateRoute exact path='/flashsales/create' component={()=><Dashboard abc={ <CreateFlashSale />} />} />

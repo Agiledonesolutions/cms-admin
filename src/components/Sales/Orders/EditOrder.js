@@ -17,8 +17,8 @@ class EditOrder extends React.Component {
     currencyRate: "--",
     customerName: "--",
     customerEmail: "--",
-    customerPhone: "--",
-    customerGroup: "--",
+    Phone: "--",
+    customerGroup: "Registered",
     billingAddress: {
       Name: "--",
       Line1: "--",
@@ -67,7 +67,7 @@ class EditOrder extends React.Component {
         }
         arr.push(tmp)
       })
-      this.setState({shippingAddress: val.Address.ShippingAddress, billingAddress: val.Address.BillingAddress, orderDate: val.createdAt.substr(0,10).split("-").reverse().join("-"), shippingMethod: val.ShippingMethod, shippingPrice: val.ShippingPrice, paymentMethod: val.PaymentMethod,orderStatus: val.Status, customerName: val.User?val.User["First Name"]+" "+val.User["Last Name"]: "--", customerEmail: val.User?val.User.Email: "--", items: arr, subTotal: val.SubTotal, discount: val.Discount, Total: val.Total, submitting: false})
+      this.setState({Phone: val.Phone,shippingAddress: val.Address.ShippingAddress, billingAddress: val.Address.BillingAddress, orderDate: val.createdAt.substr(0,10).split("-").reverse().join("-"), shippingMethod: val.ShippingMethod, shippingPrice: val.ShippingPrice, paymentMethod: val.PaymentMethod,orderStatus: val.Status, customerName: val.User?val.User["First Name"]+" "+val.User["Last Name"]: "--", customerEmail: val.User?val.User.Email: "--", items: arr, subTotal: val.SubTotal, discount: val.Discount, Total: val.Total, submitting: false})
     }).catch(err=>{
       console.log("error fetching order details")
       this.setState({submitting: false})
@@ -112,7 +112,7 @@ class EditOrder extends React.Component {
           <div className="order-wrapper">
             <div className="order-information-wrapper">
               <div className="order-information-buttons">
-                <a
+                {/* <a
                   href="#"
                   className="btn btn-default"
                   target="_blank"
@@ -120,8 +120,8 @@ class EditOrder extends React.Component {
                   title="Print"
                 >
                   <i className="fa fa-print" aria-hidden="true" />
-                </a>
-                <form
+                </a> */}
+                {/* <form
                   method="POST"
                 >
                   
@@ -133,7 +133,7 @@ class EditOrder extends React.Component {
                   >
                     <i className="fa fa-envelope-o" aria-hidden="true" />
                   </button>
-                </form>
+                </form> */}
               </div>
               <h3 className="section-title">Order &amp; Account Information</h3>
               <div className="row">
@@ -215,7 +215,7 @@ class EditOrder extends React.Component {
                           </tr>
                           <tr>
                             <td>Customer Phone</td>
-                            <td>{this.state.customerPhone}</td>
+                            <td>{this.state.Phone}</td>
                           </tr>
                           <tr>
                             <td>Customer Group</td>
@@ -237,9 +237,9 @@ class EditOrder extends React.Component {
                     <span>
                       {this.state.billingAddress.Name}
                       <br />
-                      {this.state.billingAddress.Line1}
+                      {this.state.billingAddress.AddressLine1}
                       <br />
-                      {this.state.billingAddress.Line2}
+                      {this.state.billingAddress.AddressLine2}
                       <br />
                       {this.state.billingAddress.Country}
                     </span>
@@ -251,9 +251,9 @@ class EditOrder extends React.Component {
                     <span>
                       {this.state.shippingAddress.Name}
                       <br />
-                      {this.state.shippingAddress.Line1}
+                      {this.state.shippingAddress.AddressLine1}
                       <br />
-                      {this.state.shippingAddress.Line2}
+                      {this.state.shippingAddress.AddressLine2}
                       <br />
                       {this.state.shippingAddress.Country}
                     </span>

@@ -151,6 +151,35 @@ const SideBar = () => {
                   </li>
                 </ul>
               </li>
+              <li className="treeview" onClick={NavLinkToggle}>
+                <a
+                  
+                >
+                  <i className="fa fa-envelope " />
+                  <span>Support</span>
+                  <span className="pull-right-container">
+                    <i className="fa fa-angle-left pull-right" />
+                  </span>
+                </a>
+                <ul className="treeview-menu">
+                  <li
+                    className=""
+                  >
+                    <Link to='/queries' onClick={closeNav}>
+                      <i className="fa fa-angle-double-right" />
+                      <span>Queries</span>
+                    </Link>
+                  </li>
+                  <li
+                    className=""
+                  >
+                    {/* <Link to='/complaints' onClick={closeNav}>
+                      <i className="fa fa-angle-double-right" />
+                      <span>Complaints</span>
+                    </Link> */}
+                  </li>
+                </ul>
+              </li>
               <li
                 className=""
               >

@@ -98,7 +98,7 @@ class Settings extends React.Component {
         Google: {
           Status: false,
           ClientID: "",
-          Clientsecret: "",
+          ClientSecret: "",
         },
       },
       ShippingMethods: {
@@ -257,7 +257,7 @@ class Settings extends React.Component {
     const requiredStore = ["StoreName", "StoreEmail", "StorePhone"];
     const requiredCurrency = ["SupportedCurrencies", "DefaultCurrency"];
     const requiredFacebook = ["AppID", "Appsecret"];
-    const requiredGoogle = ["ClientID", "Clientsecret"];
+    const requiredGoogle = ["ClientID", "ClientSecret"];
     const requiredShipping = ["Label"];
     const paymentMethods = ["Label", "Description"];
 
@@ -1911,10 +1911,10 @@ class Settings extends React.Component {
                     </label>
                     <div className="col-md-9">
                       <input
-                        name="Clientsecret"
+                        name="ClientSecret"
                         className="form-control "
                         type="password"
-                        value={this.state.data.SocialLogins.Google.Clientsecret}
+                        value={this.state.data.SocialLogins.Google.ClientSecret}
                         onChange={(e) => {
                           this.setVal(
                             "SocialLogins",
