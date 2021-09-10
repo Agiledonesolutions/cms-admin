@@ -34,7 +34,8 @@ class CreateBlog extends React.Component {
       heading: "",
       body: "",
       metaTitle: "",
-      metaDescription: ""
+      metaDescription: "",
+      url: ""
     },
     img: "",
     image: "",
@@ -160,6 +161,7 @@ class CreateBlog extends React.Component {
           });
           this.setState({redirect: true, submitting: false})
       }).catch(err=>{
+        console.log(err)
         toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
           position: "bottom-right",
           autoClose: 3000,
@@ -198,6 +200,7 @@ class CreateBlog extends React.Component {
                 value={this.state.data.heading}
                 onChange={(e)=>{
                     this.setVal(e.target.name, e.target.value)
+                    this.setVal("url", e.target.value.replace(' ', "-").toLowerCase())
                 }}
               />
             </div>
@@ -256,7 +259,24 @@ class CreateBlog extends React.Component {
           <h3 className="tab-content-title">SEO</h3>
           <div className="row">
             <div className="col-md-8">
-                
+            <div className="form-group">
+                <label
+                  className="col-md-3 control-label text-left"
+                >
+                  URL<span className="m-l-5 text-red">*</span>
+                </label>
+                <div className="col-md-9">
+                  <input
+                    type="text"
+                    name="url"
+                    className="form-control"
+                    value={this.state.data.url}
+                    onChange={(e)=>{
+                        this.setVal(e.target.name, e.target.value)
+                    }}
+                  />
+                </div>
+              </div>
               <div className="form-group">
                 <label
                   className="col-md-3 control-label text-left"
