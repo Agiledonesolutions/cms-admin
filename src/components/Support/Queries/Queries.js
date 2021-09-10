@@ -59,7 +59,7 @@ class Queries extends React.Component {
     this.setState({submitting: true})
     const datalist = [];
     api
-      .post("/query/get")
+      .post("/query/get", {requiredPermission: "Index Support"})
       .then((res) => {
         res.data.data.map((val) => {
           var tmp = {

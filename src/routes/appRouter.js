@@ -57,6 +57,7 @@ import CreateBlog from '../components/Blogs/CreateBlog';
 import Queries from '../components/Support/Queries/Queries';
 import Complaints from '../components/Support/Complaints/Complaints';
 import EditQuery from '../components/Support/Queries/EditQuery';
+import EditComplaint from '../components/Support/Complaints/EditComplaint';
 
 
 const routes = (
@@ -114,6 +115,7 @@ const routes = (
         <PrivateRoute exact path='/queries/:id' component={()=><Dashboard abc={ <EditQuery />} />} />
 
         <PrivateRoute exact path='/complaints' component={()=><Dashboard abc={ <Complaints />} />} />
+        <PrivateRoute exact path='/complaints/:id' component={()=><Dashboard abc={ <EditComplaint />} />} />
 
         <PrivateRoute exact path='/flashsales' component={()=><Dashboard abc={ <FlashSales />} />} />
         <PrivateRoute exact path='/flashsales/create' component={()=><Dashboard abc={ <CreateFlashSale />} />} />

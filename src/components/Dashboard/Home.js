@@ -165,7 +165,7 @@ class Home extends React.Component {
               </div>
             </div>
             <div className="col-md-5">
-              <div className="dashboard-panel">
+              {/* <div className="dashboard-panel">
                 <div className="grid-header">
                   <h4>
                     <i className="fa fa-search" aria-hidden="true" />
@@ -201,7 +201,7 @@ class Home extends React.Component {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </div> */}
               <div className="dashboard-panel">
                 <div className="grid-header">
                   <h4>

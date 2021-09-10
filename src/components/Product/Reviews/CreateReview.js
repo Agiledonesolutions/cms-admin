@@ -34,10 +34,11 @@ class CreateReview extends React.Component {
           data.comment = res.data.data.comment
           data.rating = res.data.data.rating
           
-          this.setState({data, productId: res.data.data.product["_id"], submitting: false})
+          this.setState({data, productId: res.data.data.product?.["_id"], submitting: false})
         })
         .catch((err) => {
           this.setState({submitting: false})
+          console.log(err)
           toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
             position: "bottom-right",
             autoClose: 3000,

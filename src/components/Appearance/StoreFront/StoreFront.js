@@ -539,13 +539,14 @@ class StoreFront extends React.Component {
     api
       .get("/storefront/get")
       .then((res) => {
+        
         const { data } = this.state;
         const fetched = res.data.data[0];
-        console.log(fetched);
+        // console.log(fetched);
         data.General = {
           ...data.General,
           ...fetched.General,
-          SliderId: fetched.General.Slider ? fetched.General.Slider : ""._id,
+          SliderId: fetched.General.Slider ? fetched.General.Slider._id : "",
           PrivacyPolicyPageId: fetched.General.PrivacyPolicyPage
             ? fetched.General.PrivacyPolicyPage._id
             : "",
@@ -804,7 +805,7 @@ class StoreFront extends React.Component {
                   />
                 </div>
               </div>
-              <div className="form-group">
+              {/* <div className="form-group">
                 <label className="col-md-3 control-label text-left">
                   Theme Color
                 </label>
@@ -832,8 +833,8 @@ class StoreFront extends React.Component {
                     <option value={"custom color"}>Custom Color</option>
                   </select>
                 </div>
-              </div>
-              <div
+              </div> */}
+              {/* <div
                 className={
                   this.state.data.General.ThemeColor == "custom color"
                     ? ""
@@ -856,8 +857,8 @@ class StoreFront extends React.Component {
                     />
                   </div>
                 </div>
-              </div>
-              <div className="form-group">
+              </div> */}
+              {/* <div className="form-group">
                 <label className="col-md-3 control-label text-left">
                   Mail Theme Color
                 </label>
@@ -909,7 +910,7 @@ class StoreFront extends React.Component {
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
               <div className="form-group">
                 <label className="col-md-3 control-label text-left">
                   Slider
@@ -1136,7 +1137,7 @@ class StoreFront extends React.Component {
           <h3 className="tab-content-title">Menus</h3>
           <div className="row">
             <div className="col-md-8">
-              <div className="form-group">
+              {/* <div className="form-group">
                 <label className="col-md-3 control-label text-left">
                   Navbar Text
                 </label>
@@ -1151,7 +1152,7 @@ class StoreFront extends React.Component {
                     }}
                   />
                 </div>
-              </div>
+              </div> */}
               <div className="form-group">
                 <label
                   htmlFor="storefront_primary_menu"
@@ -1170,7 +1171,7 @@ class StoreFront extends React.Component {
                   />
                 </div>
               </div>
-              <div className="form-group">
+              {/* <div className="form-group">
                 <label
                   htmlFor="storefront_category_menu"
                   className="col-md-3 control-label text-left"
@@ -1187,7 +1188,7 @@ class StoreFront extends React.Component {
                     defaultValue={this.state.data.Menus.CategoryMenuId}
                   />
                 </div>
-              </div>
+              </div> */}
               <div className="form-group">
                 <label className="col-md-3 control-label text-left">
                   Footer Menu One Title
@@ -3753,7 +3754,7 @@ class StoreFront extends React.Component {
                               >
                                 <a data-toggle="tab">Features</a>
                               </li>
-                              <li
+                              {/* <li
                                 className={
                                   this.state.activePanel == "productpage"
                                     ? "active"
@@ -3764,7 +3765,7 @@ class StoreFront extends React.Component {
                                 }}
                               >
                                 <a data-toggle="tab">Product Page</a>
-                              </li>
+                              </li> */}
                               <li
                                 className={
                                   this.state.activePanel == "sociallinks"
@@ -3816,7 +3817,7 @@ class StoreFront extends React.Component {
                         >
                           <div className="panel-body">
                             <ul className="accordion-tab nav nav-tabs">
-                              <li
+                              {/* <li
                                 className={
                                   this.state.activePanel == "sliderbanners"
                                     ? "active"
@@ -3829,8 +3830,8 @@ class StoreFront extends React.Component {
                                 }}
                               >
                                 <a data-toggle="tab">Slider Banners</a>
-                              </li>
-                              <li
+                              </li> */}
+                              {/* <li
                                 className={
                                   this.state.activePanel == "threecolfullwidth"
                                     ? "active"
@@ -3845,7 +3846,7 @@ class StoreFront extends React.Component {
                                 <a data-toggle="tab">
                                   Three Column Full Width Banners
                                 </a>
-                              </li>
+                              </li> */}
                               <li
                                 className={
                                   this.state.activePanel == "featuredcategories"
@@ -3862,20 +3863,6 @@ class StoreFront extends React.Component {
                               </li>
                               <li
                                 className={
-                                  this.state.activePanel == "producttabs1"
-                                    ? "active"
-                                    : ""
-                                }
-                                onClick={(e) => {
-                                  this.setState({
-                                    activePanel: "producttabs1",
-                                  });
-                                }}
-                              >
-                                <a data-toggle="tab">Product Tabs One</a>
-                              </li>
-                              <li
-                                className={
                                   this.state.activePanel == "topbrands"
                                     ? "active"
                                     : ""
@@ -3888,6 +3875,21 @@ class StoreFront extends React.Component {
                               </li>
                               <li
                                 className={
+                                  this.state.activePanel == "producttabs1"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({
+                                    activePanel: "producttabs1",
+                                  });
+                                }}
+                              >
+                                <a data-toggle="tab">Product Tabs One</a>
+                              </li>
+                              
+                              {/* <li
+                                className={
                                   this.state.activePanel == "flashsale"
                                     ? "active"
                                     : ""
@@ -3899,8 +3901,8 @@ class StoreFront extends React.Component {
                                 <a data-toggle="tab">
                                   Flash Sale &amp; Vertical Products
                                 </a>
-                              </li>
-                              <li
+                              </li> */}
+                              {/* <li
                                 className={
                                   this.state.activePanel == "twocolbanners"
                                     ? "active"
@@ -3913,7 +3915,7 @@ class StoreFront extends React.Component {
                                 }}
                               >
                                 <a data-toggle="tab">Two Column Banners</a>
-                              </li>
+                              </li> */}
                               <li
                                 className={
                                   this.state.activePanel == "productgrid"
@@ -3926,7 +3928,7 @@ class StoreFront extends React.Component {
                               >
                                 <a data-toggle="tab">Product Grid</a>
                               </li>
-                              <li
+                              {/* <li
                                 className={
                                   this.state.activePanel == "threecolbanners"
                                     ? "active"
@@ -3939,7 +3941,7 @@ class StoreFront extends React.Component {
                                 }}
                               >
                                 <a data-toggle="tab">Three Column Banners</a>
-                              </li>
+                              </li> */}
                               <li
                                 className={
                                   this.state.activePanel == "producttabs2"
@@ -3966,7 +3968,7 @@ class StoreFront extends React.Component {
                                   });
                                 }}
                               >
-                                <a data-toggle="tab">One Column Banner</a>
+                                <a data-toggle="tab"> Banner</a>
                               </li>
                             </ul>
                           </div>

@@ -173,21 +173,21 @@ const SideBar = () => {
                   <li
                     className=""
                   >
-                    {/* <Link to='/complaints' onClick={closeNav}>
+                    <Link to='/complaints' onClick={closeNav}>
                       <i className="fa fa-angle-double-right" />
                       <span>Complaints</span>
-                    </Link> */}
+                    </Link>
                   </li>
                 </ul>
               </li>
-              <li
+              {/* <li
                 className=""
               >
                 <Link to='/flashsales' onClick={closeNav}>
                   <i className="fa fa-bolt" />
                   <span>Flash Sales</span>
                 </Link>
-              </li>
+              </li> */}
               <li
                 className=""
               >

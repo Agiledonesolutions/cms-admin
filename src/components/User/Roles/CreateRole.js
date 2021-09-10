@@ -362,7 +362,23 @@ class CreateRole extends React.Component {
       {
           "name": "Edit Storefront",
           "value": "Inherit"
-      }
+      },
+      {
+        "name": "Index Support",
+        "value": "Inherit"
+    },
+    {
+        "name": "Create Support",
+        "value": "Inherit"
+    },
+    {
+        "name": "Edit Support",
+        "value": "Inherit"
+    },
+    {
+        "name": "Delete Support",
+        "value": "Inherit"
+    }
       ]
     },
     errors: [],
@@ -927,6 +943,28 @@ class CreateRole extends React.Component {
               />
             </div>
           </div>
+          <div className="row">
+            <div className="col-lg-9 col-md-12">
+              <div className="col-md-12">
+                <div className="row">
+                  <div className="permission-parent-head clearfix">
+                    <h3>Complaints and Queries</h3>
+                  </div>
+                </div>
+              </div>
+              <div className="clearfix" />
+              <PermissionGroup
+                heading="admin.support"
+                attributes={["Index", "Create", "Edit", "Delete"]}
+                suffix="Support"
+                setVal = {this.setVal}
+                editPermissions = {this.state.data.Permissions}
+
+              />
+           
+            </div>
+          </div>
+      
           <div className="row">
             <div className="col-lg-9 col-md-12">
               <div className="col-md-12">

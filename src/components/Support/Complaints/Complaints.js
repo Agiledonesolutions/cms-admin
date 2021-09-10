@@ -2,15 +2,13 @@ import React from "react";
 import { Link, Redirect } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import SortIcon from "@material-ui/icons/SortRounded";
-import Checkbox from "@material-ui/core/Checkbox";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import api from "../../../apis/api";
 import { format } from "timeago.js";
 import Loading from '../../Loading'
 import { toast } from 'react-toastify';
-
-class Complaints extends React.Component {
+class Complaint extends React.Component {
   state = {
     selectedRows: [],
     submitting: false,
@@ -28,10 +26,21 @@ class Complaints extends React.Component {
           sortable: true,
         },
         {
-          name: "Type",
-          selector: "type",
+          name: "Email",
+          selector: "email",
           sortable: true,
         },
+        {
+            name: "Country",
+            selector: "country",
+            sortable: true,
+        },
+        {
+            name: "Solved",
+            selector: "replied",
+            sortable: true,
+            cell: row=><span className={row.replied == "true"? "dot green": "dot red"}></span>
+          },
         {
           name: "Created",
           selector: "created",
@@ -48,16 +57,16 @@ class Complaints extends React.Component {
   componentDidMount() {
     this.setState({submitting: true})
     const datalist = [];
-    var i = 0;
     api
-      .post("/option/get")
+      .post("/complaint/get", {requiredPermission: "Index Support"})
       .then((res) => {
         res.data.data.map((val) => {
-          i++;
           var tmp = {
-            id: i,
-            name: val["name"],
-            type: val["type"],
+            id: val.ID,
+            name: val["User"]["First Name"]+" "+val["User"]["Last Name"],
+            email: val["User"]["Email"],
+            country: val["Country"],
+            replied: val["Read"],
             created: format(val["createdAt"]),
             _id: val["_id"],
           };
@@ -80,96 +89,37 @@ class Complaints extends React.Component {
       });
   }
 
-  deleteSelectedItems = () => {
-    this.setState({submitting: true})
-    const { selectedRows } = this.state;
-    const { requiredPermission } = this.state;
-    const data = { id: selectedRows, requiredPermission };
-    api
-      .delete("/option", { data })
-      .then((res) => {
-        toast.success('Option(s) deleted successfully', {
-          position: "bottom-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          });
-        this.setState({submitting: false})
-        this.componentDidMount();
-      })
-      .catch((err) => {
-        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
-          position: "bottom-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          });
-        this.setState({submitting: false})
-      });
-  };
-
   render() {
     if (this.state.edit != "") {
-      return <Redirect to={"/options/" + this.state.edit + "/edit"} />;
+      return <Redirect to={"/complaints/" + this.state.edit} />;
     }
     return (
       <div>
         <section className="content-header clearfix">
-          <h3>Options</h3>
+          <h3>Complaints</h3>
           <ol className="breadcrumb">
             <li>
               <Link to="/dashboard">Dashboard</Link>
             </li>
-            <li className="active">Options</li>
+            <li className="active">Complaints</li>
           </ol>
         </section>
         <section className="content">
-          <div className="row">
-            <div className="btn-group pull-right">
-              <Link
-                to="/options/create"
-                className="btn btn-primary btn-actions btn-create"
-              >
-                Create Option
-              </Link>
-            </div>
-          </div>
           <Loading show={this.state.submitting}/>
           <div className="box box-primary">
             <div className="box-body index-table" id="attributes-table">
-              <div className="table-delete-button">
-                <button
-                  type="button"
-                  className="btn btn-default btn-delete"
-                  onClick={this.deleteSelectedItems}
-                >
-                  Delete
-                </button>
-              </div>
+             
               <DataTableExtensions {...this.state.tableData}>
                 <DataTable
                   noHeader
                   defaultSortField="id"
                   defaultSortAsc={true}
                   sortIcon={<SortIcon />}
-                  selectableRowsComponent={Checkbox}
                   filterPlaceholder="Search"
                   export={false}
                   print={false}
-                  onSelectedRowsChange={(selected) => {
-                    const arr = [];
-                    selected["selectedRows"].forEach((row) => {
-                      arr.push(row._id);
-                    });
-                    this.setState({ selectedRows: arr });
-                  }}
                   responsive
                   pagination
-                  selectableRows
                   onRowClicked={(index) => {
                     this.setState({ edit: index._id });
                   }}
@@ -184,4 +134,4 @@ class Complaints extends React.Component {
     );
   }
 }
-export default Complaints;
+export default Complaint;

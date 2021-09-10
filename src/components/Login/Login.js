@@ -165,9 +165,9 @@ class Login extends React.Component {
               />
               <label htmlFor="remember-me">Remember me</label>
             </div>
-            <Link to="/reset-password" className="text-center pull-right">
+            {/* <Link to="/reset-password" className="text-center pull-right">
               forgot password?
-            </Link>
+            </Link> */}
           </form>
             <Loading show={this.state.submitting}/>
         </div>
