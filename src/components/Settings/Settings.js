@@ -94,11 +94,13 @@ class Settings extends React.Component {
           Status: false,
           AppID: "",
           Appsecret: "",
+          CallBackUrl: ""
         },
         Google: {
           Status: false,
           ClientID: "",
           ClientSecret: "",
+          CallBackUrl: ""
         },
       },
       ShippingMethods: {
@@ -256,8 +258,8 @@ class Settings extends React.Component {
     ];
     const requiredStore = ["StoreName", "StoreEmail", "StorePhone"];
     const requiredCurrency = ["SupportedCurrencies", "DefaultCurrency"];
-    const requiredFacebook = ["AppID", "Appsecret"];
-    const requiredGoogle = ["ClientID", "ClientSecret"];
+    const requiredFacebook = ["AppID", "Appsecret", "CallBackUrl"];
+    const requiredGoogle = ["ClientID", "ClientSecret", "CallBackUrl"];
     const requiredShipping = ["Label"];
     const paymentMethods = ["Label", "Description"];
 
@@ -1841,6 +1843,27 @@ class Settings extends React.Component {
                       />
                     </div>
                   </div>
+                  <div className="form-group">
+                    <label className="col-md-3 control-label text-left">
+                      CallBack URL<span className="m-l-5 text-red">*</span>
+                    </label>
+                    <div className="col-md-9">
+                      <input
+                        name="CallBackUrl"
+                        className="form-control "
+                        type="text"
+                        value={this.state.data.SocialLogins.Facebook.CallBackUrl}
+                        onChange={(e) => {
+                          this.setVal(
+                            "SocialLogins",
+                            "Facebook",
+                            e.target.name,
+                            e.target.value
+                          );
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               ) : (
                 ""
@@ -1915,6 +1938,27 @@ class Settings extends React.Component {
                         className="form-control "
                         type="password"
                         value={this.state.data.SocialLogins.Google.ClientSecret}
+                        onChange={(e) => {
+                          this.setVal(
+                            "SocialLogins",
+                            "Google",
+                            e.target.name,
+                            e.target.value
+                          );
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="col-md-3 control-label text-left">
+                      CallBack URL<span className="m-l-5 text-red">*</span>
+                    </label>
+                    <div className="col-md-9">
+                      <input
+                        name="CallBackUrl"
+                        className="form-control "
+                        type="text"
+                        value={this.state.data.SocialLogins.Google.CallBackUrl}
                         onChange={(e) => {
                           this.setVal(
                             "SocialLogins",
