@@ -82,7 +82,14 @@ class FileManager extends React.Component {
   setId = (id, image, filename) =>{
     if(this.props.multiple){
       this.props.setMediaId(id, true, image, filename)
-      console.log("added")
+      toast.success('Media Item Added', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        });
     }else{
       this.props.setMediaId(id, false, image, filename)
       this.props.close()
