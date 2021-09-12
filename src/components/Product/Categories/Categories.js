@@ -106,6 +106,7 @@ class Categories extends React.Component {
     }
 
     if (!Validate.validateNotEmpty(this.state.errors)) {
+      this.setState({submitting: true});
       if (this.state.selectedCategory != "none" && this.state.parentId == "") {
         api
           .put("/category", {
@@ -116,11 +117,31 @@ class Categories extends React.Component {
             requiredPermission: "Edit Categories",
           })
           .then((res) => {
-            console.log(res);
-            this.componentDidMount();
+            // console.log(res);
+            toast.success('Cateogry updated successfully', {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+              this.setState({submitting: false})
+              // this.resetData()
+            // this.componentDidMount();
           })
           .catch((err) => {
-            console.log(err.response.data);
+            // console.log(err.response.data);
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+              this.setState({submitting: false})
+
           });
       }
       if (
@@ -136,10 +157,22 @@ class Categories extends React.Component {
             requiredPermission: "Create Categories",
           })
           .then((res) => {
-            console.log(res);
+            // console.log(res);
+            window.location.reload()
+            this.setState({submitting: false})
           })
           .catch((err) => {
-            console.log(err.response.data);
+            // console.log(err.response.data);
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+              this.setState({submitting: false})
+
           });
       }
       if (this.state.selectedCategory == "none" && this.state.parentId == "") {
@@ -151,11 +184,31 @@ class Categories extends React.Component {
             requiredPermission: "Create Categories",
           })
           .then((res) => {
-            console.log(res);
+            // console.log(res);
+            toast.success('Root Category added successfully', {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+              this.setState({submitting: false})
+              this.resetData()
             this.componentDidMount();
+
           })
           .catch((err) => {
-            console.log("error adding root category");
+            // console.log("error adding root category");
+            toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              });
+              this.setState({submitting: false})
           });
       }
     }
@@ -168,11 +221,28 @@ class Categories extends React.Component {
     api
       .delete("/category", { data })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
+        toast.success('Category deleted successfully', {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+          this.resetData()
         this.componentDidMount();
       })
       .catch((err) => {
-        console.log(err.response.data);
+        // console.log(err.response.data);
+        toast.error( `${err.response && err.response.data?err.response.data.message: "Could not delete category."}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
       });
   };
   resetData = () => {
@@ -555,14 +625,15 @@ class Categories extends React.Component {
         <section className="content">
           <div className="box box-default">
             <div className="box-body clearfix">
-              <div className="col-lg-2 col-md-3">
+              <div className="col-lg-3 col-md-4">
                 <div className="row">
                   <button
                     className="btn btn-default add-root-category "
                     style={{ marginBottom: "5px" }}
                     onClick={() => {
-                      this.setState({ selectedCategory: "none" });
-                      this.resetData();
+                      window.location.reload();
+                      // this.setState({ selectedCategory: "none" });
+                      // this.resetData();
                     }}
                   >
                     Add Root Category
@@ -610,7 +681,7 @@ class Categories extends React.Component {
                   </div>
                 </div>
               </div>
-              <div className="col-lg-10 col-md-9">
+              <div className="col-lg-9 col-md-8">
                 <div className="tab-wrapper category-details-tab">
                   <ul className="nav nav-tabs">
                     <li
