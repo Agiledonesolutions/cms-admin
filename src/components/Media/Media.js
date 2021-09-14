@@ -143,10 +143,9 @@ class Media extends React.Component {
     this.setState({ files });
   };
 
-  handlePost = async (file) => {
-    
+  handlePost =  (file) => {
     var formData = new FormData();
-    await formData.append("image", file);
+     formData.append("image", file);
     api
       .post("/media", formData, {
         headers: {
@@ -154,6 +153,7 @@ class Media extends React.Component {
         },
       })
       .then((res) => {
+        // console.log("success")
         toast.success('Media item(s) added successfully', {
           position: "bottom-right",
           autoClose: 3000,
@@ -165,6 +165,7 @@ class Media extends React.Component {
         this.componentDidMount()
       })
       .catch((err) => {
+        console.log(err)
         this.setState({submitting: false})
         toast.error('Something went wrong.', {
           position: "bottom-right",
@@ -176,11 +177,20 @@ class Media extends React.Component {
           });
       });
   };
-  handleImagePost = () => {
+  handleImagePost = async() => {
     this.setState({submitting: true})
-      this.state.files.map( (file) => {
-         this.handlePost(file);
-     });         
+    const delay = (ms = 1000) => new Promise((r) => setTimeout(r, ms));
+
+    for(let i = 0; i < this.state.files.length; i++){
+      await delay()
+      await this.handlePost(this.state.files[i])
+      // console.log("loop")
+    }
+    //   this.state.files.map( async(file) => {
+    //      await this.handlePost(file);
+    //      console.log("loop");
+    //  });    
+          
   };
 
   render() {

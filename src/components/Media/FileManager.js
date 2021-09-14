@@ -169,10 +169,10 @@ class FileManager extends React.Component {
     this.setState({ files });
   };
 
-  handlePost = async (file) => {
+  handlePost =  (file) => {
 
     var formData = new FormData();
-    await formData.append("image", file);
+     formData.append("image", file);
     api
       .post("/media", formData, {
         headers: {
@@ -204,12 +204,16 @@ class FileManager extends React.Component {
         this.setState({submitting: false})
       });
   };
-  handleImagePost = () => {
-    this.setState({submitting: true})
-      this.state.files.map( (file) => {
-         this.handlePost(file);
-     });    
-     
+  handleImagePost = async() => {
+    
+     this.setState({submitting: true})
+     const delay = (ms = 1000) => new Promise((r) => setTimeout(r, ms));
+ 
+     for(let i = 0; i < this.state.files.length; i++){
+       await delay()
+       await this.handlePost(this.state.files[i])
+       // console.log("loop")
+     }
   };
 
   render() {

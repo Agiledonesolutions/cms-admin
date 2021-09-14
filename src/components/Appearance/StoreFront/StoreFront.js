@@ -2269,9 +2269,9 @@ class StoreFront extends React.Component {
                         <option value={"Latest Products"}>
                           Latest Products
                         </option>
-                        <option value={"Recently Viewed Products"}>
+                        {/* <option value={"Recently Viewed Products"}>
                           Recently Viewed Products
-                        </option>
+                        </option> */}
                         <option value={"Custom Products"}>
                           Custom Products
                         </option>
@@ -2301,7 +2301,7 @@ class StoreFront extends React.Component {
                             options={this.state.categoryOptions}
                             defaultValue={
                               this.state.data["Product Tabs One"].Tabs[idx]
-                                .CategoryId
+                                .Category._id
                             }
                           />
                         </div>
@@ -2956,11 +2956,11 @@ class StoreFront extends React.Component {
                           );
                         }}
                       >
-                        <option value="">Please Select</option>
+                        {/* <option value="">Please Select</option> */}
                         <option value={"Category Products"}>
                           Category Products
                         </option>
-                        <option value={"Latest Products"}>
+                        {/* <option value={"Latest Products"}>
                           Latest Products
                         </option>
                         <option value={"Recently Viewed Products"}>
@@ -2968,7 +2968,7 @@ class StoreFront extends React.Component {
                         </option>
                         <option value={"Custom Products"}>
                           Custom Products
-                        </option>
+                        </option> */}
                       </select>
                     </div>
                   </div>
@@ -2995,7 +2995,7 @@ class StoreFront extends React.Component {
                             options={this.state.categoryOptions}
                             defaultValue={
                               this.state.data["Product Grid"].Tabs[idx]
-                                .CategoryId
+                                .Category._id
                             }
                           />
                         </div>
@@ -3347,9 +3347,9 @@ class StoreFront extends React.Component {
                         <option value={"Latest Products"}>
                           Latest Products
                         </option>
-                        <option value={"Recently Viewed Products"}>
+                        {/* <option value={"Recently Viewed Products"}>
                           Recently Viewed Products
-                        </option>
+                        </option> */}
                         <option value={"Custom Products"}>
                           Custom Products
                         </option>
@@ -3379,7 +3379,7 @@ class StoreFront extends React.Component {
                             options={this.state.categoryOptions}
                             defaultValue={
                               this.state.data["Product Tabs Two"].Tabs[idx]
-                                .CategoryId
+                                .Category._id
                             }
                           />
                         </div>
@@ -3926,7 +3926,8 @@ class StoreFront extends React.Component {
                                   this.setState({ activePanel: "productgrid" });
                                 }}
                               >
-                                <a data-toggle="tab">Product Grid</a>
+                                {/* <a data-toggle="tab">Product Grid</a> */}
+                                <a data-toggle="tab">Category Row</a>
                               </li>
                               {/* <li
                                 className={
