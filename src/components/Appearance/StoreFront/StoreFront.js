@@ -3633,7 +3633,7 @@ class StoreFront extends React.Component {
                       onChange={(e) => {
                         this.setVal(
                           !this.state.data.TopCategories.SectionStatus,
-                          "TopBrands",
+                          "TopCategories",
                           e.target.name
                         );
                       }}
