@@ -2007,7 +2007,7 @@ class StoreFront extends React.Component {
                       type="checkbox"
                       name="SectionStatus"
                       id="storefront_featured_categories_section_enabled"
-                      checked={this.state.data.FeaturedCategories.SectionStatus == "true"?true:false}
+                      checked={this.state.data.FeaturedCategories.SectionStatus?true:false}
                       onChange={(e) => {
                         this.setVal(
                           !this.state.data.FeaturedCategories.SectionStatus,
@@ -3931,7 +3931,9 @@ class StoreFront extends React.Component {
                                     : ""
                                 }
                                 onClick={(e) => {
-                                  this.setState({ activePanel: "topbrands" });
+                                  this.setState({ activePanel: "general" },()=>{
+                                    this.setState({activePanel: "topbrands"})
+                                  });
                                 }}
                               >
                                 <a data-toggle="tab">Top Brands</a>
@@ -3943,7 +3945,9 @@ class StoreFront extends React.Component {
                                     : ""
                                 }
                                 onClick={(e) => {
-                                  this.setState({ activePanel: "topcategories" });
+                                  this.setState({ activePanel: "general" },()=>{
+                                    this.setState({activePanel: "topcategories"})
+                                  });
                                 }}
                               >
                                 <a data-toggle="tab">Popular Categories</a>
