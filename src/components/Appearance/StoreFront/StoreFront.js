@@ -219,20 +219,24 @@ class StoreFront extends React.Component {
             Type: "",
             ProductIds: [],
           },
-          {
-            CategoryId: "",
-            Type: "",
-            ProductIds: [],
-          },
-          {
-            CategoryId: "",
-            Type: "",
-            ProductIds: [],
-          },
+          // {
+          //   CategoryId: "",
+          //   Type: "",
+          //   ProductIds: [],
+          // },
+          // {
+          //   CategoryId: "",
+          //   Type: "",
+          //   ProductIds: [],
+          // },
         ],
       },
       TopBrands: {
         TopBrandsIds: [],
+        SectionStatus: false,
+      },
+      TopCategories: {
+        TopCategoriesIds: [],
         SectionStatus: false,
       },
       "Product Tabs One": {
@@ -312,6 +316,23 @@ class StoreFront extends React.Component {
             Title: "",
             Type: "",
             CategoryId: "",
+            Category: {},
+            ProductsLimit: "",
+            ProductIds: [],
+          },
+          {
+            Title: "",
+            Type: "",
+            CategoryId: "",
+            Category: {},
+            ProductsLimit: "",
+            ProductIds: [],
+          },
+          {
+            Title: "",
+            Type: "",
+            CategoryId: "",
+            Category: {},
             ProductsLimit: "",
             ProductIds: [],
           },
@@ -320,20 +341,7 @@ class StoreFront extends React.Component {
             Type: "",
             CategoryId: "",
             ProductsLimit: "",
-            ProductIds: [],
-          },
-          {
-            Title: "",
-            Type: "",
-            CategoryId: "",
-            ProductsLimit: "",
-            ProductIds: [],
-          },
-          {
-            Title: "",
-            Type: "",
-            CategoryId: "",
-            ProductsLimit: "",
+            Category: {},
             ProductIds: [],
           },
         ],
@@ -618,6 +626,7 @@ class StoreFront extends React.Component {
           ...fetched.FeaturedCategories,
         };
         data.TopBrands = { ...data.TopBrands, ...fetched.TopBrands, TopBrandsIds:  fetched.TopBrands.TopBrands.length>0? fetched.TopBrands.TopBrands.map(function(ids){return ids._id}):[]};
+        data.TopCategories = { ...data.TopCategories, ...fetched.TopCategories, TopCategoriesIds:  fetched.TopCategories.TopCategories.length>0? fetched.TopCategories.TopCategories.map(function(ids){return ids._id}):[]};
         data.Newsletter = {
           BackgroundImageId: fetched.Newsletter.BackgroundImage
             ? fetched.Newsletter.BackgroundImage._id
@@ -637,6 +646,7 @@ class StoreFront extends React.Component {
         fetched.Products.forEach((val) => {
           val.Tabs.forEach(tab=>{
             tab.ProductIds = tab.Products
+            tab.CategoryId = tab.Category?._id
           })
           data[val.Name] = { ...data[val.Name], ...val };
         });
@@ -756,6 +766,7 @@ class StoreFront extends React.Component {
           SocialLinks: data.SocialLinks,
           FeaturedCategories: data.FeaturedCategories,
           TopBrands: data.TopBrands,
+          TopCategories: data.TopCategories,
           FlashSaleVerticalProducts: data.FlashSaleVerticalProducts,
           Banners: Banners,
           Products: Products,
@@ -763,7 +774,7 @@ class StoreFront extends React.Component {
           _id: this.state._id,
         })
         .then((res) => {
-          console.log(res);
+          //console.log(res);
           this.setState({submitting: false, alertType: "success", alertMessage: "Storefront settings updated."})
         })
         .catch((err) => {
@@ -1996,7 +2007,7 @@ class StoreFront extends React.Component {
                       type="checkbox"
                       name="SectionStatus"
                       id="storefront_featured_categories_section_enabled"
-                      checked={this.state.data.FeaturedCategories.SectionStatus?true:false}
+                      checked={this.state.data.FeaturedCategories.SectionStatus == "true"?true:false}
                       onChange={(e) => {
                         this.setVal(
                           !this.state.data.FeaturedCategories.SectionStatus,
@@ -2146,7 +2157,7 @@ class StoreFront extends React.Component {
                             options={this.state.productOptions}
                             defaultValue={this.state.data.FeaturedCategories.Categories[
                               idx
-                            ].ProductIds.toString()}
+                            ].ProductIds.map(function(ids){return ids._id}).toString()}
                           />
                         </div>
                       </div>
@@ -2301,7 +2312,7 @@ class StoreFront extends React.Component {
                             options={this.state.categoryOptions}
                             defaultValue={
                               this.state.data["Product Tabs One"].Tabs[idx]
-                                .Category._id
+                                .Category?._id
                             }
                           />
                         </div>
@@ -2891,8 +2902,9 @@ class StoreFront extends React.Component {
                   </div>
                 </div>
               </div>
-              {this.state.data["Product Grid"].Tabs.map((val, idx) => (
-                <div className="box-content clearfix" key={idx}>
+              {this.state.data["Product Grid"].Tabs.map((val, idx) => {
+                
+                return <div className="box-content clearfix" key={idx}>
                   <h4 className="section-title">Tab {idx + 1}</h4>
                   <div className="form-group">
                     <label className="col-md-3 control-label text-left">
@@ -2995,7 +3007,7 @@ class StoreFront extends React.Component {
                             options={this.state.categoryOptions}
                             defaultValue={
                               this.state.data["Product Grid"].Tabs[idx]
-                                .Category._id
+                                .Category?._id
                             }
                           />
                         </div>
@@ -3069,7 +3081,7 @@ class StoreFront extends React.Component {
                     ""
                   )}
                 </div>
-              ))}
+    })}
             </div>
           </div>
         </div>
@@ -3379,7 +3391,7 @@ class StoreFront extends React.Component {
                             options={this.state.categoryOptions}
                             defaultValue={
                               this.state.data["Product Tabs Two"].Tabs[idx]
-                                .Category._id
+                                .Category?._id
                             }
                           />
                         </div>
@@ -3596,6 +3608,57 @@ class StoreFront extends React.Component {
                     </div>
                   )
                 )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }else if (this.state.activePanel == "topcategories") {
+      return (
+        <div className="tab-pane fade active in">
+          <h3 className="tab-content-title">Popular Categories</h3>
+          <div className="row">
+            <div className="col-md-8">
+              <div className="form-group">
+                <label className="col-md-3 control-label text-left">
+                  Section Status
+                </label>
+                <div className="col-md-9">
+                  <div className="checkbox">
+                    <input
+                      type="checkbox"
+                      name="SectionStatus"
+                      id="storefront_top_brands_section_enabled"
+                      checked={this.state.data.TopCategories.SectionStatus}
+                      onChange={(e) => {
+                        this.setVal(
+                          !this.state.data.TopCategories.SectionStatus,
+                          "TopBrands",
+                          e.target.name
+                        );
+                      }}
+                    />
+                    <label htmlFor="storefront_top_brands_section_enabled">
+                      Enable popular categories section
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="col-md-3 control-label text-left">
+                  Popular Categories
+                </label>
+                <div className="col-md-9">
+                  <MultiSelect
+                    onChange={(val) => {
+                      const { data } = this.state;
+                      data.TopCategories.TopCategoriesIds = val.split(",");
+                      this.setState({ data });
+                    }}
+                    options={this.state.categoryOptions}
+                    defaultValue={this.state.data.TopCategories.TopCategoriesIds.toString()}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -3872,6 +3935,18 @@ class StoreFront extends React.Component {
                                 }}
                               >
                                 <a data-toggle="tab">Top Brands</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "topcategories"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({ activePanel: "topcategories" });
+                                }}
+                              >
+                                <a data-toggle="tab">Popular Categories</a>
                               </li>
                               <li
                                 className={
