@@ -10,6 +10,7 @@ import Tree from "rc-tree";
 import "./styles.css";
 import Loading from "../../Loading";
 import { toast } from 'react-toastify';
+import {getMessage} from '../../AlertMessage'
 
 class Categories extends React.Component {
   state = {
@@ -38,8 +39,9 @@ class Categories extends React.Component {
     _id: "",
     oldIndex: "",
     newIndex:"",
-    parentCategoryId: ""
- 
+    parentCategoryId: "",
+    alertType: "",
+    alertMessage: "",
   };
 
   componentDidMount() {
@@ -79,7 +81,9 @@ class Categories extends React.Component {
         this.setState({submitting: false})
       });
   }
-
+  onClose = ()=>{
+    this.setState({alertMessage: "", alertType: ""})
+  }
   setImageId = (id, multiple, image) => {
     if (this.state.imageType == "logo") {
       this.setState({ logoId: id, logoImage: image });
@@ -93,7 +97,29 @@ class Categories extends React.Component {
     this.setState({ data });
   };
   handleSubmit = () => {
-    const { data, errors } = this.state;
+    const { data, errors, logoId, bannerId } = this.state;
+    if(logoId != "" || bannerId != "") {
+      if (!errors.includes("logo") && !Validate.validateNotEmpty(logoId)) {
+        errors.push("logo");
+        this.setState({ errors });
+      } else if (
+        errors.includes("logo") &&
+        Validate.validateNotEmpty(logoId)
+      ) {
+        errors.splice(errors.indexOf("logo"), 1);
+        this.setState({ errors });
+      }
+      if (!errors.includes("banner") && !Validate.validateNotEmpty(bannerId)) {
+        errors.push("banner");
+        this.setState({ errors });
+      } else if (
+        errors.includes("banner") &&
+        Validate.validateNotEmpty(bannerId)
+      ) {
+        errors.splice(errors.indexOf("banner"), 1);
+        this.setState({ errors });
+      }
+    }
     if (!errors.includes("name") && !Validate.validateNotEmpty(data["name"])) {
       errors.push("name");
       this.setState({ errors });
@@ -211,6 +237,9 @@ class Categories extends React.Component {
               this.setState({submitting: false})
           });
       }
+    }else{
+      this.setState({ alertType: "fail", alertMessage: "Please fill the following: " + errors})
+
     }
   };
   handleDelete = () => {
@@ -377,6 +406,19 @@ class Categories extends React.Component {
                       height={120}
                       width={120}
                     />
+                     <button
+                    type="button"
+                    className="btn remove-image"
+                    onClick={() => {
+                      
+                        this.setImageId("", false, "");
+                        const {errors} = this.state
+                        errors.splice(errors.indexOf("logo"), 1);
+                        errors.splice(errors.indexOf("banner"), 1);
+                        this.setState({ errors });
+                  
+                    }}
+                  />
                   </div>
                 ) : (
                   <div className="image-holder placeholder">
@@ -412,6 +454,18 @@ class Categories extends React.Component {
                       height={120}
                       width={120}
                     />
+                     <button
+                    type="button"
+                    className="btn remove-image"
+                    onClick={() => {
+                      
+                        this.setImageId("", false, "");
+                        const {errors} = this.state
+                        errors.splice(errors.indexOf("logo"), 1);
+                        errors.splice(errors.indexOf("banner"), 1);
+                        this.setState({ errors });
+                    }}
+                  />
                   </div>
                 ) : (
                   <div className="image-holder placeholder">
@@ -623,6 +677,7 @@ class Categories extends React.Component {
         </section>
         <Loading show={this.state.submitting}/>
         <section className="content">
+        {getMessage(this.state.alertType, this.state.alertMessage, this.onClose)}
           <div className="box box-default">
             <div className="box-body clearfix">
               <div className="col-lg-3 col-md-4">

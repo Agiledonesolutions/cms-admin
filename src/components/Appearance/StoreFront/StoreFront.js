@@ -193,6 +193,50 @@ class StoreFront extends React.Component {
             image: "",
           },
         ],
+        
+      },
+      "Six Column Banner": {
+        Name: "Six Column Banner",
+        SectionStatus: false,
+        Banners: [
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: "",
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: "",
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: "",
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: "",
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: "",
+          },
+          {
+            CalltoActionURL: "",
+            OpenInNewWindow: false,
+            ImageId: "",
+            image: "",
+          },
+        ],
+        
       },
       FeaturedCategories: {
         SectionStatus: true,
@@ -722,6 +766,9 @@ class StoreFront extends React.Component {
     } else if (this.state.activePanel == "onecolbanner") {
       data["One Column Banner"].Banners[imageFor].ImageId = id;
       data["One Column Banner"].Banners[imageFor].image = image;
+    } else if(this.state.activePanel == "sixcolbanners"){
+      data["Six Column Banner"].Banners[imageFor].ImageId = id;
+      data["Six Column Banner"].Banners[imageFor].image = image;
     }
     this.setState({ data });
   };
@@ -737,7 +784,8 @@ class StoreFront extends React.Component {
       data["Three Column Full Width Banners"],
       data["Two column banners"],
       data["Three Column Banners"],
-      data["One Column Banner"]
+      data["One Column Banner"],
+      data["Six Column Banner"]
     );
     Products.push(
       data["Product Tabs One"],
@@ -3664,6 +3712,150 @@ class StoreFront extends React.Component {
           </div>
         </div>
       );
+    }else if (this.state.activePanel == "sixcolbanners") {
+      return (
+        <div className="tab-pane fade active in">
+          <h3 className="tab-content-title">Six Column Banners</h3>
+          <div className="accordion-box-content">
+            <div className="row">
+              <div className="col-md-8">
+                <div className="form-group">
+                  <label className="col-md-3 control-label text-left">
+                    Section Status
+                  </label>
+                  <div className="col-md-9">
+                    <div className="checkbox">
+                      <input
+                        type="checkbox"
+                        name="SectionStatus"
+                        checked={
+                          this.state.data["Six Column Banner"].SectionStatus
+                        }
+                        onChange={(e) => {
+                          this.setVal(
+                            !this.state.data["Six Column Banner"]
+                              .SectionStatus,
+                            "Six Column Banner",
+                            e.target.name
+                          );
+                        }}
+                        id="storefront_three_column_banners_enabled"
+                      />
+                      <label htmlFor="storefront_three_column_banners_enabled">
+                        Enable six column banners section
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="tab-content clearfix">
+              <div className="panel-wrap">
+                {this.state.data["Six Column Banner"].Banners.map(
+                  (val, idx) => (
+                    <div className="panel" key={idx}>
+                      <div className="panel-header">
+                        <h5>Banner {idx + 1}</h5>
+                      </div>
+                      <div className="panel-body">
+                        <div
+                          className="panel-image"
+                          onClick={() => {
+                            this.setState({
+                              showModal: true,
+                              multiple: false,
+                              imageFor: idx,
+                            });
+                          }}
+                        >
+                          {this.state.data["Six Column Banner"].Banners[idx]
+                            .image ? (
+                            <img
+                              src={
+                                siteUrl +
+                                this.state.data["Six Column Banner"].Banners[
+                                  idx
+                                ].image
+                              }
+                            />
+                          ) : (
+                            <div className="placeholder">
+                              <i className="fa fa-picture-o" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="panel-content clearfix">
+                          <div className="row">
+                            <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
+                              <div className="form-group">
+                                <label htmlFor="storefront_slider_banner_1-call-to-action-url">
+                                  Call to Action URL
+                                </label>
+                                <input
+                                  type="text"
+                                  name="CalltoActionURL"
+                                  className="form-control"
+                                  value={
+                                    this.state.data["Six Column Banner"]
+                                      .Banners[idx].CalltoActionURL
+                                  }
+                                  onChange={(e) => {
+                                    this.setArr(
+                                      e.target.value,
+                                      "Six Column Banner",
+                                      "Banners",
+                                      idx,
+                                      e.target.name
+                                    );
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row">
+                            <div className="col-lg-6 col-md-12 col-sm-6">
+                              <div className="checkbox">
+                                <input
+                                  type="checkbox"
+                                  name="OpenInNewWindow"
+                                  id={
+                                    "three_col_banner-open-in-new-window" + idx
+                                  }
+                                  checked={
+                                    this.state.data["Six Column Banner"]
+                                      .Banners[idx].OpenInNewWindow
+                                  }
+                                  onChange={(e) => {
+                                    this.setArr(
+                                      !this.state.data["Six Column Banner"]
+                                        .Banners[idx].OpenInNewWindow,
+                                      "Six Column Banner",
+                                      "Banners",
+                                      idx,
+                                      e.target.name
+                                    );
+                                  }}
+                                />
+                                <label
+                                  htmlFor={
+                                    "three_col_banner-open-in-new-window" + idx
+                                  }
+                                >
+                                  Open in new window
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
     }
   };
   render() {
@@ -4049,6 +4241,20 @@ class StoreFront extends React.Component {
                                 }}
                               >
                                 <a data-toggle="tab"> Banner</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "sixcolbanners"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({
+                                    activePanel: "sixcolbanners",
+                                  });
+                                }}
+                              >
+                                <a data-toggle="tab">Six Image Banner</a>
                               </li>
                             </ul>
                           </div>
