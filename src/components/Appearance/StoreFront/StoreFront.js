@@ -9,8 +9,8 @@ import "react-multiple-select-dropdown-lite/dist/index.css";
 import FileManager from "../../Media/FileManager";
 import Loading from "../../Loading";
 import { siteUrl } from "../../../utils/utils";
-import { toast } from 'react-toastify';
-import {getMessage} from '../../AlertMessage'
+import { toast } from "react-toastify";
+import { getMessage } from "../../AlertMessage";
 
 class StoreFront extends React.Component {
   state = {
@@ -193,7 +193,6 @@ class StoreFront extends React.Component {
             image: "",
           },
         ],
-        
       },
       "Six Column Banner": {
         Name: "Six Column Banner",
@@ -236,7 +235,6 @@ class StoreFront extends React.Component {
             image: "",
           },
         ],
-        
       },
       FeaturedCategories: {
         SectionStatus: true,
@@ -428,16 +426,62 @@ class StoreFront extends React.Component {
         FooterMenuTwoId: "",
       },
     },
+    clientReviewData: {
+      title: "",
+      sectionstatus: false,
+      banners: [
+        {
+          img: "",
+          image:"",
+          smallimage:"",
+          smallimg: "",
+          title: "",
+          body: "",
+        },
+        {
+          img: "",
+          image:"",
+          smallimage:"",
+          smallimg: "",
+          title: "",
+          body: "",
+        },
+        {
+          img: "",
+          image:"",
+          smallimage:"",
+          smallimg: "",
+          title: "",
+          body: "",
+        },
+        {
+          img: "",
+          image:"",
+          smallimage:"",
+          smallimg: "",
+          title: "",
+          body: "",
+        },
+        {
+          img: "",
+          image:"",
+          smallimage:"",
+          smallimg: "",
+          title: "",
+          body: "",
+        },
+      ],
+    },
     _id: "",
     errors: [],
     alertType: "",
     alertMessage: "",
   };
-  onClose = ()=>{
-    this.setState({alertMessage: "", alertType: ""})
-  }
+  onClose = () => {
+    this.setState({ alertMessage: "", alertType: "" });
+  };
   componentDidMount() {
-    this.setState({submitting: true})
+    this.setState({ submitting: true });
 
     api
       .post("page/get")
@@ -448,8 +492,7 @@ class StoreFront extends React.Component {
             label: val.name,
             value: val._id,
           };
-          if(val.status)
-            pagesOptions.push(tmp);
+          if (val.status) pagesOptions.push(tmp);
         });
         this.setState({ pagesOptions });
       })
@@ -528,8 +571,7 @@ class StoreFront extends React.Component {
             label: val.name,
             value: val._id,
           };
-          if(val.status)
-          brandsOptions.push(tmp);
+          if (val.status) brandsOptions.push(tmp);
         });
         this.setState({ brandsOptions });
       })
@@ -544,8 +586,7 @@ class StoreFront extends React.Component {
           let tmp = {};
           tmp.value = val._id;
           tmp.label = val.name;
-          if(val.status)
-          productOptions.push(tmp);
+          if (val.status) productOptions.push(tmp);
         });
         this.setState({ productOptions });
       })
@@ -562,8 +603,7 @@ class StoreFront extends React.Component {
             label: val.name,
             value: val._id,
           };
-          if(val.status)
-          menuOptions.push(tmp);
+          if (val.status) menuOptions.push(tmp);
         });
         this.setState({ menuOptions });
       })
@@ -587,11 +627,17 @@ class StoreFront extends React.Component {
       .catch((err) => {
         console.log("error fetching flashsale");
       });
-
+      api.post('/banner/get').then(res=>{
+        let data = {...this.state.clientReviewData,...res.data.data[0]};
+        data.banners.forEach(banner=>{
+          banner.image = banner.img?banner.img.image:""
+          banner.smallimage = banner.smallimg?banner.smallimg.image:""
+        })
+        this.setState({clientReviewData: data})
+      }).catch(err => console.log("error banner"))
     api
       .get("/storefront/get")
       .then((res) => {
-        
         const { data } = this.state;
         const fetched = res.data.data[0];
         // console.log(fetched);
@@ -647,7 +693,12 @@ class StoreFront extends React.Component {
           image: fetched.Footer.AcceptedPaymentMethodsImage
             ? fetched.Footer.AcceptedPaymentMethodsImage.image
             : "",
-            FooterTagsIds: fetched.Footer.FooterTags.length>0? fetched.Footer.FooterTags.map(function(ids){ return ids._id}):[]
+          FooterTagsIds:
+            fetched.Footer.FooterTags.length > 0
+              ? fetched.Footer.FooterTags.map(function (ids) {
+                  return ids._id;
+                })
+              : [],
         };
 
         data.SocialLinks = { ...fetched.SocialLinks };
@@ -661,16 +712,34 @@ class StoreFront extends React.Component {
             : "",
         };
         data.Features = { ...data.Features, ...fetched.Features };
-        fetched.FeaturedCategories.Categories.forEach(val=>{
-          val.CategoryId = val.Category?val.Category._id:""
-          val.ProductIds = val.Products
-        })
+        fetched.FeaturedCategories.Categories.forEach((val) => {
+          val.CategoryId = val.Category ? val.Category._id : "";
+          val.ProductIds = val.Products;
+        });
         data.FeaturedCategories = {
           ...data.FeaturedCategories,
           ...fetched.FeaturedCategories,
         };
-        data.TopBrands = { ...data.TopBrands, ...fetched.TopBrands, TopBrandsIds:  fetched.TopBrands.TopBrands.length>0? fetched.TopBrands.TopBrands.map(function(ids){return ids._id}):[]};
-        data.TopCategories = { ...data.TopCategories, ...fetched.TopCategories, TopCategoriesIds:  fetched.TopCategories.TopCategories.length>0? fetched.TopCategories.TopCategories.map(function(ids){return ids._id}):[]};
+        data.TopBrands = {
+          ...data.TopBrands,
+          ...fetched.TopBrands,
+          TopBrandsIds:
+            fetched.TopBrands.TopBrands.length > 0
+              ? fetched.TopBrands.TopBrands.map(function (ids) {
+                  return ids._id;
+                })
+              : [],
+        };
+        data.TopCategories = {
+          ...data.TopCategories,
+          ...fetched.TopCategories,
+          TopCategoriesIds:
+            fetched.TopCategories.TopCategories.length > 0
+              ? fetched.TopCategories.TopCategories.map(function (ids) {
+                  return ids._id;
+                })
+              : [],
+        };
         data.Newsletter = {
           BackgroundImageId: fetched.Newsletter.BackgroundImage
             ? fetched.Newsletter.BackgroundImage._id
@@ -679,31 +748,31 @@ class StoreFront extends React.Component {
             ? fetched.Newsletter.BackgroundImage.image
             : "",
         };
-        fetched.FlashSaleVerticalProducts.VerticalProducts.forEach(val=>{
-          val.ProductIds = val.Products
-        })
+        fetched.FlashSaleVerticalProducts.VerticalProducts.forEach((val) => {
+          val.ProductIds = val.Products;
+        });
         data.FlashSaleVerticalProducts = {
           ...data.FlashSaleVerticalProducts,
           ...fetched.FlashSaleVerticalProducts,
-          ActiveCampaignId: fetched.FlashSaleVerticalProducts.ActiveCampaign
+          ActiveCampaignId: fetched.FlashSaleVerticalProducts.ActiveCampaign,
         };
         fetched.Products.forEach((val) => {
-          val.Tabs.forEach(tab=>{
-            tab.ProductIds = tab.Products
-            tab.CategoryId = tab.Category?._id
-          })
+          val.Tabs.forEach((tab) => {
+            tab.ProductIds = tab.Products;
+            tab.CategoryId = tab.Category?._id;
+          });
           data[val.Name] = { ...data[val.Name], ...val };
         });
         fetched.Banners.forEach((ban) => {
-          ban.Banners.forEach(val=>{
-            if(val.Image){
-              val.ImageId = val.Image._id
-              val.image = val.Image.image
+          ban.Banners.forEach((val) => {
+            if (val.Image) {
+              val.ImageId = val.Image._id;
+              val.image = val.Image.image;
             }
-          })
-          if(ban.Name == "Three Column Full Width Banners" && ban.Background){
-            ban.BackgroundId = ban.Background._id
-            ban.BackgroundIdImage = ban.Background.image
+          });
+          if (ban.Name == "Three Column Full Width Banners" && ban.Background) {
+            ban.BackgroundId = ban.Background._id;
+            ban.BackgroundIdImage = ban.Background.image;
           }
           data[ban.Name] = { ...data[ban.Name], ...ban };
         });
@@ -719,7 +788,7 @@ class StoreFront extends React.Component {
       })
       .catch((err) => {
         console.log("error fetching storefront details");
-        this.setState({submitting: false})
+        this.setState({ submitting: false });
       });
   }
   setVal = (val, key, key2) => {
@@ -727,13 +796,19 @@ class StoreFront extends React.Component {
     data[key][key2] = val;
     this.setState({ data });
   };
+  setClientVal = (val, key, key2, idx) => {
+    const { clientReviewData } = this.state;
+    if (key2 != "") clientReviewData[key][idx][key2] = val;
+    else clientReviewData[key] = val;
+    this.setState({ clientReviewData });
+  };
   setArr = (val, key, key2, idx, key3) => {
     const { data } = this.state;
     data[key][key2][idx][key3] = val;
     this.setState({ data });
   };
   setImageId = (id, multiple, image) => {
-    const { data, imageFor } = this.state;
+    const { data, imageFor, clientReviewData } = this.state;
     if (this.state.activePanel == "newsletter") {
       data.Newsletter[imageFor] = id;
       data.Newsletter.image = image;
@@ -766,15 +841,22 @@ class StoreFront extends React.Component {
     } else if (this.state.activePanel == "onecolbanner") {
       data["One Column Banner"].Banners[imageFor].ImageId = id;
       data["One Column Banner"].Banners[imageFor].image = image;
-    } else if(this.state.activePanel == "sixcolbanners"){
+    } else if (this.state.activePanel == "sixcolbanners") {
       data["Six Column Banner"].Banners[imageFor].ImageId = id;
       data["Six Column Banner"].Banners[imageFor].image = image;
+    }else if(this.state.activePanel == "clientreview"){
+      let arr = imageFor.split(",")
+      let key;
+      if(arr[0] == "img"){
+        key="image"
+      }else key = "smallimage"
+      clientReviewData.banners[arr[1]][arr[0]] = id
+      clientReviewData.banners[arr[1]][key] = image
     }
-    this.setState({ data });
+    this.setState({ data,clientReviewData });
   };
 
   handleSubmit = () => {
-    
     const { errors } = this.state;
     const { data } = this.state;
     const Banners = [];
@@ -823,21 +905,53 @@ class StoreFront extends React.Component {
         })
         .then((res) => {
           //console.log(res);
-          this.setState({submitting: false, alertType: "success", alertMessage: "Storefront settings updated."})
+          this.setState({
+            submitting: false,
+            alertType: "success",
+            alertMessage: "Storefront settings updated.",
+          });
         })
         .catch((err) => {
-          this.setState({submitting: false})
-        toast.error( `${err.response && err.response.data?err.response.data.message: "Something went wrong."}`, {
-          position: "bottom-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          });
+          this.setState({ submitting: false });
+          toast.error(
+            `${
+              err.response && err.response.data
+                ? err.response.data.message
+                : "Something went wrong."
+            }`,
+            {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            }
+          );
         });
+        api.put('/banner',{data: this.state.clientReviewData, requiredPermission: "Edit Storefront", id: this.state.clientReviewData._id}).then(res=>{
+        }).catch(err=>{
+          toast.error(
+            `${
+              err.response && err.response.data
+                ? err.response.data.message
+                : "Something went wrong."
+            }`,
+            {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            }
+          );
+        })
     } else {
-      this.setState({ alertType: "fail", alertMessage: "Please fill the following: " + errors})
+      this.setState({
+        alertType: "fail",
+        alertMessage: "Please fill the following: " + errors,
+      });
     }
   };
 
@@ -2055,7 +2169,11 @@ class StoreFront extends React.Component {
                       type="checkbox"
                       name="SectionStatus"
                       id="storefront_featured_categories_section_enabled"
-                      checked={this.state.data.FeaturedCategories.SectionStatus?true:false}
+                      checked={
+                        this.state.data.FeaturedCategories.SectionStatus
+                          ? true
+                          : false
+                      }
                       onChange={(e) => {
                         this.setVal(
                           !this.state.data.FeaturedCategories.SectionStatus,
@@ -2205,7 +2323,9 @@ class StoreFront extends React.Component {
                             options={this.state.productOptions}
                             defaultValue={this.state.data.FeaturedCategories.Categories[
                               idx
-                            ].ProductIds.map(function(ids){return ids._id}).toString()}
+                            ].ProductIds.map(function (ids) {
+                              return ids._id;
+                            }).toString()}
                           />
                         </div>
                       </div>
@@ -2951,76 +3071,78 @@ class StoreFront extends React.Component {
                 </div>
               </div>
               {this.state.data["Product Grid"].Tabs.map((val, idx) => {
-                
-                return <div className="box-content clearfix" key={idx}>
-                  <h4 className="section-title">Tab {idx + 1}</h4>
-                  <div className="form-group">
-                    <label className="col-md-3 control-label text-left">
-                      Title
-                    </label>
-                    <div className="col-md-9">
-                      <input
-                        name="Title"
-                        className="form-control "
-                        type="text"
-                        value={this.state.data["Product Grid"].Tabs[idx].Title}
-                        onChange={(e) => {
-                          this.setArr(
-                            e.target.value,
-                            "Product Grid",
-                            "Tabs",
-                            idx,
-                            e.target.name
-                          );
-                        }}
-                      />
+                return (
+                  <div className="box-content clearfix" key={idx}>
+                    <h4 className="section-title">Tab {idx + 1}</h4>
+                    <div className="form-group">
+                      <label className="col-md-3 control-label text-left">
+                        Title
+                      </label>
+                      <div className="col-md-9">
+                        <input
+                          name="Title"
+                          className="form-control "
+                          type="text"
+                          value={
+                            this.state.data["Product Grid"].Tabs[idx].Title
+                          }
+                          onChange={(e) => {
+                            this.setArr(
+                              e.target.value,
+                              "Product Grid",
+                              "Tabs",
+                              idx,
+                              e.target.name
+                            );
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="form-group">
-                    <label className="col-md-3 control-label text-left">
-                      Type
-                    </label>
-                    <div className="col-md-9">
-                      <select
-                        name="Type"
-                        className="form-control custom-select-black product-type"
-                        value={this.state.data["Product Grid"].Tabs[idx].Type}
-                        onChange={(e) => {
-                          this.setArr(
-                            "",
-                            "Product Grid",
-                            "Tabs",
-                            idx,
-                            "CategoryId"
-                          );
-                          this.setArr(
-                            "",
-                            "Product Grid",
-                            "Tabs",
-                            idx,
-                            "ProductsLimit"
-                          );
-                          this.setArr(
-                            [],
-                            "Product Grid",
-                            "Tabs",
-                            idx,
-                            "ProductIds"
-                          );
-                          this.setArr(
-                            e.target.value,
-                            "Product Grid",
-                            "Tabs",
-                            idx,
-                            e.target.name
-                          );
-                        }}
-                      >
-                        {/* <option value="">Please Select</option> */}
-                        <option value={"Category Products"}>
-                          Category Products
-                        </option>
-                        {/* <option value={"Latest Products"}>
+                    <div className="form-group">
+                      <label className="col-md-3 control-label text-left">
+                        Type
+                      </label>
+                      <div className="col-md-9">
+                        <select
+                          name="Type"
+                          className="form-control custom-select-black product-type"
+                          value={this.state.data["Product Grid"].Tabs[idx].Type}
+                          onChange={(e) => {
+                            this.setArr(
+                              "",
+                              "Product Grid",
+                              "Tabs",
+                              idx,
+                              "CategoryId"
+                            );
+                            this.setArr(
+                              "",
+                              "Product Grid",
+                              "Tabs",
+                              idx,
+                              "ProductsLimit"
+                            );
+                            this.setArr(
+                              [],
+                              "Product Grid",
+                              "Tabs",
+                              idx,
+                              "ProductIds"
+                            );
+                            this.setArr(
+                              e.target.value,
+                              "Product Grid",
+                              "Tabs",
+                              idx,
+                              e.target.name
+                            );
+                          }}
+                        >
+                          {/* <option value="">Please Select</option> */}
+                          <option value={"Category Products"}>
+                            Category Products
+                          </option>
+                          {/* <option value={"Latest Products"}>
                           Latest Products
                         </option>
                         <option value={"Recently Viewed Products"}>
@@ -3029,107 +3151,108 @@ class StoreFront extends React.Component {
                         <option value={"Custom Products"}>
                           Custom Products
                         </option> */}
-                      </select>
+                        </select>
+                      </div>
                     </div>
+                    {this.state.data["Product Grid"].Tabs[idx].Type ==
+                    "Category Products" ? (
+                      <div className="category-products ">
+                        <div className="form-group">
+                          <label className="col-md-3 control-label text-left">
+                            Category
+                          </label>
+                          <div className="col-md-9">
+                            <MultiSelect
+                              onChange={(val) => {
+                                this.setArr(
+                                  val,
+                                  "Product Grid",
+                                  "Tabs",
+                                  idx,
+                                  "CategoryId"
+                                );
+                              }}
+                              singleSelect={true}
+                              largeData={true}
+                              options={this.state.categoryOptions}
+                              defaultValue={
+                                this.state.data["Product Grid"].Tabs[idx]
+                                  .Category?._id
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                    {this.state.data["Product Grid"].Tabs[idx].Type ==
+                      "Latest Products" ||
+                    this.state.data["Product Grid"].Tabs[idx].Type ==
+                      "Recently Viewed Products" ? (
+                      <div className="products-limit">
+                        <div className="form-group">
+                          <label className="col-md-3 control-label text-left">
+                            Products Limit
+                          </label>
+                          <div className="col-md-9">
+                            <input
+                              name="ProductsLimit"
+                              className="form-control "
+                              type="number"
+                              value={
+                                this.state.data["Product Grid"].Tabs[idx]
+                                  .ProductsLimit
+                              }
+                              onChange={(e) => {
+                                this.setArr(
+                                  e.target.value,
+                                  "Product Grid",
+                                  "Tabs",
+                                  idx,
+                                  e.target.name
+                                );
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                    {this.state.data["Product Grid"].Tabs[idx].Type ==
+                    "Custom Products" ? (
+                      <div className="custom-products ">
+                        <div className="form-group">
+                          <label className="col-md-3 control-label text-left">
+                            Products
+                          </label>
+                          <div className="col-md-9">
+                            <MultiSelect
+                              onChange={(val) => {
+                                this.setArr(
+                                  val.split(","),
+                                  "Product Grid",
+                                  "Tabs",
+                                  idx,
+                                  "ProductIds"
+                                );
+                              }}
+                              largeData={true}
+                              options={this.state.productOptions}
+                              defaultValue={this.state.data[
+                                "Product Grid"
+                              ].Tabs[idx].ProductIds.toString()}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
-                  {this.state.data["Product Grid"].Tabs[idx].Type ==
-                  "Category Products" ? (
-                    <div className="category-products ">
-                      <div className="form-group">
-                        <label className="col-md-3 control-label text-left">
-                          Category
-                        </label>
-                        <div className="col-md-9">
-                          <MultiSelect
-                            onChange={(val) => {
-                              this.setArr(
-                                val,
-                                "Product Grid",
-                                "Tabs",
-                                idx,
-                                "CategoryId"
-                              );
-                            }}
-                            singleSelect={true}
-                            largeData={true}
-                            options={this.state.categoryOptions}
-                            defaultValue={
-                              this.state.data["Product Grid"].Tabs[idx]
-                                .Category?._id
-                            }
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                  {this.state.data["Product Grid"].Tabs[idx].Type ==
-                    "Latest Products" ||
-                  this.state.data["Product Grid"].Tabs[idx].Type ==
-                    "Recently Viewed Products" ? (
-                    <div className="products-limit">
-                      <div className="form-group">
-                        <label className="col-md-3 control-label text-left">
-                          Products Limit
-                        </label>
-                        <div className="col-md-9">
-                          <input
-                            name="ProductsLimit"
-                            className="form-control "
-                            type="number"
-                            value={
-                              this.state.data["Product Grid"].Tabs[idx]
-                                .ProductsLimit
-                            }
-                            onChange={(e) => {
-                              this.setArr(
-                                e.target.value,
-                                "Product Grid",
-                                "Tabs",
-                                idx,
-                                e.target.name
-                              );
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                  {this.state.data["Product Grid"].Tabs[idx].Type ==
-                  "Custom Products" ? (
-                    <div className="custom-products ">
-                      <div className="form-group">
-                        <label className="col-md-3 control-label text-left">
-                          Products
-                        </label>
-                        <div className="col-md-9">
-                          <MultiSelect
-                            onChange={(val) => {
-                              this.setArr(
-                                val.split(","),
-                                "Product Grid",
-                                "Tabs",
-                                idx,
-                                "ProductIds"
-                              );
-                            }}
-                            largeData={true}
-                            options={this.state.productOptions}
-                            defaultValue={this.state.data["Product Grid"].Tabs[
-                              idx
-                            ].ProductIds.toString()}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                </div>
-    })}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -3661,7 +3784,7 @@ class StoreFront extends React.Component {
           </div>
         </div>
       );
-    }else if (this.state.activePanel == "topcategories") {
+    } else if (this.state.activePanel == "topcategories") {
       return (
         <div className="tab-pane fade active in">
           <h3 className="tab-content-title">Popular Categories</h3>
@@ -3712,7 +3835,7 @@ class StoreFront extends React.Component {
           </div>
         </div>
       );
-    }else if (this.state.activePanel == "sixcolbanners") {
+    } else if (this.state.activePanel == "sixcolbanners") {
       return (
         <div className="tab-pane fade active in">
           <h3 className="tab-content-title">Six Column Banners</h3>
@@ -3733,8 +3856,7 @@ class StoreFront extends React.Component {
                         }
                         onChange={(e) => {
                           this.setVal(
-                            !this.state.data["Six Column Banner"]
-                              .SectionStatus,
+                            !this.state.data["Six Column Banner"].SectionStatus,
                             "Six Column Banner",
                             e.target.name
                           );
@@ -3856,6 +3978,177 @@ class StoreFront extends React.Component {
           </div>
         </div>
       );
+    } else if (this.state.activePanel == "clientreview") {
+      return (
+        <div className="tab-pane fade active in">
+          <h3 className="tab-content-title">Client Reviews</h3>
+          <div className="accordion-box-content">
+            <div className="tab-content clearfix">
+              <div className="row">
+                <div className="col-md-8">
+                  <div className="form-group">
+                    <label className="col-md-3 control-label text-left">
+                      Section Status
+                    </label>
+                    <div className="col-md-9">
+                      <div className="checkbox">
+                        <input
+                          type="checkbox"
+                          name="SectionStatus"
+                          id="storefront_featured_categories_section_enabled"
+                          checked={this.state.clientReviewData.sectionstatus}
+                          onChange={(e) => {
+                            this.setClientVal(
+                              !this.state.clientReviewData.sectionstatus,
+                              "sectionstatus",
+                              ""
+                            );
+                          }}
+                        />
+                        <label htmlFor="storefront_featured_categories_section_enabled">
+                          Enable client review section
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="col-md-3 control-label text-left">
+                      Section Title
+                    </label>
+                    <div className="col-md-9">
+                      <input
+                        name="SectionTitle"
+                        className="form-control "
+                        type="text"
+                        value={this.state.clientReviewData.title}
+                        onChange={(e) => {
+                          this.setClientVal(e.target.value, "title", "");
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="panel-wrap">
+                <div className="panel">
+                  <div className="panel-header">
+                    <h5>Images & Reviews</h5>
+                  </div>
+                  {this.state.clientReviewData.banners.map((banner, key) => {
+                    return (
+                      <div className="panel-body" key={key}>
+                        <div
+                          className="panel-img-wrapper"
+                          style={{ display: "flex" }}
+                        >
+                          <div className="form-group">
+                            <label>Background Image</label>
+
+                            <div
+                              className="panel-image"
+                              onClick={() => {
+                                this.setState({
+                                  showModal: true,
+                                  multiple: false,
+                                  imageFor: "img,"+key,
+                                });
+                              }}
+                            >
+                              {banner.img ? (
+                                <img
+                                  src={
+                                    siteUrl + banner.image
+                                  }
+                                />
+                              ) : (
+                                <div className="placeholder">
+                                  <i className="fa fa-picture-o" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="form-group">
+                            <label>Client Image</label>
+
+                            <div
+                              className="panel-image"
+                              onClick={() => {
+                                this.setState({
+                                  showModal: true,
+                                  multiple: false,
+                                  imageFor: "smallimg,"+key,
+                                });
+                              }}
+                            >
+                              {banner.smallimg ? (
+                                <img
+                                  src={
+                                    siteUrl + banner.smallimage
+                                  }
+                                />
+                              ) : (
+                                <div className="placeholder">
+                                  <i className="fa fa-picture-o" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className="panel-content clearfix "
+                          style={{ marginLeft: 0 }}
+                        >
+                          <div className="row">
+                            <div className="col-lg-6 col-md-12 col-sm-6 clearfix">
+                              <div className="form-group">
+                                <label>Client, Place</label>
+                                <input
+                                  type="text"
+                                  name="title"
+                                  className="form-control"
+                                  value={
+                                    banner.title
+                                  }
+                                  onChange={(e) => {
+                                    this.setClientVal(
+                                      e.target.value,
+                                      "banners",
+                                      e.target.name, 
+                                      key
+                                    );
+                                  }}
+                                />
+                              </div>
+                              <div className="form-group">
+                                <label>Review</label>
+                                <textarea
+                                  name="body"
+                                  className="form-control"
+                                  value={
+                                    banner.body
+                                  }
+                                  onChange={(e) => {
+                                    this.setClientVal(
+                                      e.target.value,
+                                      "banners",
+                                      e.target.name, 
+                                      key
+                                    );
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
     }
   };
   render() {
@@ -3896,9 +4189,13 @@ class StoreFront extends React.Component {
               <li className="active">Storefront</li>
             </ol>
           </section>
-          <Loading show={this.state.submitting}/>
+          <Loading show={this.state.submitting} />
           <section className="content">
-          {getMessage(this.state.alertType, this.state.alertMessage, this.onClose)}
+            {getMessage(
+              this.state.alertType,
+              this.state.alertMessage,
+              this.onClose
+            )}
             <form className="form-horizontal">
               <div className="accordion-content clearfix">
                 <div className="col-lg-3 col-md-4">
@@ -4123,9 +4420,14 @@ class StoreFront extends React.Component {
                                     : ""
                                 }
                                 onClick={(e) => {
-                                  this.setState({ activePanel: "general" },()=>{
-                                    this.setState({activePanel: "topbrands"})
-                                  });
+                                  this.setState(
+                                    { activePanel: "general" },
+                                    () => {
+                                      this.setState({
+                                        activePanel: "topbrands",
+                                      });
+                                    }
+                                  );
                                 }}
                               >
                                 <a data-toggle="tab">Top Brands</a>
@@ -4137,9 +4439,14 @@ class StoreFront extends React.Component {
                                     : ""
                                 }
                                 onClick={(e) => {
-                                  this.setState({ activePanel: "general" },()=>{
-                                    this.setState({activePanel: "topcategories"})
-                                  });
+                                  this.setState(
+                                    { activePanel: "general" },
+                                    () => {
+                                      this.setState({
+                                        activePanel: "topcategories",
+                                      });
+                                    }
+                                  );
                                 }}
                               >
                                 <a data-toggle="tab">Popular Categories</a>
@@ -4158,7 +4465,7 @@ class StoreFront extends React.Component {
                               >
                                 <a data-toggle="tab">Product Tabs One</a>
                               </li>
-                              
+
                               {/* <li
                                 className={
                                   this.state.activePanel == "flashsale"
@@ -4227,6 +4534,20 @@ class StoreFront extends React.Component {
                                 }}
                               >
                                 <a data-toggle="tab">Product Tabs Two</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "clientreview"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({
+                                    activePanel: "clientreview",
+                                  });
+                                }}
+                              >
+                                <a data-toggle="tab"> Client Reviews</a>
                               </li>
                               <li
                                 className={

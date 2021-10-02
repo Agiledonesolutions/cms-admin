@@ -267,8 +267,14 @@ a {
   } */
 }
 
+.panel-img-wrapper .panel-image{
+  position: relative !important;
+  top: 0 !important;
+}
+.panel-img-wrapper .form-group{
+  margin: 5px !important;
 
-
+}
 @media screen and (max-width: 767px) {
   .single-grid.total-orders {
     margin-top: 15px;
