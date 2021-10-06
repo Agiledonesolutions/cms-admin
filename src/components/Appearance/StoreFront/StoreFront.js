@@ -388,6 +388,20 @@ class StoreFront extends React.Component {
           },
         ],
       },
+      "Product Most Viewed": {
+        Name: "Product Most Viewed",
+        SectionStatus: false,
+        Title: "",
+        Tabs: [
+          {
+            Title: "",
+            Type: "",
+            CategoryId: "",
+            ProductsLimit: "",
+            ProductIds: [],
+          }
+        ],
+      },
       FlashSaleVerticalProducts: {
         Title: "",
         ActiveCampaignId: "",
@@ -470,6 +484,14 @@ class StoreFront extends React.Component {
           title: "",
           body: "",
         },
+        {
+          img: "",
+          image:"",
+          smallimage:"",
+          smallimg: "",
+          title: "",
+          body: "",
+        }
       ],
     },
     _id: "",
@@ -633,6 +655,7 @@ class StoreFront extends React.Component {
           banner.image = banner.img?banner.img.image:""
           banner.smallimage = banner.smallimg?banner.smallimg.image:""
         })
+
         this.setState({clientReviewData: data})
       }).catch(err => console.log("error banner"))
     api
@@ -640,7 +663,7 @@ class StoreFront extends React.Component {
       .then((res) => {
         const { data } = this.state;
         const fetched = res.data.data[0];
-        // console.log(fetched);
+        //console.log(fetched.Products);
         data.General = {
           ...data.General,
           ...fetched.General,
@@ -872,7 +895,8 @@ class StoreFront extends React.Component {
     Products.push(
       data["Product Tabs One"],
       data["Product Grid"],
-      data["Product Tabs Two"]
+      data["Product Tabs Two"],
+      data["Product Most Viewed"]
     );
     if (this.state.data.General.MailThemeColor == "custom color") {
       data.General.MailThemeColor =
@@ -3641,7 +3665,247 @@ class StoreFront extends React.Component {
           </div>
         </div>
       );
-    } else if (this.state.activePanel == "onecolbanner") {
+    } else if (this.state.activePanel == "productmostviewed") {
+      return (
+        <div className="tab-pane fade active in">
+          <h3 className="tab-content-title">Product Most Viewed</h3>
+          <div className="row">
+            <div className="col-md-8">
+              <div className="form-group">
+                <label className="col-md-3 control-label text-left">
+                  Section Status
+                </label>
+                <div className="col-md-9">
+                  <div className="checkbox">
+                    <input
+                      type="checkbox"
+                      name="SectionStatus"
+                      id="storefront_product_tabs_1_section_enabled"
+                      checked={
+                        this.state.data["Product Most Viewed"].SectionStatus
+                      }
+                      onChange={(e) => {
+                        this.setVal(
+                          !this.state.data["Product Most Viewed"].SectionStatus,
+                          "Product Most Viewed",
+                          e.target.name
+                        );
+                      }}
+                    />
+                    <label htmlFor="storefront_product_tabs_1_section_enabled">
+                      Enable Product Most Viewed section
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="col-md-3 control-label text-left">
+                  Section Title
+                </label>
+                <div className="col-md-9">
+                  <input
+                    name="Title"
+                    className="form-control "
+                    type="text"
+                    value={this.state.data["Product Most Viewed"].Title}
+                    onChange={(e) => {
+                      this.setVal(
+                        e.target.value,
+                        "Product Most Viewed",
+                        e.target.name
+                      );
+                    }}
+                  />
+                </div>
+              </div>
+              {this.state.data["Product Most Viewed"].Tabs.map((val, idx) => (
+                <div className="box-content clearfix" key={idx}>
+                  <h4 className="section-title">Tab {idx + 1}</h4>
+                  <div className="form-group">
+                    <label className="col-md-3 control-label text-left">
+                      Title
+                    </label>
+                    <div className="col-md-9">
+                      <input
+                        name="Title"
+                        className="form-control "
+                        type="text"
+                        value={
+                          this.state.data["Product Most Viewed"].Tabs[idx].Title
+                        }
+                        onChange={(e) => {
+                          this.setArr(
+                            e.target.value,
+                            "Product Most Viewed",
+                            "Tabs",
+                            idx,
+                            e.target.name
+                          );
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="col-md-3 control-label text-left">
+                      Type
+                    </label>
+                    <div className="col-md-9">
+                      <select
+                        name="Type"
+                        className="form-control custom-select-black product-type"
+                        value={
+                          this.state.data["Product Most Viewed"].Tabs[idx].Type
+                        }
+                        onChange={(e) => {
+                          this.setArr(
+                            "",
+                            "Product Most Viewed",
+                            "Tabs",
+                            idx,
+                            "CategoryId"
+                          );
+                          this.setArr(
+                            "",
+                            "Product Most Viewed",
+                            "Tabs",
+                            idx,
+                            "ProductsLimit"
+                          );
+                          this.setArr(
+                            [],
+                            "Product Most Viewed",
+                            "Tabs",
+                            idx,
+                            "ProductIds"
+                          );
+                          this.setArr(
+                            e.target.value,
+                            "Product Most Viewed",
+                            "Tabs",
+                            idx,
+                            e.target.name
+                          );
+                        }}
+                      >
+                        <option value="">Please Select</option>
+                        <option value={"Category Products"}>
+                          Category Products
+                        </option>
+                        <option value={"Latest Products"}>
+                          Latest Products
+                        </option>
+                        {/* <option value={"Recently Viewed Products"}>
+                          Recently Viewed Products
+                        </option> */}
+                        <option value={"Custom Products"}>
+                          Custom Products
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  {this.state.data["Product Most Viewed"].Tabs[idx].Type ==
+                  "Category Products" ? (
+                    <div className="category-products ">
+                      <div className="form-group">
+                        <label className="col-md-3 control-label text-left">
+                          Category
+                        </label>
+                        <div className="col-md-9">
+                          <MultiSelect
+                            onChange={(val) => {
+                              this.setArr(
+                                val,
+                                "Product Most Viewed",
+                                "Tabs",
+                                idx,
+                                "CategoryId"
+                              );
+                            }}
+                            singleSelect={true}
+                            largeData={true}
+                            options={this.state.categoryOptions}
+                            defaultValue={
+                              this.state.data["Product Most Viewed"].Tabs[idx]
+                                .Category?._id
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {this.state.data["Product Most Viewed"].Tabs[idx].Type ==
+                    "Latest Products" ||
+                  this.state.data["Product Most Viewed"].Tabs[idx].Type ==
+                    "Recently Viewed Products" ? (
+                    <div className="products-limit">
+                      <div className="form-group">
+                        <label className="col-md-3 control-label text-left">
+                          Products Limit
+                        </label>
+                        <div className="col-md-9">
+                          <input
+                            name="ProductsLimit"
+                            className="form-control "
+                            type="number"
+                            value={
+                              this.state.data["Product Most Viewed"].Tabs[idx]
+                                .ProductsLimit
+                            }
+                            onChange={(e) => {
+                              this.setArr(
+                                e.target.value,
+                                "Product Most Viewed",
+                                "Tabs",
+                                idx,
+                                e.target.name
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {this.state.data["Product Most Viewed"].Tabs[idx].Type ==
+                  "Custom Products" ? (
+                    <div className="custom-products ">
+                      <div className="form-group">
+                        <label className="col-md-3 control-label text-left">
+                          Products
+                        </label>
+                        <div className="col-md-9">
+                          <MultiSelect
+                            onChange={(val) => {
+                              this.setArr(
+                                val.split(","),
+                                "Product Most Viewed",
+                                "Tabs",
+                                idx,
+                                "ProductIds"
+                              );
+                            }}
+                            largeData={true}
+                            options={this.state.productOptions}
+                            defaultValue={this.state.data[
+                              "Product Most Viewed"
+                            ].Tabs[idx].ProductIds.toString()}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }else if (this.state.activePanel == "onecolbanner") {
       return (
         <div className="tab-pane fade active in">
           <h3 className="tab-content-title">One Column Banner</h3>
@@ -4534,6 +4798,20 @@ class StoreFront extends React.Component {
                                 }}
                               >
                                 <a data-toggle="tab">Product Tabs Two</a>
+                              </li>
+                              <li
+                                className={
+                                  this.state.activePanel == "productmostviewed"
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={(e) => {
+                                  this.setState({
+                                    activePanel: "productmostviewed",
+                                  });
+                                }}
+                              >
+                                <a data-toggle="tab">Product Most Viewed</a>
                               </li>
                               <li
                                 className={
