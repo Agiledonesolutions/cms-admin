@@ -63,8 +63,8 @@ class Complaint extends React.Component {
         res.data.data.map((val) => {
           var tmp = {
             id: val.ID,
-            name: val["User"]["First Name"]+" "+val["User"]["Last Name"],
-            email: val["User"]["Email"],
+            name: val.User?.["First Name"]+" "+val.User?.["Last Name"],
+            email: val.User?.["Email"],
             country: val["Country"],
             replied: val["Read"],
             created: format(val["createdAt"]),

@@ -297,7 +297,6 @@ class CreateProduct extends React.Component {
         this.setState({ attributesOptions });
       })
       .catch((err) => {
-        console.log(err);
         console.log("cannot fetch attribute");
       });
     api
@@ -331,7 +330,7 @@ class CreateProduct extends React.Component {
       api
         .get(url)
         .then((res) => {
-          console.log(res.data.data.inventoryManagement)
+          //console.log(res.data.data.inventoryManagement)
           let tmp = {
             name: res.data.data.name,
             taxClass: res.data.data.taxClass,
@@ -477,7 +476,7 @@ class CreateProduct extends React.Component {
           requiredPermission: "Create Products",
         })
         .then((res) => {
-          console.log(res.data.data);
+          //console.log(res.data.data);
           const {stocks} = this.state
           res.data.data.forEach((stk=>{
             let temp = {
@@ -674,7 +673,7 @@ class CreateProduct extends React.Component {
                   requiredPermission: "Create Products",
                 })
                 .then((res2) => {
-                  console.log(res2);
+                  //console.log(res2);
                   toast.success("Stock added successfully.", {
                     position: "bottom-right",
                     hideProgressBar: true,

@@ -10,6 +10,7 @@ class Home extends React.Component {
     latestOrders: [],
     latestReviews: [],
     totalCustomers: 0,
+    totalSales: 0,
     url: "",
     submitting: false
   };
@@ -30,6 +31,16 @@ class Home extends React.Component {
       .get("/dashboard/products")
       .then((res) => {
         this.setState({ totalProducts: res.data.data, submitting: false });
+      })
+      .catch((err) => {
+        console.log("error");
+        this.setState({submitting: false})
+
+      });
+      api
+      .get("/dashboard/sales")
+      .then((res) => {
+        this.setState({ totalSales: res.data.data, submitting: false });
       })
       .catch((err) => {
         console.log("error");
@@ -80,7 +91,7 @@ class Home extends React.Component {
                 <div className="single-grid total-sales">
                   <h4>Total Sales</h4>
                   <i className="fa fa-money pull-left" aria-hidden="true" />
-                  <span className="pull-right">₹0.00</span>
+                  <span className="pull-right">₹{this.state.totalSales}</span>
                 </div>
               </div>
               <div className="col-lg-3 col-md-6 col-sm-6">
